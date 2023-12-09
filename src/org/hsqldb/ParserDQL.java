@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -58,13 +30,7 @@ import org.hsqldb.types.NumberType;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Parser for DQL statements
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class ParserDQL extends ParserBase {
 
     protected Database             database;
@@ -72,12 +38,7 @@ public class ParserDQL extends ParserBase {
     protected final CompileContext compileContext;
     HsqlException                  lastError;
 
-    /**
-     *  Constructs a new Parser object with the given context.
-     *
-     * @param  session the connected context
-     * @param  t the token source from which to parse commands
-     */
+    
     ParserDQL(Session session, Scanner t) {
 
         super(t);
@@ -87,11 +48,7 @@ public class ParserDQL extends ParserBase {
         compileContext = new CompileContext(session, this);
     }
 
-    /**
-     *  Resets this parse context with the given SQL character sequence.
-     *
-     * @param sql a new SQL character sequence to replace the current one
-     */
+    
     void reset(String sql) {
 
         super.reset(sql);
@@ -391,7 +348,7 @@ public class ParserDQL extends ParserBase {
                 length = BlobType.defaultBlobSize;
             } else if (database.sqlEnforceSize) {
 
-                // BIT is always BIT(1), regardless of sqlEnforceSize
+                
                 if (typeNumber == Types.SQL_CHAR
                         || typeNumber == Types.SQL_BINARY) {
                     length = 1;
@@ -629,15 +586,7 @@ public class ParserDQL extends ParserBase {
         }
     }
 
-    /**
-     * Process a bracketed column list as used in the declaration of SQL
-     * CONSTRAINTS and return an array containing the indexes of the columns
-     * within the table.
-     *
-     * @param table table that contains the columns
-     * @param ascOrDesc boolean
-     * @return array of column indexes
-     */
+    
     int[] readColumnList(Table table, boolean ascOrDesc) {
 
         OrderedHashSet set = readColumnNames(ascOrDesc);
@@ -708,7 +657,7 @@ public class ParserDQL extends ParserBase {
         while (true) {
             if (session.isProcessingScript) {
 
-                // for old scripts
+                
                 if (!isSimpleName()) {
                     token.isDelimitedIdentifier = true;
                 }
@@ -1444,7 +1393,7 @@ public class ParserDQL extends ParserBase {
 
     void readWhereGroupHaving(QuerySpecification select) {
 
-        // where
+        
         if (token.tokenType == Tokens.WHERE) {
             read();
 
@@ -1453,7 +1402,7 @@ public class ParserDQL extends ParserBase {
             select.addQueryCondition(e);
         }
 
-        // group by
+        
         if (token.tokenType == Tokens.GROUP) {
             read();
             readThis(Tokens.BY);
@@ -1473,7 +1422,7 @@ public class ParserDQL extends ParserBase {
             }
         }
 
-        // having
+        
         if (token.tokenType == Tokens.HAVING) {
             read();
 
@@ -1525,7 +1474,7 @@ public class ParserDQL extends ParserBase {
                 return null;
             }
 
-            // optional comma
+            
             readIfThis(Tokens.COMMA);
 
             e2 = XreadSimpleValueSpecificationOrNull();
@@ -1763,7 +1712,7 @@ public class ParserDQL extends ParserBase {
                     if (table.isTriggerUpdatable()
                             || table.isTriggerInsertable()) {
 
-                        // all or nothing
+                        
                     } else if (table.isUpdatable() && table.isInsertable()) {
                         break;
                     }
@@ -1831,9 +1780,7 @@ public class ParserDQL extends ParserBase {
         return sq.getTable();
     }
 
-    /**
-     * Creates a RangeVariable from the parse context. <p>
-     */
+    
     protected RangeVariable readTableOrSubquery(RangeVariable[] outerRanges) {
 
         Table          table          = null;
@@ -2066,9 +2013,9 @@ public class ParserDQL extends ParserBase {
         return aggregateExp;
     }
 
-//--------------------------------------
-    // returns null
-    // := <unsigned literal> | <general value specification>
+
+    
+    
     Expression XreadValueSpecificationOrNull() {
 
         Expression e     = null;
@@ -2100,8 +2047,8 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    // returns null
-    // <unsigned literl> | <general value specification>
+    
+    
     Expression XreadUnsignedValueSpecificationOrNull() {
 
         Expression e;
@@ -2159,7 +2106,7 @@ public class ParserDQL extends ParserBase {
                     throw unexpectedToken(Tokens.T_COLON);
                 }
 
-            // fall through
+            
             case Tokens.QUESTION :
                 e = new ExpressionColumn(OpTypes.DYNAMIC_PARAM);
 
@@ -2192,13 +2139,13 @@ public class ParserDQL extends ParserBase {
 
                 return readSQLFunction(function);
 
-            // read SQL parameter reference
+            
         }
 
         return null;
     }
 
-    // <unsigned literl> | <dynamic parameter> | <variable>
+    
     Expression XreadSimpleValueSpecificationOrNull() {
 
         Expression e;
@@ -2221,7 +2168,7 @@ public class ParserDQL extends ParserBase {
                     throw unexpectedToken(Tokens.T_COLON);
                 }
 
-            // fall through
+            
             case Tokens.QUESTION :
                 e = new ExpressionColumn(OpTypes.DYNAMIC_PARAM);
 
@@ -2246,9 +2193,9 @@ public class ParserDQL extends ParserBase {
         }
     }
 
-    // combined <value expression primary> and <predicate>
-    // exclusively called
-    // <explicit row value constructor> needed for predicate
+    
+    
+    
     Expression XreadAllTypesValueExpressionPrimary(boolean boole) {
 
         Expression e = null;
@@ -2298,9 +2245,9 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    // doesn't return null
-    // <value expression primary> ::= <parenthesized value expression>
-    // | <nonparenthesized value expression primary>
+    
+    
+    
     Expression XreadValueExpressionPrimary() {
 
         Expression e;
@@ -2326,9 +2273,9 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    // returns null
-    //  <row value special case> :== this
-    // <boolean predicand> :== this | <parenthesized boolean value expression>
+    
+    
+    
     Expression XreadSimpleValueExpressionPrimary() {
 
         Expression e;
@@ -2604,7 +2551,7 @@ public class ParserDQL extends ParserBase {
             case Tokens.LEFT :
             case Tokens.RIGHT :
 
-                // CLI function names
+                
                 break;
 
             case Tokens.TABLE : {
@@ -2655,8 +2602,8 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    // OK - composite production -
-    // <numeric primary> <charactr primary> <binary primary> <datetime primary> <interval primary>
+    
+    
     Expression XreadAllTypesPrimary(boolean boole) {
 
         Expression e = null;
@@ -2672,7 +2619,7 @@ public class ParserDQL extends ParserBase {
             case Tokens.OVERLAY :
             case Tokens.NORMALIZE :
 
-            //
+            
             case Tokens.POSITION :
             case Tokens.OCCURRENCES_REGEX :
             case Tokens.POSITION_REGEX :
@@ -2815,13 +2762,7 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    /**
-     *     <value expression> ::=
-     *   <common value expression>
-     *   | <boolean value expression>
-     *   | <row value expression>
-     *
-     */
+    
     Expression XreadValueExpression() {
 
         Expression e = XreadAllTypesCommonValueExpression(true);
@@ -2839,13 +2780,13 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    // union of <numeric | datetime | string | interval value expression>
+    
     Expression XreadRowOrCommonValueExpression() {
         return XreadAllTypesCommonValueExpression(false);
     }
 
-    // union of <numeric | datetime | string | interval | boolean value expression>
-    // no <row value expression> and no <predicate>
+    
+    
     Expression XreadAllTypesCommonValueExpression(boolean boole) {
 
         Expression e    = XreadAllTypesTerm(boole);
@@ -2877,7 +2818,7 @@ public class ParserDQL extends ParserBase {
                         break;
                     }
 
-                // fall through
+                
                 default :
                     end = true;
                     break;
@@ -2925,7 +2866,7 @@ public class ParserDQL extends ParserBase {
                         break;
                     }
 
-                // fall through
+                
                 default :
                     end = true;
                     break;
@@ -3024,7 +2965,7 @@ public class ParserDQL extends ParserBase {
 
         return XreadCharacterValueExpression();
 
-//        XreadBinaryValueExpression();
+
     }
 
     Expression XreadCharacterValueExpression() {
@@ -3051,15 +2992,15 @@ public class ParserDQL extends ParserBase {
 
             case Tokens.SUBSTRING :
 
-//            case Token.SUBSTRING_REGEX :
+
             case Tokens.LOWER :
             case Tokens.UPPER :
 
-//            case Token.TRANSLATE_REGEX :
+
             case Tokens.TRIM :
             case Tokens.OVERLAY :
 
-//            case Token.NORMALIZE :
+
                 FunctionSQL function =
                     FunctionSQL.newSQLFunction(token.tokenString,
                                                compileContext);
@@ -3080,8 +3021,8 @@ public class ParserDQL extends ParserBase {
 
             case Tokens.POSITION :
 
-//            case Token.OCCURRENCES_REGEX :
-//            case Token.POSITION_REGEX :
+
+
             case Tokens.EXTRACT :
             case Tokens.CHAR_LENGTH :
             case Tokens.CHARACTER_LENGTH :
@@ -3097,7 +3038,7 @@ public class ParserDQL extends ParserBase {
             case Tokens.CEILING :
             case Tokens.CEIL :
 
-//            case Token.WIDTH_BUCKET :
+
                 FunctionSQL function =
                     FunctionSQL.newSQLFunction(token.tokenString,
                                                compileContext);
@@ -3261,7 +3202,7 @@ public class ParserDQL extends ParserBase {
             case Tokens.LOCALTIME :
             case Tokens.LOCALTIMESTAMP :
 
-            //
+            
             case Tokens.ABS :
                 FunctionSQL function =
                     FunctionSQL.newSQLFunction(token.tokenString,
@@ -3279,7 +3220,7 @@ public class ParserDQL extends ParserBase {
         return XreadValueExpressionPrimary();
     }
 
-    // returns null
+    
     Expression XreadDateTimeValueFunctionOrNull() {
 
         FunctionSQL function = null;
@@ -3451,7 +3392,7 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    // <boolean primary> ::= <predicate> | <boolean predicand>
+    
     Expression XreadBooleanPrimaryOrNull(RangeVariable[] outerRanges) {
 
         Expression e = null;
@@ -3521,7 +3462,7 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    // similar to <value expression primary>
+    
     Expression XreadBooleanPredicand() {
 
         Expression e;
@@ -3894,14 +3835,14 @@ public class ParserDQL extends ParserBase {
 
             if (args.length != degree) {
 
-                // SQL error message
+                
                 throw unexpectedToken();
             }
 
             for (int j = 0; j < degree; j++) {
                 if (args[j].getType() == OpTypes.ROW) {
 
-                    // SQL error message
+                    
                     throw unexpectedToken();
                 }
             }
@@ -4011,10 +3952,10 @@ public class ParserDQL extends ParserBase {
         return XreadRowValueSpecialCase();
     }
 
-    //  union of <row value expression> |
-    // <boolean predicand> | <non parenthesized value expression primary> |
-    //  translated to <explicit row value constructor>
-    // <value expression primary> | <non parenthesized value expression primary> |
+    
+    
+    
+    
     Expression XreadRowValuePredicand() {
         return XreadRowOrCommonValueExpression();
     }
@@ -4030,8 +3971,8 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    // <row value constructor>
-    // ISSUE - XreadCommonValueExpression and XreadBooleanValueExpression should merge
+    
+    
     Expression XreadRowValueConstructor() {
 
         Expression e;
@@ -4051,8 +3992,8 @@ public class ParserDQL extends ParserBase {
         return XreadBooleanValueExpression();
     }
 
-    // returns null
-    // must be called in conjusnction with <parenthesized ..
+    
+    
     Expression XreadExplicitRowValueConstructorOrNull() {
 
         Expression e;
@@ -4724,7 +4665,7 @@ public class ParserDQL extends ParserBase {
         return new Expression(OpTypes.ARRAY_SUBQUERY, sq);
     }
 
-    // Additional Common Elements
+    
     SchemaObject readCollateClauseOrNull() {
 
         if (token.tokenType == Tokens.COLLATE) {
@@ -4804,9 +4745,7 @@ public class ParserDQL extends ParserBase {
         return readCaseWhen(predicand);
     }
 
-    /**
-     * Reads part of a CASE .. WHEN  expression
-     */
+    
     private Expression readCaseWhen(final Expression l) {
 
         readThis(Tokens.WHEN);
@@ -4868,9 +4807,7 @@ public class ParserDQL extends ParserBase {
         return casewhen;
     }
 
-    /**
-     * reads a CASEWHEN expression
-     */
+    
     private Expression readCaseWhenExpressionOrNull() {
 
         Expression l        = null;
@@ -4902,9 +4839,7 @@ public class ParserDQL extends ParserBase {
         return l;
     }
 
-    /**
-     * Reads a CAST or CONVERT expression
-     */
+    
     private Expression readCastExpressionOrNull() {
 
         boolean    isConvert = token.tokenType == Tokens.CONVERT;
@@ -4961,9 +4896,7 @@ public class ParserDQL extends ParserBase {
         return e;
     }
 
-    /**
-     * reads a Column or Function expression
-     */
+    
     private Expression readColumnOrFunctionExpression() {
 
         String  name           = token.tokenString;
@@ -5195,7 +5128,7 @@ public class ParserDQL extends ParserBase {
         Expression root;
         Expression r;
 
-        // turn into a concatenation
+        
         int position = getPosition();
 
         read();
@@ -5298,9 +5231,7 @@ public class ParserDQL extends ParserBase {
         return new ExpressionOp(OpTypes.CASEWHEN, l, a);
     }
 
-    /**
-     * Reads a NULLIF expression
-     */
+    
     private Expression readNullIfExpression() {
 
         read();
@@ -5321,9 +5252,7 @@ public class ParserDQL extends ParserBase {
         return c;
     }
 
-    /**
-     * Reads a ISNULL or ISNULL of NVL expression
-     */
+    
     private Expression readIfNullExpressionOrNull() {
 
         int position = getPosition();
@@ -5352,9 +5281,7 @@ public class ParserDQL extends ParserBase {
         return c;
     }
 
-    /**
-     * Reads a NVL2 expression
-     */
+    
     private Expression readIfNull2ExpressionOrNull() {
 
         int position = getPosition();
@@ -5387,9 +5314,7 @@ public class ParserDQL extends ParserBase {
         return c;
     }
 
-    /**
-     * Reads a COALESE expression
-     */
+    
     private Expression readCoalesceExpression() {
 
         Expression c = null;
@@ -5685,7 +5610,7 @@ public class ParserDQL extends ParserBase {
                             && !token.isDelimitedPrefix
                             && (Tokens.T_MODULE.equals(token.namePrefix))) {
 
-                        // local
+                        
                     } else {
                         throw unexpectedTokenRequire(Tokens.T_MODULE);
                     }
@@ -5804,7 +5729,7 @@ public class ParserDQL extends ParserBase {
         if (token.namePrefix != null) {
             if (!token.namePrefix.equals(schemaName.name)) {
 
-                // todo - better error message
+                
                 throw Error.error(ErrorCode.X_42505, token.namePrefix);
             }
 
@@ -5812,7 +5737,7 @@ public class ParserDQL extends ParserBase {
                 if (!token.namePrePrefix.equals(
                         database.getCatalogName().name)) {
 
-                    // todo - better error message
+                    
                     throw Error.error(ErrorCode.X_42505, token.namePrefix);
                 }
             }
@@ -5986,9 +5911,7 @@ public class ParserDQL extends ParserBase {
         return cs;
     }
 
-    /**
-     * Retrieves a SELECT or other query expression Statement from this parse context.
-     */
+    
     StatementQuery compileCursorSpecification(int props, boolean isRoutine,
             RangeVariable[] outerRanges) {
 
@@ -6096,11 +6019,11 @@ public class ParserDQL extends ParserBase {
         final Session    session;
         final ParserBase parser;
 
-        //
+        
         private int           subqueryDepth;
         private HsqlArrayList namedSubqueries;
 
-        //
+        
         private OrderedIntKeyHashMap parameters   = new OrderedIntKeyHashMap();
         private HsqlArrayList usedSequences       = new HsqlArrayList(8, true);
         private HsqlArrayList        usedRoutines = new HsqlArrayList(8, true);
@@ -6110,7 +6033,7 @@ public class ParserDQL extends ParserBase {
         boolean                      contextuallyTypedExpression;
         Routine                      callProcedure;
 
-        //
+        
         private int rangeVarIndex = 0;
 
         public CompileContext(Session session, ParserBase parser) {
@@ -6141,7 +6064,7 @@ public class ParserDQL extends ParserBase {
 
             usedObjects.clear();
 
-            //
+            
             currentDomain               = null;
             contextuallyTypedExpression = false;
         }

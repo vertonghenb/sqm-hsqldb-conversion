@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.scriptio;
@@ -48,33 +20,13 @@ import org.hsqldb.error.ErrorCode;
 import org.hsqldb.lib.FileAccess;
 import org.hsqldb.rowio.RowOutputTextLog;
 
-/**
- * Handles all scripting and logging operations. A script consists of two blocks:<p>
- *
- * DDL: SQL statements for table and user definitions
- * DATA: INSERT statements for memory tables
- *
- * This happens as part of the CHECKPOINT and SHUTDOWN COMPACT
- * process. In this case, the
- * DATA block contains the CACHED table data as well.<p>
- *
- * A related use for this class is for saving a current snapshot of the
- * database data to a user-defined file with the SCRIPT command
- *
- * A log consists of SQL statements of different types. Each statement is
- * encoded as ASCII and saved.
- *
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.7.2
- */
+
 public class ScriptWriterText extends ScriptWriterBase {
 
     RowOutputTextLog           rowOut;
     public static final String ISO_8859_1 = "ISO-8859-1";
 
-    /** @todo - perhaps move this global into a lib utility class */
+    
     public static byte[] BYTES_LINE_SEP;
     static byte[]        BYTES_COMMIT;
     static byte[]        BYTES_INSERT_INTO;

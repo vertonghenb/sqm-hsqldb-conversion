@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.scriptio;
@@ -51,18 +23,10 @@ import org.hsqldb.rowio.RowInputTextLog;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 
-/**
- * Handles operations involving reading back a script or log file written
- * out by ScriptWriterText. This implementation
- * corresponds to ScriptWriterText.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- *  @version 2.1.1
- *  @since 1.7.2
- */
+
 public class ScriptReaderText extends ScriptReaderBase {
 
-    // this is used only to enable reading one logged line at a time
+    
     LineReader      dataStreamIn;
     RowInputTextLog rowIn;
     boolean         isInsert;
@@ -94,7 +58,7 @@ public class ScriptReaderText extends ScriptReaderBase {
 
         super(db);
 
-//        inputStream = new BufferedInputStream(inputStream);
+
         dataStreamIn = new LineReader(inputStream,
                                       ScriptWriterText.ISO_8859_1);
         rowIn = new RowInputTextLog(db.databaseProperties.isVersion18());
@@ -122,13 +86,13 @@ public class ScriptReaderText extends ScriptReaderBase {
 
             if (result.isError()) {
 
-                // handle grants on math and library routines in old versions
+                
                 if (cs == null) {}
                 else if (cs.getType() == StatementTypes.GRANT) {
                     continue;
                 } else if (cs.getType() == StatementTypes.CREATE_ROUTINE) {
 
-                    // ignore legacy references
+                    
                     if (result.getMainString().contains(
                             "org.hsqldb.Library")) {
                         continue;
@@ -160,7 +124,7 @@ public class ScriptReaderText extends ScriptReaderBase {
         try {
             String tablename = null;
 
-            // fredt - needed for forward referencing FK constraints
+            
             database.setReferentialIntegrity(false);
 
             for (; isInsert || readLoggedStatement(session);
@@ -207,7 +171,7 @@ public class ScriptReaderText extends ScriptReaderBase {
 
         if (!sessionChanged) {
 
-            //fredt temporary solution - should read bytes directly from buffer
+            
             String s;
 
             try {
@@ -220,7 +184,7 @@ public class ScriptReaderText extends ScriptReaderBase {
 
             lineCount++;
 
-            //        System.out.println(lineCount);
+            
             statement = StringConverter.unicodeStringToString(s);
 
             if (statement == null) {

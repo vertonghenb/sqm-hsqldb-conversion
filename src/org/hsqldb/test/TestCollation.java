@@ -1,42 +1,11 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
 
 import org.hsqldb.types.Collation;
 
-/**
- * Test HSQLDBs collation capabilities
- * @author frank.schoenheit@sun.com
- */
+
 public class TestCollation extends TestBase {
 
     java.sql.Statement      statement;
@@ -44,7 +13,7 @@ public class TestCollation extends TestBase {
     org.hsqldb.lib.Iterator collIterator;
     org.hsqldb.lib.Iterator localeIterator;
 
-    /** Creates a new instance of TestCollation */
+    
     public TestCollation(String name) {
 
         super(name);
@@ -76,12 +45,10 @@ public class TestCollation extends TestBase {
         super.tearDown();
     }
 
-    /**
-     * checks whether expected locales are present and selectable
-     */
+    
     public void testVerifyAvailability() {
 
-        // let's check whether unknown collation identifiers are rejected
+        
         try {
             statement.execute(
                 getSetCollationStmt(
@@ -89,7 +56,7 @@ public class TestCollation extends TestBase {
             fail("database did not reject invalid collation name");
         } catch (java.sql.SQLException e) {}
 
-        // let's check whether the DB accepts all known collations
+        
         int count = 0;
 
         while (collIterator.hasNext()) {
@@ -108,15 +75,15 @@ public class TestCollation extends TestBase {
         System.out.println("checked " + count
                            + " collations for availability.");
 
-        // even if the above worked, we cannot be sure that all locales are really supported.
-        // The fact that SET DATABASE COLLATION succeeeded only means that a Collator could
-        // be instantiated with a Locale matching the given collation name. But what if
-        // Locale.Instance(...) lied, and returned a fallback Locale instance?
-        //
-        // Hmm, looking at the documentation of Locale.getAvailableLocales, I'm not sure
-        // whether it is really feasible. The doc states "returns a list of all installed Locales".
-        // The "installed" puzzles me - maybe this is really different per installation, and not only
-        // per JDK version?
+        
+        
+        
+        
+        
+        
+        
+        
+        
         java.util.Locale[] availableLocales =
             java.util.Locale.getAvailableLocales();
         org.hsqldb.lib.Set existenceCheck = new org.hsqldb.lib.HashSet();
@@ -157,9 +124,7 @@ public class TestCollation extends TestBase {
         }
     }
 
-    /**
-     * checks whether sorting via a given collation works as expected
-     */
+    
     public void testVerifyCollation() {
 
         String failedCollations = "";
@@ -185,9 +150,7 @@ public class TestCollation extends TestBase {
         }
     }
 
-    /**
-     * returns an SQL statement to set the database collation
-     */
+    
     protected final String getSetCollationStmt(String collationName) {
 
         final String setCollationStmtPre  = "SET DATABASE COLLATION \"";
@@ -196,9 +159,7 @@ public class TestCollation extends TestBase {
         return setCollationStmtPre + collationName + setCollationStmtPost;
     }
 
-    /**
-     * checks sorting a table with according to a given collation
-     */
+    
     protected String checkSorting(String collationName) {
 
         String stmt1 =
@@ -213,7 +174,7 @@ public class TestCollation extends TestBase {
 
         try {
 
-            // set database collation
+            
             statement.execute(getSetCollationStmt(collationName));
             statement.execute(stmt1);
             statement.execute(stmt2);

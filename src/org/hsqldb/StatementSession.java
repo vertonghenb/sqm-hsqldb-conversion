@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -42,13 +14,7 @@ import org.hsqldb.types.DTIType;
 import org.hsqldb.types.IntervalSecondData;
 import org.hsqldb.types.Type;
 
-/**
- * Implementation of Statement for SQL session statements.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since 1.9.0
- */
+
 public class StatementSession extends Statement {
 
     public final static StatementSession commitNoChainStatement =
@@ -116,7 +82,7 @@ public class StatementSession extends Statement {
 
         switch (type) {
 
-            // logged by statement
+            
             case StatementTypes.SET_SCHEMA :
                 group    = StatementTypes.X_SQL_SESSION;
                 isLogged = true;
@@ -127,7 +93,7 @@ public class StatementSession extends Statement {
                 isLogged = true;
                 break;
 
-            // cursor
+            
             case StatementTypes.ALLOCATE_CURSOR :
                 group = StatementTypes.X_SQL_DATA;
                 break;
@@ -138,7 +104,7 @@ public class StatementSession extends Statement {
                 group = StatementTypes.X_SQL_DYNAMIC;
                 break;
 
-            //
+            
             case StatementTypes.DYNAMIC_DELETE_CURSOR :
                 group = StatementTypes.X_SQL_DATA_CHANGE;
                 break;
@@ -149,7 +115,7 @@ public class StatementSession extends Statement {
                 group = StatementTypes.X_SQL_DATA;
                 break;
 
-            //
+            
             case StatementTypes.OPEN :
             case StatementTypes.FETCH :
             case StatementTypes.FREE_LOCATOR :
@@ -158,19 +124,19 @@ public class StatementSession extends Statement {
                 group = StatementTypes.X_SQL_DATA;
                 break;
 
-            //
+            
             case StatementTypes.PREPARABLE_DYNAMIC_DELETE_CURSOR :
             case StatementTypes.PREPARABLE_DYNAMIC_UPDATE_CURSOR :
             case StatementTypes.PREPARE :
                 group = StatementTypes.X_SQL_DYNAMIC;
                 break;
 
-            // logged by session
+            
             case StatementTypes.DISCONNECT :
                 group = StatementTypes.X_SQL_CONNECTION;
                 break;
 
-            //
+            
             case StatementTypes.SET_COLLATION :
             case StatementTypes.SET_CONNECTION :
             case StatementTypes.SET_CONSTRAINT :
@@ -188,7 +154,7 @@ public class StatementSession extends Statement {
                 group    = StatementTypes.X_HSQLDB_SESSION;
                 break;
 
-            // logged by session if necessary
+            
             case StatementTypes.COMMIT_WORK :
             case StatementTypes.RELEASE_SAVEPOINT :
             case StatementTypes.ROLLBACK_SAVEPOINT :
@@ -268,12 +234,12 @@ public class StatementSession extends Statement {
 
         switch (type) {
 
-            // cursor
+            
             case StatementTypes.ALLOCATE_CURSOR :
             case StatementTypes.ALLOCATE_DESCRIPTOR :
                 return Result.updateZeroResult;
 
-            //
+            
             case StatementTypes.COMMIT_WORK : {
                 try {
                     boolean chain = ((Boolean) parameters[0]).booleanValue();
@@ -294,19 +260,19 @@ public class StatementSession extends Statement {
 
                 return Result.updateZeroResult;
 
-            //
+            
             case StatementTypes.DYNAMIC_CLOSE :
             case StatementTypes.DYNAMIC_DELETE_CURSOR :
             case StatementTypes.DYNAMIC_FETCH :
             case StatementTypes.DYNAMIC_OPEN :
 
-            //
+            
             case StatementTypes.FETCH :
             case StatementTypes.FREE_LOCATOR :
             case StatementTypes.GET_DESCRIPTOR :
             case StatementTypes.HOLD_LOCATOR :
 
-            //
+            
             case StatementTypes.OPEN :
             case StatementTypes.PREPARABLE_DYNAMIC_DELETE_CURSOR :
             case StatementTypes.PREPARABLE_DYNAMIC_UPDATE_CURSOR :
@@ -527,7 +493,7 @@ public class StatementSession extends Statement {
                         throw Error.error(ErrorCode.X_28501);
                     }
 
-                    // override the actual SQL at runtime
+                    
                     sql = userObject.getConnectUserSQL();
 
                     if (userObject == session.getGrantee()) {
@@ -548,7 +514,7 @@ public class StatementSession extends Statement {
                         return Result.updateZeroResult;
                     }
 
-                    /** @todo may need different error code */
+                    
                     throw Error.error(ErrorCode.X_28000);
                 } catch (HsqlException e) {
                     return Result.newErrorResult(e, sql);
@@ -583,7 +549,7 @@ public class StatementSession extends Statement {
             case StatementTypes.START_TRANSACTION :
                 startTransaction = true;
 
-            // fall through
+            
             case StatementTypes.SET_TRANSACTION : {
                 try {
                     if (parameters[0] != null) {
@@ -609,7 +575,7 @@ public class StatementSession extends Statement {
                 }
             }
 
-            //
+            
             case StatementTypes.SET_SESSION_AUTOCOMMIT : {
                 boolean mode = ((Boolean) parameters[0]).booleanValue();
 

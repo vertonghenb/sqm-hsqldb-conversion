@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.types;
@@ -48,25 +20,19 @@ import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.rights.Grantee;
 import org.hsqldb.store.ValuePool;
 
-/**
- * Base class for type objects.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.9.0
- */
+
 public abstract class Type implements SchemaObject, Cloneable {
 
     public static final Type[] emptyArray = new Type[]{};
 
-    //
+    
     public final int        typeComparisonGroup;
     public final int        typeCode;
     public final long       precision;
     public final int        scale;
     public UserTypeModifier userTypeModifier;
 
-    //
+    
     Type(int typeGroup, int type, long precision, int scale) {
 
         this.typeComparisonGroup = typeGroup;
@@ -75,7 +41,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         this.scale               = scale;
     }
 
-    // interface specific methods
+    
     public final int getType() {
 
         if (userTypeModifier == null) {
@@ -148,13 +114,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         userTypeModifier.compile(session);
     }
 
-    /**
-     *  Retrieves the SQL character sequence required to (re)create the
-     *  trigger, as a StringBuffer
-     *
-     * @return the SQL character sequence required to (re)create the
-     *  trigger
-     */
+    
     public String getSQL() {
 
         if (userTypeModifier == null) {
@@ -179,16 +139,10 @@ public abstract class Type implements SchemaObject, Cloneable {
 
     public abstract int displaySize();
 
-    /**
-     * Returns the JDBC type number of type, if it exists,
-     * otherwise the HSQLDB / SQL type.
-     */
+    
     public abstract int getJDBCTypeCode();
 
-    /**
-     * Returns the JDBC class name of type, if it exists,
-     * otherwise the HSQLDB class name.
-     */
+    
     public abstract String getJDBCClassName();
 
     public abstract Class getJDBCClass();
@@ -202,30 +156,20 @@ public abstract class Type implements SchemaObject, Cloneable {
                                              : (int) precision;
     }
 
-    /**
-     * Returns the generic SQL CLI type number of type, if it exists,
-     * otherwise the HSQLDB type. The generic type is returned for DATETIME
-     * and INTERVAL types.
-     */
+    
     public int getSQLGenericTypeCode() {
         return typeCode;
     }
 
-    /**
-     * Returns the name of the type
-     */
+    
     public abstract String getNameString();
 
-    /**
-     * Returns the name of the type
-     */
+    
     public String getFullNameString() {
         return getNameString();
     }
 
-    /**
-     * Returns the full definition of the type, including parameters
-     */
+    
     public abstract String getDefinition();
 
     public boolean hasCollation() {
@@ -281,28 +225,16 @@ public abstract class Type implements SchemaObject, Cloneable {
     public abstract Object convertToTypeLimits(SessionInterface session,
             Object a);
 
-    /**
-     * Explicit casts are handled by this method.
-     * SQL standard 6.12 rules for enforcement of size, precision and scale
-     * are implemented. For CHARACTER values, it performs truncation in all
-     * cases of long strings.
-     */
+    
     public Object castToType(SessionInterface session, Object a, Type type) {
         return convertToType(session, a, type);
     }
 
-    /**
-     * Same as castToType except for CHARACTER values. Perform string
-     * truncation of trailing spaces only. For other long strings, it raises
-     * an exception.
-     */
+    
     public abstract Object convertToType(SessionInterface session, Object a,
                                          Type type);
 
-    /**
-     * Convert type for JDBC reads. Same as convertToType, but supports non-standard
-     * SQL conversions supported by JDBC
-     */
+    
     public Object convertToTypeJDBC(SessionInterface session, Object a,
                                     Type otherType) {
 
@@ -321,9 +253,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         return a;
     }
 
-    /**
-     * Converts the object to the given type without limit checks. Used for JDBC writes.
-     */
+    
     public abstract Object convertToDefaultType(
         SessionInterface sessionInterface, Object o);
 
@@ -333,10 +263,7 @@ public abstract class Type implements SchemaObject, Cloneable {
 
     public abstract boolean canConvertFrom(Type otherType);
 
-    /**
-     * Can convert without changing the object
-     * @return 0 always, 1 range check required, -1 never
-     */
+    
     public int canMoveFrom(Type otherType) {
 
         if (otherType == this) {
@@ -488,17 +415,10 @@ public abstract class Type implements SchemaObject, Cloneable {
         return Integer.MIN_VALUE;
     }
 
-    /**
-     * Common type used in comparison opertions. other must be comparable
-     * with this.
-     */
+    
     public abstract Type getAggregateType(Type other);
 
-    /**
-     * Result type of combining values of two types in different opertions.
-     * other type is not allways comparable with this, but a operation should
-     * be valid without any explicit CAST
-     */
+    
     public abstract Type getCombinedType(Session session, Type other,
                                          int operation);
 
@@ -506,9 +426,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         return 0;
     }
 
-    /**
-     * All arithmetic ops are called on the pre-determined Type object of the result
-     */
+    
     public Object absolute(Object a) {
         throw Error.runtimeError(ErrorCode.U_S0500, "Type");
     }
@@ -594,12 +512,12 @@ public abstract class Type implements SchemaObject, Cloneable {
         }
     }
 
-    /** @todo 1.9.0 - review all needs max implementation defined lengths, used for parameters */
+    
 
-    // null type
+    
     public static final Type SQL_ALL_TYPES = NullType.getNullType();
 
-    // character types
+    
     public static final CharacterType SQL_CHAR =
         new CharacterType(Types.SQL_CHAR, 1);
     public static final CharacterType SQL_CHAR_16 =
@@ -619,14 +537,14 @@ public abstract class Type implements SchemaObject, Cloneable {
         new CharacterType(Types.VARCHAR_IGNORECASE,
                           CharacterType.defaultVarcharPrecision);
 
-    // binary types
+    
     public static final BitType SQL_BIT = new BitType(Types.SQL_BIT, 1);
     public static final BitType SQL_BIT_VARYING =
         new BitType(Types.SQL_BIT_VARYING, 1);
     public static final BitType SQL_BIT_VARYING_MAX_LENGTH =
         new BitType(Types.SQL_BIT_VARYING, BitType.maxBitPrecision);
 
-    // binary types
+    
     public static final BinaryType SQL_BINARY =
         new BinaryType(Types.SQL_BINARY, 1);
     public static final BinaryType SQL_BINARY_16 =
@@ -640,13 +558,13 @@ public abstract class Type implements SchemaObject, Cloneable {
     public static final BlobType SQL_BLOB =
         new BlobType(BlobType.defaultBlobSize);
 
-    // other type
+    
     public static final OtherType OTHER = OtherType.getOtherType();
 
-    // boolean type
+    
     public static final BooleanType SQL_BOOLEAN = BooleanType.getBooleanType();
 
-    // number types
+    
     public static final NumberType SQL_NUMERIC =
         new NumberType(Types.SQL_NUMERIC, NumberType.defaultNumericPrecision,
                        0);
@@ -662,7 +580,7 @@ public abstract class Type implements SchemaObject, Cloneable {
     public static final NumberType SQL_DOUBLE =
         new NumberType(Types.SQL_DOUBLE, 0, 0);
 
-    //
+    
     public static final NumberType TINYINT = new NumberType(Types.TINYINT,
         NumberType.tinyintPrecision, 0);
     public static final NumberType SQL_SMALLINT =
@@ -672,7 +590,7 @@ public abstract class Type implements SchemaObject, Cloneable {
     public static final NumberType SQL_BIGINT =
         new NumberType(Types.SQL_BIGINT, NumberType.bigintPrecision, 0);
 
-    // date time
+    
     public static final DateTimeType SQL_DATE =
         new DateTimeType(Types.SQL_TIMESTAMP, Types.SQL_DATE, 0);
     public static final DateTimeType SQL_TIME =
@@ -691,7 +609,7 @@ public abstract class Type implements SchemaObject, Cloneable {
     public static final DateTimeType SQL_TIMESTAMP_NO_FRACTION =
         new DateTimeType(Types.SQL_TIMESTAMP, Types.SQL_TIMESTAMP, 0);
 
-    // interval
+    
     public static final IntervalType SQL_INTERVAL_YEAR =
         IntervalType.newIntervalType(Types.SQL_INTERVAL_YEAR,
                                      DTIType.defaultIntervalPrecision, 0);
@@ -740,7 +658,7 @@ public abstract class Type implements SchemaObject, Cloneable {
                                      DTIType.defaultIntervalPrecision,
                                      DTIType.defaultIntervalFractionPrecision);
 
-    //
+    
     public static final IntervalType SQL_INTERVAL_YEAR_MAX_PRECISION =
         IntervalType.newIntervalType(Types.SQL_INTERVAL_YEAR,
                                      DTIType.maxIntervalPrecision, 0);
@@ -765,7 +683,7 @@ public abstract class Type implements SchemaObject, Cloneable {
                                      DTIType.maxIntervalPrecision,
                                      DTIType.maxFractionPrecision);
 
-    //
+    
     public static final IntervalType SQL_INTERVAL_YEAR_TO_MONTH_MAX_PRECISION =
         IntervalType.newIntervalType(Types.SQL_INTERVAL_YEAR_TO_MONTH,
                                      DTIType.maxIntervalPrecision, 0);
@@ -774,7 +692,7 @@ public abstract class Type implements SchemaObject, Cloneable {
                                      DTIType.maxIntervalPrecision,
                                      DTIType.maxFractionPrecision);
 
-    //
+    
     public static final ArrayType SQL_ARRAY_ALL_TYPES =
         new ArrayType(SQL_ALL_TYPES, 0);
 
@@ -952,13 +870,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         }
     }
 
-    /**
-     * translate an internal type number to JDBC type number if a type is not
-     * supported internally, it is returned without translation
-     *
-     * @param type int
-     * @return int
-     */
+    
     public static int getJDBCTypeCode(int type) {
 
         switch (type) {
@@ -990,9 +902,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         }
     }
 
-    /**
-     * Enforces precision and scale limits on type
-     */
+    
     public static Type getType(int type, Charset charset, Collation collation,
                                long precision, int scale) {
 
@@ -1001,7 +911,7 @@ public abstract class Type implements SchemaObject, Cloneable {
             case Types.SQL_ALL_TYPES :
                 return SQL_ALL_TYPES;
 
-//                return SQL_ALL_TYPES; // needs changes to Expression type resolution
+
             case Types.SQL_CHAR :
             case Types.SQL_VARCHAR :
             case Types.VARCHAR_IGNORECASE :
@@ -1026,7 +936,7 @@ public abstract class Type implements SchemaObject, Cloneable {
                     throw Error.error(ErrorCode.X_42592, "" + precision);
                 }
 
-            // fall through
+            
             case Types.SQL_REAL :
             case Types.SQL_DOUBLE :
                 return SQL_DOUBLE;
@@ -1126,7 +1036,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         typeNames.put(Tokens.T_BIT, Types.SQL_BIT);
         typeNames.put(Tokens.T_OTHER, Types.OTHER);
 
-        //
+        
         typeAliases = new IntValueHashMap(64);
 
         typeAliases.put(Tokens.T_CHAR, Types.SQL_CHAR);
@@ -1137,7 +1047,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         typeAliases.put(Tokens.T_LONGVARBINARY, Types.LONGVARBINARY);
         typeAliases.put(Tokens.T_OBJECT, Types.OTHER);
 
-        //
+        
         jdbcConvertTypes = new IntKeyHashMap(37);
 
         jdbcConvertTypes.put(Tokens.SQL_CHAR, Type.SQL_CHAR_DEFAULT);

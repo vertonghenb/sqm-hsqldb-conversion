@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -44,14 +16,7 @@ import org.hsqldb.types.IntervalType;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Implementation of CAST, CASE, LIMIT and ZONE operations.
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.9.0
- */
+
 public class ExpressionOp extends Expression {
 
     static final ExpressionOp limitOneExpression = new ExpressionOp(
@@ -59,9 +24,7 @@ public class ExpressionOp extends Expression {
         new ExpressionValue(ValuePool.INTEGER_0, Type.SQL_INTEGER),
         new ExpressionValue(ValuePool.INTEGER_1, Type.SQL_INTEGER));
 
-    /**
-     * Creates a special binary operation expression
-     */
+    
     ExpressionOp(int type, Expression left, Expression right) {
 
         super(type);
@@ -89,9 +52,7 @@ public class ExpressionOp extends Expression {
         }
     }
 
-    /**
-     * creates a CAST expression
-     */
+    
     ExpressionOp(Expression e, Type dataType) {
 
         super(OpTypes.CAST);
@@ -102,9 +63,7 @@ public class ExpressionOp extends Expression {
         this.alias    = e.alias;
     }
 
-    /**
-     * creates a special conversion for time / timestamp comparison
-     */
+    
     ExpressionOp(Expression e) {
 
         super(e.dataType.isDateTimeTypeWithZone() ? OpTypes.CAST
@@ -438,18 +397,18 @@ public class ExpressionOp extends Expression {
                         throw Error.error(ErrorCode.X_42563);
                 }
 
-                // no constant optimisation as value dependent on session zone
+                
                 break;
 
             case OpTypes.CASEWHEN :
 
-                // We use CASEWHEN as parent type.
-                // In the parent, left node is the condition, and right node is
-                // the leaf, tagged as type ALTERNATIVE; its left node is
-                // case 1 (how to get the value when the condition in
-                // the parent evaluates to true), while its right node is case 2
-                // (how to get the value when the condition in
-                // the parent evaluates to false).
+                
+                
+                
+                
+                
+                
+                
                 resolveTypesForCaseWhen(session);
                 break;
 
@@ -486,10 +445,7 @@ public class ExpressionOp extends Expression {
         }
     }
 
-    /**
-     * For CASE WHEN and its special cases section 9.3 of the SQL standard
-     * on type aggregation is implemented.
-     */
+    
     void resolveTypesForCaseWhen(Session session) {
 
         if (dataType != null) {
@@ -811,7 +767,7 @@ public class ExpressionOp extends Expression {
             }
             case OpTypes.LIMIT :
 
-            // fall through
+            
             default :
                 throw Error.runtimeError(ErrorCode.U_S0500, "ExpressionOp");
         }

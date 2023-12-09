@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -39,26 +11,15 @@ import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.lib.StringConverter;
 import org.hsqldb.rights.Grantee;
 
-// peterhudson@users 20020130 - patch 478657 by peterhudson - triggers support
-// fredt@users 20020130 - patch 1.7.0 by fredt
-// added new class as jdk 1.1 does not allow use of LinkedList
-// fredt@users 20030727 - signature and other alterations
-// fredt@users 20040430 - changes by mattshaw@users to allow termination of the
-// trigger thread -
-// fredt@users - updated for v. 2.x
 
-/**
- *  Represents an HSQLDB Trigger definition. <p>
- *
- *  Provides services regarding HSQLDB Trigger execution and metadata. <p>
- *
- *  Development of the trigger implementation sponsored by Logicscope
- *  Realisations Ltd
- *
- * @author Peter Hudson (peterhudson@users dot sourceforge.net)- Logicscope Realisations Ltd
- * @version  2.0.1
- * @since hsqldb 1.61
- */
+
+
+
+
+
+
+
+
 public class TriggerDef implements Runnable, SchemaObject {
 
     static final int OLD_ROW     = 0;
@@ -70,11 +31,11 @@ public class TriggerDef implements Runnable, SchemaObject {
     static final int AFTER       = 5;
     static final int INSTEAD     = 6;
 
-    //
-    static final int NUM_TRIGGER_OPS = 3;                      // {ins,del,upd}
-    static final int NUM_TRIGS       = NUM_TRIGGER_OPS * 3;    // {b}{fer}, {a},{fer, fes}
+    
+    static final int NUM_TRIGGER_OPS = 3;                      
+    static final int NUM_TRIGS       = NUM_TRIGGER_OPS * 3;    
 
-    //
+    
     static final TriggerDef[] emptyArray = new TriggerDef[]{};
     Table[]                   transitions;
     RangeVariable[]           rangeVars;
@@ -85,57 +46,30 @@ public class TriggerDef implements Runnable, SchemaObject {
     Routine                   routine;
     int[]                     updateColumns;
 
-    // other variables
+    
     private HsqlName name;
     long             changeTimestamp;
     int              actionTiming;
     int              operationType;
     boolean          isSystem;
     boolean          forEachRow;
-    boolean          nowait;                                   // block or overwrite if queue full
-    int              maxRowsQueued;                            // max size of queue of pending triggers
+    boolean          nowait;                                   
+    int              maxRowsQueued;                            
     Table            table;
     Trigger          trigger;
     String           triggerClassName;
     int              triggerType;
     Thread           thread;
 
-    //protected boolean busy;               // firing trigger in progress
-    protected HsqlDeque        pendingQueue;                   // row triggers pending
-    protected int              rowsQueued;                     // rows in pendingQueue
-    protected boolean          valid     = true;               // parsing valid
+    
+    protected HsqlDeque        pendingQueue;                   
+    protected int              rowsQueued;                     
+    protected boolean          valid     = true;               
     protected volatile boolean keepGoing = true;
 
     TriggerDef() {}
 
-    /**
-     *  Constructs a new TriggerDef object to represent an HSQLDB trigger
-     *  declared in an SQL CREATE TRIGGER statement.
-     *
-     *  Changes in 1.7.2 allow the queue size to be specified as 0. A zero
-     *  queue size causes the Trigger.fire() code to run in the main thread of
-     *  execution (fully inside the enclosing transaction). Otherwise, the code
-     *  is run in the Trigger's own thread.
-     *  (fredt@users)
-     *
-     * @param  name The trigger object's HsqlName
-     * @param  when whether the trigger fires
-     *      before, after or instead of the triggering event
-     * @param  operation the triggering operation;
-     *      currently insert, update, or delete
-     * @param  forEach indicates whether the trigger is fired for each row
-     *      (true) or statement (false)
-     * @param  table the Table object upon which the indicated operation
-     *      fires the trigger
-     * @param  triggerClassName the fully qualified named of the class implementing
-     *      the org.hsqldb.Trigger (trigger body) interface
-     * @param  noWait do not wait for available space on the pending queue; if
-     *      the pending queue does not have fewer than nQueueSize queued items,
-     *      then overwrite the current tail instead
-     * @param  queueSize the length to which the pending queue may grow before
-     *      further additions are either blocked or overwrite the tail entry,
-     *      as determined by noWait
-     */
+    
     public TriggerDef(HsqlNameManager.HsqlName name, int when, int operation,
                       boolean forEach, Table table, Table[] transitions,
                       RangeVariable[] rangeVars, Expression condition,
@@ -168,7 +102,7 @@ public class TriggerDef implements Runnable, SchemaObject {
         } else {
             try {
 
-                // dynamically instantiate it
+                
                 trigger = (Trigger) cl.newInstance();
             } catch (Throwable t1) {
                 valid   = false;
@@ -235,13 +169,7 @@ public class TriggerDef implements Runnable, SchemaObject {
 
     public void compile(Session session, SchemaObject parentObject) {}
 
-    /**
-     *  Retrieves the SQL character sequence required to (re)create the
-     *  trigger, as a StringBuffer
-     *
-     * @return the SQL character sequence required to (re)create the
-     *  trigger
-     */
+    
     public String getSQL() {
 
         StringBuffer sb = getSQLMain();
@@ -442,10 +370,7 @@ public class TriggerDef implements Runnable, SchemaObject {
                                               .getName().name;
     }
 
-    /**
-     *  Given the SQL creating the trigger, set up the index to the
-     *  HsqlArrayList[] and the associated GRANT type
-     */
+    
     void setUpIndexesAndTypes() {
 
         triggerType = 0;
@@ -478,9 +403,7 @@ public class TriggerDef implements Runnable, SchemaObject {
         }
     }
 
-    /**
-     *  Return the type code for operation tokens
-     */
+    
     static int getOperationType(int token) {
 
         switch (token) {
@@ -521,13 +444,7 @@ public class TriggerDef implements Runnable, SchemaObject {
         return operationType;
     }
 
-    /**
-     *  run method declaration <P>
-     *
-     *  the trigger JSP is run in its own thread here. Its job is simply to
-     *  wait until it is told by the main thread that it should fire the
-     *  trigger.
-     */
+    
     public void run() {
 
         while (keepGoing) {
@@ -547,9 +464,7 @@ public class TriggerDef implements Runnable, SchemaObject {
         } catch (Throwable t) {}
     }
 
-    /**
-     * start the thread if this is threaded
-     */
+    
     public synchronized void start() {
 
         if (maxRowsQueued != 0) {
@@ -559,9 +474,7 @@ public class TriggerDef implements Runnable, SchemaObject {
         }
     }
 
-    /**
-     * signal the thread to stop
-     */
+    
     public synchronized void terminate() {
 
         keepGoing = false;
@@ -569,30 +482,21 @@ public class TriggerDef implements Runnable, SchemaObject {
         notify();
     }
 
-    /**
-     *  pop2 method declaration <P>
-     *
-     *  The consumer (trigger) thread waits for an event to be queued <P>
-     *
-     *  <B>Note: </B> This push/pop pairing assumes a single producer thread
-     *  and a single consumer thread _only_.
-     *
-     * @return  Description of the Return Value
-     */
+    
     synchronized TriggerData popPair() {
 
         if (rowsQueued == 0) {
             try {
-                wait();    // this releases the lock monitor
+                wait();    
             } catch (InterruptedException e) {
 
-                /* ignore and resume */
+                
             }
         }
 
         rowsQueued--;
 
-        notify();    // notify push's wait
+        notify();    
 
         if (pendingQueue.size() == 0) {
             return null;
@@ -601,15 +505,7 @@ public class TriggerDef implements Runnable, SchemaObject {
         }
     }
 
-    /**
-     *  The main thread tells the trigger thread to fire by this call.
-     *  If this Trigger is not threaded then the fire method is caled
-     *  immediately and executed by the main thread. Otherwise, the row
-     *  data objects are added to the queue to be used by the Trigger thread.
-     *
-     * @param  row1
-     * @param  row2
-     */
+    
     synchronized void pushPair(Session session, Object[] row1, Object[] row2) {
 
         if (maxRowsQueued == 0) {
@@ -627,13 +523,13 @@ public class TriggerDef implements Runnable, SchemaObject {
 
         if (rowsQueued >= maxRowsQueued) {
             if (nowait) {
-                pendingQueue.removeLast();    // overwrite last
+                pendingQueue.removeLast();    
             } else {
                 try {
                     wait();
                 } catch (InterruptedException e) {
 
-                    /* ignore and resume */
+                    
                 }
 
                 rowsQueued++;
@@ -643,7 +539,7 @@ public class TriggerDef implements Runnable, SchemaObject {
         }
 
         pendingQueue.add(new TriggerData(session, row1, row2));
-        notify();    // notify pop's wait
+        notify();    
     }
 
     public boolean isBusy() {
@@ -659,11 +555,7 @@ public class TriggerDef implements Runnable, SchemaObject {
                           : Tokens.T_STATEMENT;
     }
 
-    /**
-     * Class to store the data used to fire a trigger. The username attribute
-     * is not used but it allows developers to change the signature of the
-     * fire method of the Trigger class and pass the user name to the Trigger.
-     */
+    
     static class TriggerData {
 
         public Object[] oldRow;
@@ -683,7 +575,7 @@ public class TriggerDef implements Runnable, SchemaObject {
         public void fire(int i, String name, String table, Object[] row1,
                          Object[] row2) {
 
-            // do nothing
+            
         }
     }
 }

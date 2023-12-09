@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.server;
@@ -57,31 +29,14 @@ import org.hsqldb.result.ResultConstants;
 import org.hsqldb.rowio.RowInputBinary;
 import org.hsqldb.rowio.RowOutputBinary;
 
-// fredt@users 20021002 - patch 1.7.1 - changed notification method
-// unsaved@users 20021113 - patch 1.7.2 - SSL support
-// boucherb@users 20030510 - patch 1.7.2 - SSL support moved to factory interface
-// boucherb@users 20030510 - patch 1.7.2 - general lint removal
-// boucherb@users 20030514 - patch 1.7.2 - localized error responses
-// fredt@users 20030628 - patch 1.7.2 - new protocol, persistent sessions
 
-/**
- *  A web server connection is a transient object that lasts for the duration
- *  of the SQL call and its result. This class uses the notification
- *  mechanism in WebServer to allow cleanup after a SHUTDOWN.<p>
- *
- *  The POST method is used for login  and subsequent remote calls. In 1.7.2
- *  The initial login establishes a persistent Session and returns its handle
- *  to the client. Subsequent calls are executed in the context of this
- *  session.<p>
- *  (fredt@users)
- *
- * Rewritten in version HSQLDB 1.7.2, based on original Hypersonic code.
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since Hypersonic SQL
- */
+
+
+
+
+
+
+
 class WebServerConnection implements Runnable {
 
     static final String         ENCODING = "ISO-8859-1";
@@ -101,7 +56,7 @@ class WebServerConnection implements Runnable {
     private RowOutputBinary     rowOut = new RowOutputBinary(mainBuffer);
     private RowInputBinary      rowIn            = new RowInputBinary(rowOut);
 
-    //
+    
     static byte[] BYTES_GET;
     static byte[] BYTES_HEAD;
     static byte[] BYTES_POST;
@@ -122,31 +77,17 @@ class WebServerConnection implements Runnable {
         (byte) ' ', (byte) '\t'
     };
 
-    // default mime type mappings
+    
     private static final int hnd_content_types =
         BundleHandler.getBundleHandle("content-types", null);
 
-    /**
-     * Creates a new WebServerConnection to the specified WebServer on the
-     * specified socket.
-     *
-     * @param socket the network socket on which WebServer communication
-     *      takes place
-     * @param server the WebServer instance to which the object
-     *      represents a connection
-     */
+    
     WebServerConnection(Socket socket, WebServer server) {
         this.server = server;
         this.socket = socket;
     }
 
-    /**
-     * Retrieves a best-guess mime-type string using the file extension
-     * of the name argument.
-     *
-     * @return a best-guess mime-type string using the file extension
-     *      of the name argument.
-     */
+    
     private String getMimeTypeString(String name) {
 
         int    pos;
@@ -161,13 +102,13 @@ class WebServerConnection implements Runnable {
         key      = null;
         mimeType = null;
 
-        // first search user-specified mapping
+        
         if (pos >= 0) {
             key      = name.substring(pos).toLowerCase();
             mimeType = server.serverProperties.getProperty(key);
         }
 
-        // if not found, search default mapping
+        
         if (mimeType == null && key.length() > 1) {
             mimeType = BundleHandler.getString(hnd_content_types,
                                                key.substring(1));
@@ -177,13 +118,7 @@ class WebServerConnection implements Runnable {
                                 : mimeType;
     }
 
-    /**
-     * Causes this WebServerConnection to process its HTTP request
-     * in a blocking fashion until the request is fully processed
-     * or an exception occurs internally.
-     *
-     * This method reads the Request line then delegates action to subroutines.
-     */
+    
     public void run() {
 
         DataInputStream inStream = null;
@@ -197,7 +132,7 @@ class WebServerConnection implements Runnable {
             int    method = REQUEST_TYPE_BAD;
             int    len    = -1;
 
-            // read line, ignoring any leading blank lines
+            
             do {
                 count = InOutUtil.readLine(inStream, rowOut);
 
@@ -267,25 +202,22 @@ class WebServerConnection implements Runnable {
         }
     }
 
-    /**
-     * POST is used only for database access. So we can assume the strings
-     * are those generated by HTTPClientConnection
-     */
+    
     private void processPost(InputStream inStream,
                              String name) throws IOException {
 
-        // fredt - parsing in this block is not actually necessary
+        
         try {
 
-            // read the Content-Type line
+            
             InOutUtil.readLine(inStream, rowOut);
 
-            // read and parse the Content-Length line
+            
             int count  = InOutUtil.readLine(inStream, rowOut);
             int offset = rowOut.size() - count;
 
-            // get buffer always after reading into rowOut, else old buffer may
-            // be returned
+            
+            
             byte[] byteArray = rowOut.getBuffer();
 
             if (!ArrayUtil.containsAt(byteArray, offset, BYTES_CONTENT)) {
@@ -295,7 +227,7 @@ class WebServerConnection implements Runnable {
             count  -= BYTES_CONTENT.length;
             offset += BYTES_CONTENT.length;
 
-            // omit the last two characters
+            
             String lenStr = new String(byteArray, offset, count - 2);
             int    length = Integer.parseInt(lenStr);
 
@@ -309,13 +241,7 @@ class WebServerConnection implements Runnable {
         processQuery(inStream);
     }
 
-    /**
-     * Processes a database query in HSQL protocol that has been
-     * tunneled over HTTP protocol.
-     *
-     * @param inStream the incoming byte stream representing the HSQL protocol
-     *      database query
-     */
+    
     void processQuery(InputStream inStream) {
 
         try {
@@ -330,7 +256,7 @@ class WebServerConnection implements Runnable {
             resultIn.setDatabaseId(databaseID);
             resultIn.setSessionId(sessionID);
 
-            //
+            
             Result resultOut;
 
             if (resultIn.getType() == ResultConstants.CONNECT) {
@@ -376,7 +302,7 @@ class WebServerConnection implements Runnable {
                 return;
             }
 
-//
+
             DataOutputStream dataOut =
                 new DataOutputStream(socket.getOutputStream());
             String header = getHead(HEADER_OK, false,
@@ -391,12 +317,7 @@ class WebServerConnection implements Runnable {
         }
     }
 
-    /**
-     *  Processes an HTTP GET request
-     *
-     * @param  name the name of the content to get
-     * @param  send whether to send the content as well, or just the header
-     */
+    
     private void processGet(String name, boolean send) {
 
         try {
@@ -409,7 +330,7 @@ class WebServerConnection implements Runnable {
                 name += server.getDefaultWebPage();
             }
 
-            // traversing up the directory structure is forbidden.
+            
             if (name.indexOf("..") != -1) {
                 processError(HttpURLConnection.HTTP_FORBIDDEN);
 
@@ -461,15 +382,7 @@ class WebServerConnection implements Runnable {
         }
     }
 
-    /**
-     * Retrieves an HTTP protocol header given the supplied arguments.
-     *
-     * @param responseCodeString the HTTP response code
-     * @param addInfo true if additional header info is to be added
-     * @param mimeType the Content-Type field value
-     * @param length the Content-Length field value
-     * @return an HTTP protocol header
-     */
+    
     String getHead(String responseCodeString, boolean addInfo,
                    String mimeType, int length) {
 
@@ -493,12 +406,7 @@ class WebServerConnection implements Runnable {
         return sb.toString();
     }
 
-    /**
-     *  Processess an HTTP error condition, sending an error response to
-     *  the client.
-     *
-     * @param code the error condition code
-     */
+    
     private void processError(int code) {
 
         String msg;
@@ -540,13 +448,7 @@ class WebServerConnection implements Runnable {
         }
     }
 
-    /**
-     * Retrieves the thread name to be used  when
-     * this object is the Runnable object of a Thread.
-     *
-     * @return the thread name to be used  when
-     *      this object is the Runnable object of a Thread.
-     */
+    
     String getConnectionThreadName() {
         return "HSQLDB HTTP Connection @" + Integer.toString(hashCode(), 16);
     }

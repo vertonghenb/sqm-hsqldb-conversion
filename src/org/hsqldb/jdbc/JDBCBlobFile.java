@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.jdbc;
@@ -53,42 +25,10 @@ import org.hsqldb.lib.FileUtil;
 import org.hsqldb.lib.InOutUtil;
 import org.hsqldb.lib.KMPSearchAlgorithm;
 
-/**
- * <!-- start Release-specific documentation -->
- * <div class="ReleaseSpecificDocumentation">
- * <h3>HSQLDB-Specific Information:</h3> <p>
- *
- * Starting with 2.1, in addition to HSQLDB driver support for both client-side
- * in-memory and remote SQL CLOB data implementations, this class is provided
- * to expose efficient, relatively high-performance BLOB operations over client
- * accessible files.<p>
- *
- * <b>Design Notes</b><p>
- *
- * Although it is possible to implement a transactional version of this class,
- * the present implementation directly propagates changes to the underlying
- * file such that changes become visible as soon as they are either
- * implicitly or explicitly flushed to disk.
- * <p>
- *
- * </div>
- * <!-- end release-specific documentation -->
- * @author boucherb@users
- * @version 2.1.1
- * @since HSQLDB 2.1
- */
+
 public class JDBCBlobFile implements java.sql.Blob {
 
-    /**
-     * Returns the number of bytes in the <code>BLOB</code> value
-     * designated by this <code>Blob</code> object.
-     * @return length of the <code>BLOB</code> in bytes
-     * @exception SQLException if there is an error accessing the
-     * length of the <code>BLOB</code>
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @since JDK 1.2
-     */
+    
     public long length() throws SQLException {
 
         checkClosed();
@@ -100,29 +40,7 @@ public class JDBCBlobFile implements java.sql.Blob {
         }
     }
 
-    /**
-     * Retrieves all or part of the <code>BLOB</code>
-     * value that this <code>Blob</code> object represents, as an array of
-     * bytes.  This <code>byte</code> array contains up to <code>length</code>
-     * consecutive bytes starting at position <code>pos</code>.
-     *
-     * @param pos the ordinal position of the first byte in the
-     *        <code>BLOB</code> value to be extracted; the first byte is at
-     *        position 1
-     * @param length the number of consecutive bytes to be copied; the value
-     * for length must be 0 or greater
-     * @return a byte array containing up to <code>length</code>
-     *         consecutive bytes from the <code>BLOB</code> value designated
-     *         by this <code>Blob</code> object, starting with the
-     *         byte at position <code>pos</code>
-     * @exception SQLException if there is an error accessing the
-     *            <code>BLOB</code> value; if pos is less than 1 or length is
-     * less than 0
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @see #setBytes
-     * @since JDK 1.2
-     */
+    
     public byte[] getBytes(final long pos,
                            final int length) throws SQLException {
 
@@ -151,39 +69,12 @@ public class JDBCBlobFile implements java.sql.Blob {
         return baos.toByteArray();
     }
 
-    /**
-     * Retrieves the <code>BLOB</code> value designated by this
-     * <code>Blob</code> instance as a stream.
-     *
-     * @return a stream containing the <code>BLOB</code> data
-     * @exception SQLException if there is an error accessing the
-     *            <code>BLOB</code> value
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @see #setBinaryStream
-     * @since JDK 1.2
-     */
+    
     public InputStream getBinaryStream() throws SQLException {
         return getBinaryStream(1, Long.MAX_VALUE);
     }
 
-    /**
-     * Retrieves the byte position at which the specified byte array
-     * <code>pattern</code> begins within the <code>BLOB</code>
-     * value that this <code>Blob</code> object represents.  The
-     * search for <code>pattern</code> begins at position
-     * <code>start</code>.
-     *
-     * @param pattern the byte array for which to search
-     * @param start the position at which to begin searching; the
-     *        first position is 1
-     * @return the position at which the pattern appears, else -1
-     * @exception SQLException if there is an error accessing the
-     * <code>BLOB</code> or if start is less than 1
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @since JDK 1.2
-     */
+    
     public long position(final byte[] pattern,
                          final long start) throws SQLException {
 
@@ -217,23 +108,7 @@ public class JDBCBlobFile implements java.sql.Blob {
         }
     }
 
-    /**
-     * Retrieves the byte position in the <code>BLOB</code> value
-     * designated by this <code>Blob</code> object at which
-     * <code>pattern</code> begins.  The search begins at position
-     * <code>start</code>.
-     *
-     * @param pattern the <code>Blob</code> object designating
-     * the <code>BLOB</code> value for which to search
-     * @param start the position in the <code>BLOB</code> value
-     *        at which to begin searching; the first position is 1
-     * @return the position at which the pattern begins, else -1
-     * @exception SQLException if there is an error accessing the
-     *            <code>BLOB</code> value or if start is less than 1
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @since JDK 1.2
-     */
+    
     public long position(final Blob pattern,
                          final long start) throws SQLException {
 
@@ -261,104 +136,16 @@ public class JDBCBlobFile implements java.sql.Blob {
         return position(bytePattern, start);
     }
 
-    // -------------------------- JDBC 3.0 -----------------------------------
+    
 
-    /**
-     * Writes the given array of bytes to the <code>BLOB</code> value that
-     * this <code>Blob</code> object represents, starting at position
-     * <code>pos</code>, and returns the number of bytes written.
-     * The array of bytes will overwrite the existing bytes
-     * in the <code>Blob</code> object starting at the position
-     * <code>pos</code>.  If the end of the <code>Blob</code> value is reached
-     * while writing the array of bytes, then the length of the <code>Blob</code>
-     * value will be increased to accommodate the extra bytes.
-     * <p>
-     * <b>Note:</b> If the value specified for <code>pos</code>
-     * is greater then the length+1 of the <code>BLOB</code> value then the
-     * behavior is undefined. Some JDBC drivers may throw a
-     * <code>SQLException</code> while other drivers may support this
-     * operation.
-     *
-     * <!-- start release-specific documentation -->
-     * <div class="ReleaseSpecificDocumentation">
-     * <h3>HSQLDB-Specific Information:</h3> <p>
-     *
-     * This operation affects only the content of the underlying file; it has no
-     * effect upon a value stored in a database. To propagate the updated
-     * Blob value to a database, it is required to supply the Blob instance to
-     * an updating or inserting setXXX method of a Prepared or Callable
-     * Statement, or to supply the Blob instance to an updateXXX method of an
-     * updateable ResultSet. <p>
-     *
-     * </div>
-     * <!-- end release-specific documentation -->
-     *
-     * @param pos the position in the <code>BLOB</code> object at which
-     *        to start writing; the first position is 1
-     * @param bytes the array of bytes to be written to the <code>BLOB</code>
-     *        value that this <code>Blob</code> object represents
-     * @return the number of bytes written
-     * @exception SQLException if there is an error accessing the
-     *            <code>BLOB</code> value or if pos is less than 1
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @see #getBytes
-     * @since JDK 1.4
-     */
+    
     public int setBytes(final long pos,
                         final byte[] bytes) throws SQLException {
         return setBytes(pos, bytes, 0, bytes == null ? 0
                                                      : bytes.length);
     }
 
-    /**
-     * Writes all or part of the given <code>byte</code> array to the
-     * <code>BLOB</code> value that this <code>Blob</code> object represents
-     * and returns the number of bytes written.
-     * Writing starts at position <code>pos</code> in the <code>BLOB</code>
-     * value; <code>len</code> bytes from the given byte array are written.
-     * The array of bytes will overwrite the existing bytes
-     * in the <code>Blob</code> object starting at the position
-     * <code>pos</code>.  If the end of the <code>Blob</code> value is reached
-     * while writing the array of bytes, then the length of the <code>Blob</code>
-     * value will be increased to accommodate the extra bytes.
-     * <p>
-     * <b>Note:</b> If the value specified for <code>pos</code>
-     * is greater then the length+1 of the <code>BLOB</code> value then the
-     * behavior is undefined. Some JDBC drivers may throw a
-     * <code>SQLException</code> while other drivers may support this
-     * operation.
-     *
-     * <!-- start release-specific documentation -->
-     * <div class="ReleaseSpecificDocumentation">
-     * <h3>HSQLDB-Specific Information:</h3> <p>
-     *
-     * This operation affects only the content of the underlying file; it has no
-     * effect upon a value stored in a database. To propagate the updated
-     * Blob value to a database, it is required to supply the Blob instance to
-     * an updating or inserting setXXX method of a Prepared or Callable
-     * Statement, or to supply the Blob instance to an updateXXX method of an
-     * updateable ResultSet. <p>
-     *
-     * </div>
-     * <!-- end release-specific documentation -->
-     *
-     * @param pos the position in the <code>BLOB</code> object at which
-     *        to start writing; the first position is 1
-     * @param bytes the array of bytes to be written to this <code>BLOB</code>
-     *        object
-     * @param offset the offset into the array <code>bytes</code> at which
-     *        to start reading the bytes to be set
-     * @param len the number of bytes to be written to the <code>BLOB</code>
-     *        value from the array of bytes <code>bytes</code>
-     * @return the number of bytes written
-     * @exception SQLException if there is an error accessing the
-     *            <code>BLOB</code> value or if pos is less than 1
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @see #getBytes
-     * @since JDK 1.4
-     */
+    
     public int setBytes(final long pos, final byte[] bytes, final int offset,
                         final int len) throws SQLException {
 
@@ -381,47 +168,7 @@ public class JDBCBlobFile implements java.sql.Blob {
         return len;
     }
 
-    /**
-     * Retrieves a stream that can be used to write to the <code>BLOB</code>
-     * value that this <code>Blob</code> object represents.  The stream begins
-     * at position <code>pos</code>.
-     * The  bytes written to the stream will overwrite the existing bytes
-     * in the <code>Blob</code> object starting at the position
-     * <code>pos</code>.  If the end of the <code>Blob</code> value is reached
-     * while writing to the stream, then the length of the <code>Blob</code>
-     * value will be increased to accommodate the extra bytes.
-     * <p>
-     * <b>Note:</b> If the value specified for <code>pos</code>
-     * is greater then the length+1 of the <code>BLOB</code> value then the
-     * behavior is undefined. Some JDBC drivers may throw a
-     * <code>SQLException</code> while other drivers may support this
-     * operation.
-     *
-     * <!-- start release-specific documentation -->
-     * <div class="ReleaseSpecificDocumentation">
-     * <h3>HSQLDB-Specific Information:</h3> <p>
-     *
-     * Data written to the returned stream affects only the content of the
-     * underlying file; it has no effect upon a value stored in a database.
-     * To propagate the updated Blob value to a database, it is required to
-     * supply the Blob instance to an updating or inserting setXXX method of a
-     * Prepared or Callable Statement, or to supply the Blob instance to an
-     * updateXXX method of an updateable ResultSet. <p>
-     *
-     * </div>
-     * <!-- end release-specific documentation -->
-     *
-     * @param pos the position in the <code>BLOB</code> value at which
-     *        to start writing; the first position is 1
-     * @return a <code>java.io.OutputStream</code> object to which data can
-     *         be written
-     * @exception SQLException if there is an error accessing the
-     *            <code>BLOB</code> value or if pos is less than 1
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @see #getBinaryStream
-     * @since JDK 1.4
-     */
+    
     public OutputStream setBinaryStream(final long pos) throws SQLException {
 
         if (pos < 1) {
@@ -456,38 +203,7 @@ public class JDBCBlobFile implements java.sql.Blob {
         return result;
     }
 
-    /**
-     * Truncates the <code>BLOB</code> value that this <code>Blob</code>
-     * object represents to be <code>len</code> bytes in length.
-     * <p>
-     * <b>Note:</b> If the value specified for <code>pos</code>
-     * is greater then the length+1 of the <code>BLOB</code> value then the
-     * behavior is undefined. Some JDBC drivers may throw a
-     * <code>SQLException</code> while other drivers may support this
-     * operation.
-     *
-     * <!-- start release-specific documentation -->
-     * <div class="ReleaseSpecificDocumentation">
-     * <h3>HSQLDB-Specific Information:</h3> <p>
-     *
-     * This operation affects only the length of the underlying file; it has no
-     * effect upon a value stored in a database. To propagate the truncated
-     * Blob value to a database, it is required to supply the Blob instance to
-     * an updating or inserting setXXX method of a Prepared or Callable
-     * Statement, or to supply the Blob instance to an updateXXX method of an
-     * updateable ResultSet. <p>
-     *
-     * </div>
-     * <!-- end release-specific documentation -->
-     *
-     * @param len the length, in bytes, to which the <code>BLOB</code> value
-     *        that this <code>Blob</code> object represents should be truncated
-     * @exception SQLException if there is an error accessing the
-     *            <code>BLOB</code> value or if len is less than 0
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @since JDK 1.4
-     */
+    
     public void truncate(long len) throws SQLException {
 
         if (len < 0) {
@@ -513,39 +229,7 @@ public class JDBCBlobFile implements java.sql.Blob {
         }
     }
 
-    /**
-     * This method frees the <code>Blob</code> object and releases the resources that
-     * it holds. The object is invalid once the <code>free</code>
-     * method is called.
-     * <p>
-     * After <code>free</code> has been called, any attempt to invoke a
-     * method other than <code>free</code> will result in a <code>SQLException</code>
-     * being thrown.  If <code>free</code> is called multiple times, the subsequent
-     * calls to <code>free</code> are treated as a no-op.
-     * <p>
-     *
-     * <!-- start release-specific documentation -->
-     * <div class="ReleaseSpecificDocumentation">
-     * <h3>HSQLDB-Specific Information:</h3> <p>
-     *
-     * This operation closes any input and/or output streams obtained
-     * via {@link #getBinaryStream()}, {@link #getBinaryStream(long, long)} or
-     * {@link #setBinaryStream(long)}. <p>
-     *
-     * Additionally, if the property {@link #isDeleteOnFree()} is true, then
-     * an attempt is made to delete the backing file.
-     *
-     * </div>
-     * <!-- end release-specific documentation -->
-     *
-     * @throws SQLException if an error occurs releasing
-     * the Blob's resources
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @see #setDeleteOnFree(boolean)
-     * @see #isDeleteOnFree()
-     * @since JDK 1.6
-     */
+    
     public synchronized void free() throws SQLException {
 
         if (m_closed) {
@@ -568,14 +252,14 @@ public class JDBCBlobFile implements java.sql.Blob {
                     ((InputStream) stream).close();
                 } catch (Exception ex) {
 
-                    //
+                    
                 }
             } else if (stream instanceof OutputStream) {
                 try {
                     ((OutputStream) stream).close();
                 } catch (Exception ex) {
 
-                    //
+                    
                 }
             }
         }
@@ -587,22 +271,7 @@ public class JDBCBlobFile implements java.sql.Blob {
         }
     }
 
-    /**
-     * Returns an <code>InputStream</code> object that contains a partial <code>Blob</code> value,
-     * starting  with the byte specified by pos, which is length bytes in length.
-     *
-     * @param pos the offset to the first byte of the partial value to be retrieved.
-     *  The first byte in the <code>Blob</code> is at position 1
-     * @param length the length in bytes of the partial value to be retrieved
-     * @return <code>InputStream</code> through which the partial <code>Blob</code> value can be read.
-     * @throws SQLException if pos is less than 1 or if pos is greater than the number of bytes
-     * in the <code>Blob</code> or if pos + length is greater than the number of bytes
-     * in the <code>Blob</code>
-     *
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @since JDK 1.6
-     */
+    
     public InputStream getBinaryStream(final long pos,
                                        final long length) throws SQLException {
 
@@ -635,39 +304,22 @@ public class JDBCBlobFile implements java.sql.Blob {
         return result;
     }
 
-    /**
-     * Retrieves the canonical <tt>File</tt> object denoting the file that
-     * backs this BLOB.
-     *
-     * @return the file that backs this BLOB.
-     */
+    
     public File getFile() {
         return m_file;
     }
 
-    /**
-     * Retrieves whether an attempt to delete the backing file
-     * is made in response to invocation of {@link #free()}.
-     *
-     * @return true if backing file deletion is attempted; otherwise false.
-     */
+    
     public boolean isDeleteOnFree() {
         return m_deleteOnFree;
     }
 
-    /**
-     * Assigns whether an attempt to delete the backing file
-     * is made in response to invocation of {@link #free()}.
-     *
-     * @param deleteOnFree the new value to assign
-     */
+    
     public void setDeleteOnFree(boolean deleteOnFree) {
         m_deleteOnFree = deleteOnFree;
     }
 
-    /**
-     * Ensures this object is freed in response to finalization.
-     */
+    
     protected void finalize() throws Throwable {
 
         try {
@@ -677,42 +329,24 @@ public class JDBCBlobFile implements java.sql.Blob {
         }
     }
 
-    //--------------------------------------------------------------------------
-    // Internal Implementation
-    //--------------------------------------------------------------------------
+    
+    
+    
     public static final String TEMP_FILE_PREFIX = "hsql_jdbc_blob_file_";
     public static final String TEMP_FILE_SUFFIX = ".tmp";
 
-    //
+    
     private final File m_file;
     private boolean    m_closed;
     private boolean    m_deleteOnFree;
     private List       m_streams = new ArrayList();
 
-    /**
-     * Convenience constructor; equivalent to JDBCBlobFile(true);
-     *
-     * @throws SQLException If a file could not be created or if a security
-     *         manager exists and its <code>{@link
-     *         java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-     *         method does not allow a file to be created.
-     */
+    
     public JDBCBlobFile() throws SQLException {
         this(true);
     }
 
-    /**
-     * Constructs a new instance backed by a File object created in response
-     * to invoking File.createTempFile(TEMP_FILE_PREFIX,TEMP_FILE_SUFFIX) <p>
-     *
-     * @param deleteOnFree Assigns whether an attempt to delete the backing file
-     *                     is to be made in response to invocation of {@link #free()}.
-     *
-     * @throws SQLException If a file could not be created or if a security
-     *         manager exists and its <code>{@link
-     *         java.lang.SecurityManager#checkWrite(java.lang.String)}</code>
-     *         method does not allow a file to be created.
-     */
+    
     public JDBCBlobFile(boolean deleteOnFree) throws SQLException {
 
         m_deleteOnFree = deleteOnFree;
@@ -725,34 +359,12 @@ public class JDBCBlobFile implements java.sql.Blob {
         }
     }
 
-    /**
-     * Convenience constructor; equivalent to JDBCBlobFile(file, false);
-     *
-     * @param file used to back this BLOB instance.
-     * @throws SQLException If an I/O error occurs, which is possible because
-     *         the construction of the canonical pathname may require file system
-     *         queries; if a required system property value cannot be accessed,
-     *         or if a security manager exists and its <code>{@link
-     *         java.lang.SecurityManager#checkRead}</code> method denies
-     *         read access to the file
-     */
+    
     public JDBCBlobFile(final File file) throws SQLException {
         this(file, false);
     }
 
-    /**
-     *  Constructs a new instance backed by the given File object.
-     *
-     * @param file used to back this BLOB instance.
-     * @param deleteOnFree Assigns whether an attempt to delete the backing file
-     *                     is to be made in response to invocation of {@link #free()}.
-     * @throws SQLException If an I/O error occurs, which is possible because
-     *         the construction of the canonical pathname may require file system
-     *         queries; if a required system property value cannot be accessed,
-     *         or if a security manager exists and its <code>{@link
-     *         java.lang.SecurityManager#checkRead}</code> method denies
-     *         read access to the file
-     */
+    
     public JDBCBlobFile(final File file,
                         boolean deleteOnFree) throws SQLException {
 
@@ -764,7 +376,7 @@ public class JDBCBlobFile implements java.sql.Blob {
             throw Util.sqlException(ex);
         }
 
-        checkIsFile( /*checkExists*/false);
+        checkIsFile( false);
     }
 
     protected final void checkIsFile(boolean checkExists) throws SQLException {
@@ -813,7 +425,7 @@ public class JDBCBlobFile implements java.sql.Blob {
             throw Util.sqlException(ex);
         }
 
-        checkIsFile( /*checkExists*/true);
+        checkIsFile( true);
     }
 
     protected static class OutputStreamAdapter extends OutputStream {

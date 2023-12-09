@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.cmdline;
@@ -35,26 +7,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
-/* $Id: SqlToolSprayer.java 4141 2011-03-14 01:35:49Z fredt $ */
 
-/**
- * Sql Tool Sprayer.
- * Invokes SqlTool.objectMain() multiple times with the same SQL.
- * Invokes for multiple urlids and/or retries.
- *
- * See JavaDocs for the main method for syntax of how to run.
- *
- * System properties used if set:
- * <UL>
- *      <LI>sqltoolsprayer.period (in ms.)</LI>
- *      <LI>sqltoolsprayer.maxtime (in ms.)</LI>
- *      <LI>sqltoolsprayer.rcfile (filepath)</LI>
- * </UL>
- *
- * @see #main(String[])
- * @version $Revision: 4141 $, $Date: 2011-03-13 21:35:49 -0400 (Sun, 13 Mar 2011) $
- * @author Blaine Simpson (blaine dot simpson at admc dot com)
- */
+
+
 public class SqlToolSprayer {
 
     public static String LS = System.getProperty("line.separator");
@@ -130,8 +85,8 @@ public class SqlToolSprayer {
                 }
 
                 sqlToolArgs[sqlToolArgs.length - 1] = urlids.get(i);
-                // System.err.println("ARGS:"
-                //      + java.util.Arrays.asList(sqlToolArgs));
+                
+                
 
                 try {
                     SqlTool.objectMain(sqlToolArgs);
@@ -156,13 +111,13 @@ public class SqlToolSprayer {
             try {
                 Thread.sleep(period);
             } catch (InterruptedException ie) {
-                // Purposefully doing nothing
+                
             }
         }
 
         ArrayList<String> failedUrlids = new ArrayList<String>();
 
-        // If all statuses true, then System.exit(0);
+        
         for (int i = 0; i < status.length; i++) {
             if (status[i] != true) {
                 failedUrlids.add(urlids.get(i));

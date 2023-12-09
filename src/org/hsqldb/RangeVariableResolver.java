@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -44,14 +16,7 @@ import org.hsqldb.lib.MultiValueHashMap;
 import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.lib.OrderedIntHashSet;
 
-/**
- * Determines how JOIN and WHERE expressions are used in query
- * processing and which indexes are used for table access.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.9.0
- */
+
 public class RangeVariableResolver {
 
     Session         session;
@@ -61,24 +26,24 @@ public class RangeVariableResolver {
     CompileContext  compileContext;
     SortAndSlice    sortAndSlice = SortAndSlice.noSort;
 
-    //
+    
     HsqlArrayList[] tempJoinExpressions;
     HsqlArrayList[] joinExpressions;
     HsqlArrayList[] whereExpressions;
     HsqlArrayList   queryExpressions = new HsqlArrayList();
 
-    //
+    
     Expression[] inExpressions;
     boolean[]    inInJoin;
     int          inExpressionCount  = 0;
     boolean      expandInExpression = true;
 
-    //
+    
     boolean hasOuterJoin = false;
     int     firstLeftJoinIndex;
     int     firstRightJoinIndex;
 
-    //
+    
     OrderedIntHashSet     colIndexSetEqual = new OrderedIntHashSet();
     IntKeyIntValueHashMap colIndexSetOther = new IntKeyIntValueHashMap();
     OrderedHashSet        tempSet          = new OrderedHashSet();
@@ -91,7 +56,7 @@ public class RangeVariableResolver {
         this.compileContext = select.compileContext;
         this.sortAndSlice   = select.sortAndSlice;
 
-//        this.expandInExpression = select.checkQueryCondition == null;
+
         initialise();
     }
 
@@ -246,7 +211,7 @@ public class RangeVariableResolver {
             return;
         }
 
-        // choose start expressions
+        
         Expression    start    = null;
         int           position = 0;
         RangeVariable range    = null;
@@ -284,7 +249,7 @@ public class RangeVariableResolver {
             return;
         }
 
-        //
+        
         position = ArrayUtil.find(rangeVariables, range);
 
         if (position <= 0) {
@@ -370,9 +335,7 @@ public class RangeVariableResolver {
         return found;
     }
 
-    /**
-     * Divides AND and OR conditions and assigns
-     */
+    
     static Expression decomposeAndConditions(Session session, Expression e,
             HsqlArrayList conditions) {
 
@@ -422,9 +385,7 @@ public class RangeVariableResolver {
         return Expression.EXPR_TRUE;
     }
 
-    /**
-     * Divides AND and OR conditions and assigns
-     */
+    
     static Expression decomposeOrConditions(Expression e,
             HsqlArrayList conditions) {
 
@@ -460,9 +421,7 @@ public class RangeVariableResolver {
         return Expression.EXPR_FALSE;
     }
 
-    /**
-     * Assigns the conditions to separate lists
-     */
+    
     void assignToLists() {
 
         int lastBoundary   = 0;
@@ -506,12 +465,7 @@ public class RangeVariableResolver {
         }
     }
 
-    /**
-     * Assigns a single condition to the relevant list of conditions
-     *
-     * Parameter first indicates the first range variable to which condition
-     * can be assigned
-     */
+    
     void assignToJoinLists(Expression e, HsqlArrayList[] expressionLists,
                            int first) {
 
@@ -520,12 +474,12 @@ public class RangeVariableResolver {
 
         int index = rangeVarSet.getLargestIndex(tempSet);
 
-        // condition is independent of tables if no range variable is found
+        
         if (index == -1) {
             index = 0;
         }
 
-        // condition is assigned to first non-outer range variable
+        
         if (index < first) {
             index = first;
         }
@@ -637,10 +591,7 @@ public class RangeVariableResolver {
         array[index].add(e);
     }
 
-    /**
-     * Assigns conditions to range variables and converts suitable IN conditions
-     * to table lookup.
-     */
+    
     void assignToRangeVariables() {
 
         for (int i = 0; i < rangeVariables.length; i++) {
@@ -671,7 +622,7 @@ public class RangeVariableResolver {
 
                 conditions = rangeVariables[i].whereConditions[0];
 
-                // assign to all right range variables to the right
+                
                 for (int j = i + 1; j < rangeVariables.length; j++) {
                     if (rangeVariables[j].isRightJoin) {
                         assignToRangeVariable(
@@ -680,7 +631,7 @@ public class RangeVariableResolver {
                     }
                 }
 
-                // index only on one condition -- right and full can have index
+                
                 if (!hasIndex) {
                     assignToRangeVariable(rangeVariables[i], conditions, i,
                                           whereExpressions[i]);
@@ -720,7 +671,7 @@ public class RangeVariableResolver {
 
             if (e.exprSubType == OpTypes.ANY_QUANTIFIED) {
 
-                // can process in the future
+                
                 continue;
             }
 
@@ -756,9 +707,7 @@ public class RangeVariableResolver {
         return null;
     }
 
-    /**
-     * Assigns a set of conditions to a range variable.
-     */
+    
     void assignToRangeVariable(RangeVariable rangeVar,
                                RangeVariableConditions conditions,
                                int rangeVarIndex, HsqlArrayList exprList) {
@@ -786,7 +735,7 @@ public class RangeVariableResolver {
                 continue;
             }
 
-            // repeat check required for OR
+            
             if (!e.isIndexable(conditions.rangeVar)) {
                 continue;
             }
@@ -889,7 +838,7 @@ public class RangeVariableResolver {
             hasIndex = conditions.hasIndex();
         }
 
-        // no index found
+        
         boolean isOR = false;
 
         if (!hasIndex && includeOr) {
@@ -902,7 +851,7 @@ public class RangeVariableResolver {
 
                 if (e.getType() == OpTypes.OR) {
 
-                    //
+                    
                     hasIndex = ((ExpressionLogical) e).isIndexable(
                         conditions.rangeVar);
 
@@ -939,8 +888,8 @@ public class RangeVariableResolver {
                         conditions.rangeVar.rangeTable.getIndexForColumns(
                             session, set, false);
 
-                    // code to disable IN optimisation
-                    // index = null;
+                    
+                    
                     if (index != null
                             && inExpressions[rangeVarIndex] == null) {
                         inExpressions[rangeVarIndex] = e;
@@ -1012,7 +961,7 @@ public class RangeVariableResolver {
 
             if (!c.hasIndex()) {
 
-                // deep OR
+                
                 return false;
             }
         }
@@ -1043,7 +992,7 @@ public class RangeVariableResolver {
 
         if (exclude != null) {
 
-//            return false;
+
         }
 
         if (conditions.isJoin) {
@@ -1258,9 +1207,7 @@ public class RangeVariableResolver {
         }
     }
 
-    /**
-     * Converts an IN conditions into a JOIN
-     */
+    
     void setInConditionsAsTables() {
 
         for (int i = rangeVariables.length - 1; i >= 0; i--) {
@@ -1298,7 +1245,7 @@ public class RangeVariableResolver {
 
                 rangeVariables = newList;
 
-                // make two columns as arg
+                
                 Expression[] exprList = new Expression[index.getColumnCount()];
 
                 for (int j = 0; j < indexedColCount; j++) {

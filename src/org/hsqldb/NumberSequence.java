@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -42,30 +14,24 @@ import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Maintains a sequence of numbers.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version  1.9.0
- * @since 1.7.2
- */
+
 public final class NumberSequence implements SchemaObject {
 
     public static final NumberSequence[] emptyArray = new NumberSequence[]{};
 
-    //
+    
     private HsqlName name;
 
-    // present value
+    
     private long currValue;
 
-    // last value
+    
     private long lastValue;
 
-    // limit state
+    
     private boolean limitReached;
 
-    // original start value - used in CREATE and ALTER commands
+    
     private long    startValue;
     private long    minValue;
     private long    maxValue;
@@ -126,7 +92,7 @@ public final class NumberSequence implements SchemaObject {
                     break;
                 }
 
-            // fall through
+            
             default :
                 throw Error.error(ErrorCode.X_42563);
         }
@@ -136,9 +102,7 @@ public final class NumberSequence implements SchemaObject {
         increment = 1;
     }
 
-    /**
-     * constructor with initial value and increment;
-     */
+    
     public NumberSequence(HsqlName name, long value, long increment,
                           Type type) {
 
@@ -188,7 +152,7 @@ public final class NumberSequence implements SchemaObject {
         sb.append(Tokens.T_AS).append(' ');
         sb.append(getDataType().getNameString()).append(' ');
 
-        //
+        
         sb.append(Tokens.T_START).append(' ');
         sb.append(Tokens.T_WITH).append(' ');
         sb.append(startValue);
@@ -233,7 +197,7 @@ public final class NumberSequence implements SchemaObject {
             sb.append(' ').append(Tokens.T_AS).append(' ').append(
                 Tokens.T_IDENTITY).append(Tokens.T_OPENBRACKET);
 
-            //
+            
             sb.append(Tokens.T_START).append(' ');
             sb.append(Tokens.T_WITH).append(' ');
             sb.append(startValue);
@@ -589,9 +553,7 @@ public final class NumberSequence implements SchemaObject {
         isAlways   = other.isAlways;
     }
 
-    /**
-     * getter for a given value
-     */
+    
     synchronized long userUpdate(long value) {
 
         if (value == currValue) {
@@ -615,12 +577,7 @@ public final class NumberSequence implements SchemaObject {
         return value;
     }
 
-    /**
-     * Updates are necessary for text tables
-     * For memory tables, the logged and scripted RESTART WITH will override
-     * this.
-     * No checks as values may have overridden the sequnece defaults
-     */
+    
     synchronized long systemUpdate(long value) {
 
         if (value == currValue) {
@@ -668,9 +625,7 @@ public final class NumberSequence implements SchemaObject {
         return result;
     }
 
-    /**
-     * principal getter for the next sequence value
-     */
+    
     synchronized public long getValue() {
 
         if (limitReached) {
@@ -710,25 +665,19 @@ public final class NumberSequence implements SchemaObject {
         return result;
     }
 
-    /**
-     * reset to start value
-     */
+    
     synchronized void reset() {
 
-        // no change if called before getValue() or called twice
+        
         lastValue = currValue = startValue;
     }
 
-    /**
-     * get next value without incrementing
-     */
+    
     synchronized public long peek() {
         return currValue;
     }
 
-    /**
-     * reset the wasUsed flag
-     */
+    
     synchronized boolean resetWasUsed() {
 
         boolean result = lastValue != currValue;
@@ -738,9 +687,7 @@ public final class NumberSequence implements SchemaObject {
         return result;
     }
 
-    /**
-     * reset to new initial value
-     */
+    
     synchronized public void reset(long value) {
 
         if (value < minValue || value > maxValue) {

@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -45,13 +17,7 @@ import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 
-/**
- * Implementation of column, variable, parameter, etc. access operations.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.1.1
- * @since 1.9.0
- */
+
 public class ExpressionColumn extends Expression {
 
     public static final ExpressionColumn[] emptyArray =
@@ -59,7 +25,7 @@ public class ExpressionColumn extends Expression {
     static final SimpleName rownumName =
         HsqlNameManager.getSimpleName("ROWNUM", false);
 
-    //
+    
     public final static HashMappedList diagnosticsList = new HashMappedList();
     final static String[] diagnosticsVariableTokens    = new String[] {
         Tokens.T_NUMBER, Tokens.T_MORE, Tokens.T_ROW_COUNT
@@ -85,25 +51,23 @@ public class ExpressionColumn extends Expression {
         }
     }
 
-    //
+    
     ColumnSchema  column;
     String        schema;
     String        tableName;
     String        columnName;
     RangeVariable rangeVariable;
 
-    //
+    
     NumberSequence sequence;
-    boolean        isWritable;    // = false; true if column of writable table
+    boolean        isWritable;    
 
-    //
+    
     boolean isParam;
 
-    //
+    
 
-    /**
-     * Creates a OpTypes.COLUMN expression
-     */
+    
     ExpressionColumn(String schema, String table, String column) {
 
         super(OpTypes.COLUMN);
@@ -131,9 +95,7 @@ public class ExpressionColumn extends Expression {
         setAutoAttributesAsColumn(rangeVar, columnIndex);
     }
 
-    /**
-     * Creates a temporary OpTypes.COLUMN expression
-     */
+    
     ExpressionColumn(Expression e, int colIndex, int rangePosition) {
 
         super(OpTypes.SIMPLE_COLUMN);
@@ -160,9 +122,7 @@ public class ExpressionColumn extends Expression {
         }
     }
 
-    /**
-     * For diagnostics vars
-     */
+    
     ExpressionColumn(int type, int columnIndex) {
 
         super(type);
@@ -180,9 +140,7 @@ public class ExpressionColumn extends Expression {
         this.columnName = name;
     }
 
-    /**
-     * Creates an OpCodes.ASTERISK expression
-     */
+    
     ExpressionColumn(String schema, String table) {
 
         super(OpTypes.MULTICOLUMN);
@@ -191,9 +149,7 @@ public class ExpressionColumn extends Expression {
         tableName   = table;
     }
 
-    /**
-     * Creates a OpTypes.SEQUENCE expression
-     */
+    
     ExpressionColumn(NumberSequence sequence, int opType) {
 
         super(opType);
@@ -818,17 +774,13 @@ public class ExpressionColumn extends Expression {
 
             case OpTypes.MULTICOLUMN :
 
-            // shouldn't get here
+            
         }
 
         return sb.toString();
     }
 
-    /**
-     * Returns the table name used in query
-     *
-     * @return table name
-     */
+    
     String getTableName() {
 
         if (opType == OpTypes.MULTICOLUMN) {
@@ -872,10 +824,10 @@ public class ExpressionColumn extends Expression {
                                         Expression.columnExpressionSet,
                                         Expression.emptyExpressionSet);
 
-                // throw with column name
+                
                 checkColumnsResolved(newSet);
 
-                // throw anyway if not found
+                
                 throw Error.error(ErrorCode.X_42501);
             }
         }
@@ -903,9 +855,7 @@ public class ExpressionColumn extends Expression {
         return unresolvedSet;
     }
 
-    /**
-     * collects all range variables in expression tree
-     */
+    
     void collectRangeVariables(RangeVariable[] rangeVariables, Set set) {
 
         for (int i = 0; i < nodes.length; i++) {
@@ -1002,9 +952,7 @@ public class ExpressionColumn extends Expression {
         return -1;
     }
 
-    /**
-     * return true if given RangeVariable is used in expression tree
-     */
+    
     boolean hasReference(RangeVariable range) {
 
         if (range == rangeVariable) {
@@ -1022,9 +970,7 @@ public class ExpressionColumn extends Expression {
         return false;
     }
 
-    /**
-     * SIMPLE_COLUMN expressions can be of different Java types
-     */
+    
     public boolean equals(Expression other) {
 
         if (other == this) {
@@ -1109,10 +1055,7 @@ public class ExpressionColumn extends Expression {
         return RangeVariable.emptyArray;
     }
 
-    /**
-     * For normal tables only. We don't want to create an index on
-     * each column that is checked.
-     */
+    
     double costFactor(Session session, RangeVariable range, int operation) {
 
         PersistentStore store = range.rangeTable.getRowStore(session);

@@ -1,39 +1,11 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.cmdline.sqltool;
 
 import java.util.regex.Pattern;
 
-/* @(#)$Id: Token.java 4497 2011-10-09 18:43:39Z unsaved $ */
+
 
 public class Token {
     public static final int SQL_TYPE = 0;
@@ -74,13 +46,13 @@ public class Token {
             case EDIT_TYPE:
             case PL_TYPE:
             case MACRO_TYPE:
-                // These types must be not null.  May be just whitespace.
-                // Will be trimmed.
+                
+                
                 if (val == null) throw new IllegalArgumentException(
                         "Null String value for scanner token");
-                // Leading white space is always safe for us to trim from these
-                // types of commands, but we must preserve trailing whitespace
-                // for some commands.
+                
+                
+                
                 val = leadingWhitePattern.matcher(val).replaceFirst("");
                 break;
 
@@ -89,15 +61,15 @@ public class Token {
             case RAW_TYPE:
             case RAWEXEC_TYPE:
             case UNTERM_TYPE:
-                // These types must be not null.  May be just whitespace.
-                // Will NOT be trimmed.
+                
+                
                 if (val == null) throw new IllegalArgumentException(
                         "Null String value for scanner token");
                 break;
 
             case SQL_TYPE:
-                // These types may be anything (null, whitespace, etc.).
-                // Will NOT be trimmed
+                
+                
                 break;
 
             default: throw new IllegalArgumentException(
@@ -117,9 +89,7 @@ public class Token {
             + " TYPE=" + getTypeString() + ", VALUE=(" + val + ')';
     }
 
-    /**
-     * Equality ignores the line number
-     */
+    
     public boolean equals(Token otherToken) {
         if (type != otherToken.type) return false;
         if (val == null && otherToken.val != null) return false;
@@ -128,17 +98,12 @@ public class Token {
         return true;
     }
 
-    /*
-     * Convenience wrapper for brevity.
-     */
+    
     public String reconstitute() {
         return reconstitute(false);
     }
 
-    /*
-     * A command string generated from val and type which can hopefully be
-     * re-executed.
-     */
+    
     public String reconstitute(boolean semify) {
         if (val == null) return "";
         switch (type) {

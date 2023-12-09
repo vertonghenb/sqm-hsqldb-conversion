@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -51,81 +23,70 @@ import org.hsqldb.rowio.RowOutputBinaryEncode;
 import org.hsqldb.rowio.RowOutputInterface;
 import org.hsqldb.store.BitMap;
 
-/**
- * Acts as a manager for CACHED table persistence.<p>
- *
- * This contains the top level functionality. Provides file management services
- * and access.<p>
- *
- * Rewritten for 1.8.0 and 2.x
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.8
- * @since 1.7.2
- */
+
 public class DataFileCache {
 
     protected FileAccess fa;
 
-    // flags
+    
     public static final int FLAG_ISSHADOWED = 1;
     public static final int FLAG_ISSAVED    = 2;
     public static final int FLAG_ROWINFO    = 3;
     public static final int FLAG_190        = 4;
     public static final int FLAG_HX         = 5;
 
-    // file format fields
-    static final int LONG_EMPTY_SIZE      = 4;        // empty space size
-    static final int LONG_FREE_POS_POS    = 12;       // where iFreePos is saved
-    static final int LONG_EMPTY_INDEX_POS = 20;       // empty space index
+    
+    static final int LONG_EMPTY_SIZE      = 4;        
+    static final int LONG_FREE_POS_POS    = 12;       
+    static final int LONG_EMPTY_INDEX_POS = 20;       
     static final int FLAGS_POS            = 28;
     static final int MIN_INITIAL_FREE_POS = 32;
 
-    //
+    
     DataFileBlockManager     freeBlocks;
     private static final int initIOBufferSize = 256;
 
-    //
+    
     protected String   dataFileName;
     protected String   backupFileName;
     protected Database database;
 
-    // this flag is used externally to determine if a backup is required
+    
     protected boolean fileModified;
     protected boolean cacheModified;
     protected int     cacheFileScale;
 
-    // post opening constant fields
+    
     protected boolean cacheReadonly;
 
-    //
+    
     protected int     cachedRowPadding;
     protected int     initialFreePos;
     protected long    fileStartFreePosition;
     protected boolean hasRowInfo = false;
     protected int     storeCount;
 
-    // reusable input / output streams
+    
     protected RowInputInterface rowIn;
     public RowOutputInterface   rowOut;
 
-    //
+    
     public long maxDataFileSize;
 
-    //
+    
     boolean is180;
 
-    //
+    
     protected RandomAccessInterface dataFile;
     protected volatile long         fileFreePosition;
-    protected int                   maxCacheRows;     // number of Rows
-    protected long                  maxCacheBytes;    // number of bytes
+    protected int                   maxCacheRows;     
+    protected long                  maxCacheBytes;    
     protected Cache                 cache;
 
-    //
+    
     private RAShadowFile shadowFile;
 
-    //
+    
     ReadWriteLock lock      = new ReentrantReadWriteLock();
     Lock          readLock  = lock.readLock();
     Lock          writeLock = lock.writeLock();
@@ -137,9 +98,7 @@ public class DataFileCache {
         cache = new Cache(this);
     }
 
-    /**
-     * initial external parameters are set here.
-     */
+    
     protected void initParams(Database database, String baseFileName) {
 
         this.dataFileName   = baseFileName + Logger.dataFileExtension;
@@ -167,10 +126,7 @@ public class DataFileCache {
         shadowFile      = null;
     }
 
-    /**
-     * Opens the *.data file for this cache, setting the variables that
-     * allow access to the particular database version of the *.data file.
-     */
+    
     public void open(boolean readonly) {
 
         fileFreePosition = initialFreePos;
@@ -327,7 +283,7 @@ public class DataFileCache {
         dataFile.seek(LONG_FREE_POS_POS);
         dataFile.writeLong(fileFreePosition);
 
-        // set shadowed flag;
+        
         int flags = 0;
 
         if (database.logger.propIncrementBackup) {
@@ -380,12 +336,10 @@ public class DataFileCache {
         }
     }
 
-    /**
-     * Restores a compressed backup or the .data file.
-     */
+    
     private boolean restoreBackup() {
 
-        // in case data file cannot be deleted, reset it
+        
         deleteFile();
 
         try {
@@ -407,9 +361,7 @@ public class DataFileCache {
         }
     }
 
-    /**
-     * Restores in from an incremental backup
-     */
+    
     private boolean restoreBackupIncremental() {
 
         try {
@@ -427,15 +379,7 @@ public class DataFileCache {
         }
     }
 
-    /**
-     *  Parameter write indicates either an orderly close, or a fast close
-     *  without backup.
-     *
-     *  When false, just closes the file.
-     *
-     *  When true, writes out all cached rows that have been modified and the
-     *  free position pointer for the *.data file and then closes the file.
-     */
+    
     public void close(boolean write) {
 
         writeLock.lock();
@@ -519,9 +463,7 @@ public class DataFileCache {
         }
     }
 
-    /**
-     * Commits all the changes to the file
-     */
+    
     public void commitChanges() {
 
         writeLock.lock();
@@ -537,15 +479,15 @@ public class DataFileCache {
 
             if (fileModified || freeBlocks.isModified()) {
 
-                // set empty
+                
                 dataFile.seek(LONG_EMPTY_SIZE);
                 dataFile.writeLong(freeBlocks.getLostBlocksSize());
 
-                // set end
+                
                 dataFile.seek(LONG_FREE_POS_POS);
                 dataFile.writeLong(fileFreePosition);
 
-                // set saved flag;
+                
                 dataFile.seek(FLAGS_POS);
 
                 int flags = dataFile.readInt();
@@ -657,11 +599,7 @@ public class DataFileCache {
         }
     }
 
-    /**
-     * Used when a row is deleted as a result of some DML or DDL statement.
-     * Removes the row from the cache data structures.
-     * Adds the file space for the row to the list of free positions.
-     */
+    
     public void remove(int i, PersistentStore store) {
 
         writeLock.lock();
@@ -681,12 +619,7 @@ public class DataFileCache {
 
     public void removePersistence(CachedObject object) {}
 
-    /**
-     * Allocates file space for the row. <p>
-     *
-     * Free space is requested from the block manager if it exists.
-     * Otherwise the file is grown to accommodate it.
-     */
+    
     int setFilePos(CachedObject r) {
 
         int  rowSize = r.getStorageSize();
@@ -876,8 +809,8 @@ public class DataFileCache {
                 }
             }
 
-            // for text tables with empty rows at the beginning,
-            // pos may move forward in readObject
+            
+            
             pos = object.getPos();
 
             cache.put(pos, object);
@@ -983,10 +916,7 @@ public class DataFileCache {
         }
     }
 
-    /**
-     * Writes out the specified Row. Will write only the Nodes or both Nodes
-     * and table row data depending on what is not already persisted to disk.
-     */
+    
     public void saveRow(CachedObject row) {
 
         writeLock.lock();
@@ -1048,11 +978,7 @@ public class DataFileCache {
         }
     }
 
-    /**
-     *  Saves the *.data file as compressed *.backup.
-     *
-     * @throws  HsqlException
-     */
+    
     void backupFile(boolean newFile) {
 
         writeLock.lock();
@@ -1106,11 +1032,7 @@ public class DataFileCache {
         }
     }
 
-    /**
-     *  Renames the *.data.new file.
-     *
-     * @throws  HsqlException
-     */
+    
     void renameDataFile() {
 
         writeLock.lock();
@@ -1132,15 +1054,15 @@ public class DataFileCache {
 
         try {
 
-            // first attemp to delete
+            
             fa.removeElement(dataFileName);
 
-            // OOo related code
+            
             if (database.logger.isStoredFileAccess()) {
                 return;
             }
 
-            // OOo end
+            
             if (fa.isStreamElement(dataFileName)) {
                 this.database.logger.log.deleteOldDataFiles();
                 fa.removeElement(dataFileName);
@@ -1229,7 +1151,7 @@ public class DataFileCache {
         try {
             if (!fileModified) {
 
-                // unset saved flag;
+                
                 long start = cache.saveAllTimer.elapsedTime();
 
                 cache.saveAllTimer.start();

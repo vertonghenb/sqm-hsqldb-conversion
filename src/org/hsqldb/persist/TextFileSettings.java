@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -35,17 +7,10 @@ import org.hsqldb.Database;
 import org.hsqldb.error.Error;
 import org.hsqldb.error.ErrorCode;
 
-/**
- * Parser and container for text table settings.
- *
- * @author Bob Preston (sqlbob@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since 2.2.6
- */
+
 public class TextFileSettings {
 
-    //state of Cache
+    
     public static final String NL = System.getProperty("line.separator");
     public String              fs;
     public String              vs;
@@ -55,27 +20,20 @@ public class TextFileSettings {
     public boolean             isAllQuoted;
     public boolean             ignoreFirst;
 
-    //
+    
     Database database;
     String   dataFileName;
     int      maxCacheRows;
     int      maxCacheBytes;
 
-    //
+    
     static final byte[] BYTES_LINE_SEP    = NL.getBytes();
     static final char   DOUBLE_QUOTE_CHAR = '\"';
     static final char   BACKSLASH_CHAR    = '\\';
     static final char   LF_CHAR           = '\n';
     static final char   CR_CHAR           = '\r';
 
-    /**
-     *  The source string for a cached table is evaluated and the parameters
-     *  are used to open the source file.<p>
-     *
-     *  Settings are used in this order: (1) settings specified in the
-     *  source string for the table (2) global database settings in
-     *  *.properties file (3) program defaults
-     */
+    
     TextFileSettings(Database database, String fileSettingsString) {
 
         this.database = database;
@@ -85,14 +43,14 @@ public class TextFileSettings {
                 ";", "textdb");
         HsqlDatabaseProperties dbProps = database.getProperties();
 
-        //-- Get file name
+        
         switch (tableprops.errorCodes.length) {
 
             case 0 :
                 this.dataFileName = null;
             case 1 :
 
-                // source file name is the only key without a value
+                
                 this.dataFileName = tableprops.errorKeys[0].trim();
                 break;
 
@@ -100,7 +58,7 @@ public class TextFileSettings {
                 throw Error.error(ErrorCode.X_S0502);
         }
 
-        //-- Get separators: from database properties, then from table properties
+        
         fs  = dbProps.getStringProperty(HsqlDatabaseProperties.textdb_fs);
         fs  = tableprops.getProperty(HsqlDatabaseProperties.textdb_fs, fs);
         vs  = dbProps.getStringProperty(HsqlDatabaseProperties.textdb_vs);
@@ -124,7 +82,7 @@ public class TextFileSettings {
             throw Error.error(ErrorCode.X_S0503);
         }
 
-        //-- Get booleans
+        
         ignoreFirst =
             dbProps.isPropertyTrue(HsqlDatabaseProperties.textdb_ignore_first);
         ignoreFirst = tableprops.isPropertyTrue(
@@ -145,7 +103,7 @@ public class TextFileSettings {
             tableprops.getProperty(HsqlDatabaseProperties.textdb_encoding,
                                    stringEncoding);
 
-        //-- get size and scale
+        
         int cacheScale = dbProps.getIntegerProperty(
             HsqlDatabaseProperties.textdb_cache_scale);
 
@@ -158,7 +116,7 @@ public class TextFileSettings {
         cacheSizeScale = tableprops.getIntegerProperty(
             HsqlDatabaseProperties.textdb_cache_size_scale, cacheSizeScale);
 
-//
+
         maxCacheRows = (1 << cacheScale) * 3;
         maxCacheRows = dbProps.getIntegerProperty(
             HsqlDatabaseProperties.textdb_cache_rows, maxCacheRows);
@@ -193,10 +151,7 @@ public class TextFileSettings {
         return translateSep(sep, false);
     }
 
-    /**
-     * Translates the escaped characters in a separator string and returns
-     * the non-escaped string.
-     */
+    
     private static String translateSep(String sep, boolean isProperty) {
 
         if (sep == null) {

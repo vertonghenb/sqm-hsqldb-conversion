@@ -1,71 +1,4 @@
-/*
- * For work developed by the HSQL Development Group:
- *
- * Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- *
- * For work originally developed by the Hypersonic SQL Group:
- *
- * Copyright (c) 1995-2000, The Hypersonic SQL Group.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the Hypersonic SQL Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * on behalf of the Hypersonic SQL Group.
- */
+
 
 
 package org.hsqldb.util;
@@ -101,25 +34,18 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.image.MemoryImageSource;
 
-// fredt@users 20011220 - patch 481239 by xponsard@users - enhancements
-// enhancements to support saving and loading of transfer settings,
-// transfer of blobs, and catalog and schema names in source db
-// changes by fredt to allow saving and loading of transfer settings
-// fredt@users 20020215 - patch 516309 by Nicolas Bazin - enhancements
-// sqlbob@users 20020401 - patch 1.7.0 - reengineering
-// nicolas BAZIN 20020430 - add Catalog selection, correct a bug preventing table
-//    edition, change double quotes to simple quotes for default values of CHAR type
-// lonbinder@users 20030426 - correct bug in prefs load/save
-// fredt@users 20040508 - patch 1.7.2 - bug fixes
 
-/**
- *  Utility program (or applet) for transferring tables between different
- *  databases via JDBC. Understands HSQLDB database particularly well.
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
-  * @version 1.7.2
-  * @since Hypersonic SQL
- */
+
+
+
+
+
+
+
+
+
+
+
 public class Transfer extends Applet
 implements WindowListener, ActionListener, ItemListener, Traceable {
 
@@ -154,12 +80,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
     static final int TRFM_DUMP             = 2;
     static final int TRFM_RESTORE          = 3;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param s
-     */
+    
     public void trace(String s) {
 
         if ((s != null) &&!s.equals("")) {
@@ -178,9 +99,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         m._main(null);
     }
 
-    /**
-     * @throws IllegalArgumentException for the obvious reason
-     */
+    
     public static void work(String[] arg) {
 
         Transfer m = new Transfer();
@@ -188,11 +107,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         m._main(arg);
     }
 
-    /**
-     * Run with --help arg for syntax help.
-     *
-     * @throws IllegalArgumentException for the obvious reason
-     */
+    
     public static void main(String[] arg) {
 
         System.getProperties().put("sun.java2d.noddraw", "true");
@@ -359,14 +274,10 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
     static private final String SYNTAX_MSG =
         "java " + Transfer.class.getName() + " [--help|--dump|--restore]";
 
-    /**
-     * @throws IllegalArgumentException for the obvious reason
-     */
+    
     void _main(String[] arg) {
 
-        /*
-         ** What function is asked from the transfer tool?
-         */
+        
         iTransferMode = TRFM_TRANSFER;
 
         if (arg != null) {
@@ -411,7 +322,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         Dimension d    = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension size = fMain.getSize();
 
-        // (ulrivo): full size on screen with less than 640 width
+        
         if (d.width >= 640) {
             fMain.setLocation((d.width - size.width) / 2,
                               (d.height - size.height) / 2);
@@ -537,13 +448,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         fMain.show();
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param f
-     * @param m
-     */
+    
     private void addMenuItems(Menu f, String[] m) {
 
         for (int i = 0; i < m.length; i++) {
@@ -558,12 +463,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         }
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
     public void itemStateChanged(ItemEvent e) {
 
         ItemSelectable item = e.getItemSelectable();
@@ -589,16 +489,13 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
             }
         } else {
 
-            // it must be a checkbox
+            
             saveTable();
             updateEnabled(true);
         }
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     private void saveTable() {
 
         if (tCurrent == null) {
@@ -618,7 +515,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         t.Stmts.sDestInsert      = tDestInsert.getText();
         t.Stmts.sDestAlter       = tDestAlter.getText();
 
-        //
+        
         t.Stmts.bTransfer    = cTransfer.getState();
         t.Stmts.bDrop        = cDrop.getState();
         t.Stmts.bCreate      = cCreate.getState();
@@ -651,12 +548,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         }
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param t
-     */
+    
     private void displayTable(TransferTable t) {
 
         tCurrent = t;
@@ -687,12 +579,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         cIdxForced.setState(t.Stmts.bIdxForced);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param and
-     */
+    
     private void updateEnabled(boolean and) {
 
         boolean b = cTransfer.getState();
@@ -722,9 +609,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         }
     }
 
-    /**
-     * Method ProcessNextStep
-     */
+    
     private void ProcessNextStep() {
 
         switch (iSelectionStep) {
@@ -767,12 +652,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         }
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param ev
-     */
+    
     public void actionPerformed(ActionEvent ev) {
 
         if (ev.getSource() instanceof TextField) {
@@ -891,28 +771,13 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         }
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
     public void windowActivated(WindowEvent e) {}
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
     public void windowDeactivated(WindowEvent e) {}
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
     public void windowClosed(WindowEvent e) {}
 
     private void cleanup() {
@@ -928,12 +793,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         } catch (Exception e) {}
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param ev
-     */
+    
     public void windowClosing(WindowEvent ev) {
 
         fMain.dispose();
@@ -943,34 +803,16 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         }
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
     public void windowDeiconified(WindowEvent e) {}
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
     public void windowIconified(WindowEvent e) {}
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
     public void windowOpened(WindowEvent e) {}
 
-    /**
-     * Method declaration
-     *
-     */
+    
     private void initGUI() {
 
         Font fFont = new Font("Dialog", Font.PLAIN, 12);
@@ -1125,12 +967,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         fMain.add("South", pMessage);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param center
-     */
+    
     private Panel createBorderPanel(Component center) {
 
         Panel p = new Panel();
@@ -1146,12 +983,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         return p;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param s
-     */
+    
     private Label createLabel(String s) {
 
         Label l = new Label(s);
@@ -1213,10 +1045,7 @@ implements WindowListener, ActionListener, ItemListener, Traceable {
         }
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     private void transfer() {
 
         saveTable();

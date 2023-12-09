@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -39,16 +11,7 @@ import java.io.InputStream;
 import org.hsqldb.Database;
 import org.hsqldb.lib.HsqlByteArrayInputStream;
 
-/**
- * This class is a random access wrapper around a DataInputStream object and
- * enables access to cached tables when a database is included in a jar.
- *
- * A proof-of-concept prototype was first contributed by winfriedthom@users.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version  2.2.6
- * @since  1.8.0
- */
+
 final class ScaledRAFileInJar implements RandomAccessInterface {
 
     DataInputStream          file;
@@ -59,7 +22,7 @@ final class ScaledRAFileInJar implements RandomAccessInterface {
     HsqlByteArrayInputStream ba = new HsqlByteArrayInputStream(buffer);
     long                     bufferOffset;
 
-    //
+    
     long seekPosition;
     long realPosition;
 
@@ -75,11 +38,7 @@ final class ScaledRAFileInJar implements RandomAccessInterface {
         return fileLength;
     }
 
-    /**
-     * Some JVM's do not allow seek beyond end of file, so zeros are written
-     * first in that case. Reported by bohgammer@users in Open Disucssion
-     * Forum.
-     */
+    
     public void seek(long position) throws IOException {
         seekPosition = position;
     }
@@ -240,7 +199,7 @@ final class ScaledRAFileInJar implements RandomAccessInterface {
             }
         } catch (Throwable t) {
 
-            //
+            
         } finally {
             if (fis == null) {
                 throw new FileNotFoundException(fileName);

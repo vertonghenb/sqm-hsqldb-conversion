@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -37,16 +9,10 @@ import org.hsqldb.lib.ArrayUtil;
 import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.persist.PersistentStore;
 
-/**
- * Represents the chain of insert / delete / rollback / commit actions on a row.
- *
- * @author Fred Toussi (fredt@users dot sourceforge dot net)
- * @version 2.2.7
- * @since 2.0.0
- */
+
 public class RowAction extends RowActionBase {
 
-    //
+    
     final TableBase       table;
     final PersistentStore store;
     Row                   memoryRow;
@@ -294,7 +260,7 @@ public class RowAction extends RowActionBase {
 
     public void setAsNoOp() {
 
-//        memoryRow       = null;
+
         session         = null;
         actionTimestamp = 0;
         commitTimestamp = 0;
@@ -318,7 +284,7 @@ public class RowAction extends RowActionBase {
         next            = null;
     }
 
-    /** for two-phased pre-commit */
+    
     synchronized void prepareCommit(Session session) {
 
         RowActionBase action = this;
@@ -347,7 +313,7 @@ public class RowAction extends RowActionBase {
                 } else if (action.type == ACTION_DELETE) {
                     if (actiontype == ACTION_INSERT) {
 
-                        // ACTION_INSERT + ACTION_DELETE
+                        
                         actiontype = ACTION_INSERT_DELETE;
                     } else {
                         actiontype = action.type;
@@ -379,10 +345,7 @@ public class RowAction extends RowActionBase {
         return false;
     }
 
-    /**
-     * returns type of commit performed on timestamp. ACTION_NONE if none.
-     * assumes rolled-back actions have already been merged
-     */
+    
     synchronized int getCommitTypeOn(long timestamp) {
 
         RowActionBase action     = this;
@@ -395,7 +358,7 @@ public class RowAction extends RowActionBase {
                 } else if (action.type == ACTION_DELETE) {
                     if (actionType == ACTION_INSERT) {
 
-                        // ACTION_INSERT + ACTION_DELETE
+                        
                         actionType = ACTION_INSERT_DELETE;
                     } else {
                         actionType = action.type;
@@ -409,9 +372,7 @@ public class RowAction extends RowActionBase {
         return actionType;
     }
 
-    /**
-     * returns false if another committed session has altered the same row
-     */
+    
     synchronized boolean canCommit(Session session, OrderedHashSet set) {
 
         RowActionBase action;
@@ -428,7 +389,7 @@ public class RowAction extends RowActionBase {
                 if (action.session == session
                         && action.type == ACTION_DELETE) {
 
-                    // for READ_COMMITTED, use action timestamp for later conflicts
+                    
                     if (action.commitTimestamp == 0) {
                         timestamp = action.actionTimestamp;
                     }
@@ -490,11 +451,7 @@ public class RowAction extends RowActionBase {
         } while (action != null);
     }
 
-    /**
-     * returns false if cannot complete
-     * when READ COMMITTED, false result always means repeat action and adds
-     * to set parameter the sessions to wait on (may be no wait)
-     */
+    
     synchronized boolean complete(Session session, OrderedHashSet set) {
 
         RowActionBase action;
@@ -513,7 +470,7 @@ public class RowAction extends RowActionBase {
 
             if (action.session == session) {
 
-                //
+                
             } else {
                 if (action.prepared) {
                     set.add(action.session);
@@ -524,10 +481,10 @@ public class RowAction extends RowActionBase {
                 if (readCommitted) {
                     if (action.commitTimestamp > session.actionTimestamp) {
 
-                        // 2.0 -- investigate
-                        // can redo - if deletes
-                        // can redo - if dup, but will likely fail at retry
-                        // can redo - if ref, but will likely fail at retry
+                        
+                        
+                        
+                        
                         set.add(session);
 
                         result = false;
@@ -604,9 +561,7 @@ public class RowAction extends RowActionBase {
         return actionType;
     }
 
-    /**
-     * Rollback actions for a session including and after the given timestamp
-     */
+    
     synchronized void rollback(Session session, long timestamp) {
 
         RowActionBase action = this;
@@ -624,9 +579,7 @@ public class RowAction extends RowActionBase {
         } while (action != null);
     }
 
-    /**
-     * merge rolled back actions
-     */
+    
     synchronized int mergeRollback(Session session, long timestamp, Row row) {
 
         RowActionBase action         = this;
@@ -674,12 +627,7 @@ public class RowAction extends RowActionBase {
         return rollbackAction;
     }
 
-    /**
-     * merge session actions committed on given timestamp.
-     *
-     * may be called more than once on same action
-     *
-     */
+    
     synchronized void mergeToTimestamp(long timestamp) {
 
         RowActionBase action     = this;
@@ -828,7 +776,7 @@ public class RowAction extends RowActionBase {
                 } else if (action.type == ACTION_DELETE) {
                     if (mode == TransactionManager.ACTION_DUP) {
 
-                        //
+                        
                     } else if (mode == TransactionManager.ACTION_REF) {
                         actionType = ACTION_DELETE;
                     }
@@ -885,7 +833,7 @@ public class RowAction extends RowActionBase {
         return false;
     }
 
-    /** eliminate all expired updatedAction in chain */
+    
     private RowAction mergeExpiredRefActions() {
 
         if (updatedAction != null) {

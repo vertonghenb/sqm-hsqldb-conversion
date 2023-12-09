@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -56,49 +28,41 @@ import org.hsqldb.types.CharacterType;
 import org.hsqldb.types.Collation;
 import org.hsqldb.types.Type;
 
-/**
- * Holds the data structures and methods for creation of a database table.
- *
- * Extensively rewritten and extended in successive versions of HSQLDB.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.6.1
- */
+
 public class Table extends TableBase implements SchemaObject {
 
     public static final Table[] emptyArray = new Table[]{};
 
-    // main properties
+    
     private HsqlName tableName;
     protected long   changeTimestamp;
 
-    //
-    public HashMappedList columnList;          // columns in table
-    int                   identityColumn;      // -1 means no such column
-    NumberSequence        identitySequence;    // next value of identity column
+    
+    public HashMappedList columnList;          
+    int                   identityColumn;      
+    NumberSequence        identitySequence;    
 
-// -----------------------------------------------------------------------
-    Constraint[]    constraintList;            // constrainst for the table
-    Constraint[]    fkConstraints;             //
+
+    Constraint[]    constraintList;            
+    Constraint[]    fkConstraints;             
     Constraint[]    fkMainConstraints;
     Constraint[]    checkConstraints;
     TriggerDef[]    triggerList;
-    TriggerDef[][]  triggerLists;              // array of trigger lists
-    Expression[]    colDefaults;               // expressions of DEFAULT values
-    private boolean hasDefaultValues;          // shortcut for above
-    boolean[]       colGenerated;              // generated columns
-    private boolean hasGeneratedValues;        // shortcut for above
-    boolean[]       colRefFK;                  // foreign key columns
-    boolean[]       colMainFK;                 // columns referenced by foreign key
-    boolean         hasReferentialAction;      // has set null, set default or cascade
-    boolean         isDropped;                 // has been dropped
-    private boolean hasDomainColumns;          // shortcut
-    private boolean hasNotNullColumns;         // shortcut
-    protected int[] defaultColumnMap;          // holding 0,1,2,3,...
+    TriggerDef[][]  triggerLists;              
+    Expression[]    colDefaults;               
+    private boolean hasDefaultValues;          
+    boolean[]       colGenerated;              
+    private boolean hasGeneratedValues;        
+    boolean[]       colRefFK;                  
+    boolean[]       colMainFK;                 
+    boolean         hasReferentialAction;      
+    boolean         isDropped;                 
+    private boolean hasDomainColumns;          
+    private boolean hasNotNullColumns;         
+    protected int[] defaultColumnMap;          
     RangeVariable[] defaultRanges;
 
-    //
+    
     public Table(Database database, HsqlName name, int type) {
 
         this.database = database;
@@ -120,7 +84,7 @@ public class Table extends TableBase implements SchemaObject {
             case INFO_SCHEMA_TABLE :
                 isSessionBased = true;
 
-            // fall through
+            
             case SYSTEM_TABLE :
                 persistenceScope = SCOPE_FULL;
                 isSchemaBased    = true;
@@ -138,7 +102,7 @@ public class Table extends TableBase implements SchemaObject {
 
                 type = MEMORY_TABLE;
 
-            // fall through
+            
             case MEMORY_TABLE :
                 persistenceScope = SCOPE_FULL;
                 isSchemaBased    = true;
@@ -202,7 +166,7 @@ public class Table extends TableBase implements SchemaObject {
                 throw Error.runtimeError(ErrorCode.U_S0500, "Table");
         }
 
-        // type may have changed above for CACHED tables
+        
         tableType         = type;
         primaryKeyCols    = null;
         primaryKeyTypes   = null;
@@ -229,7 +193,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /** trigger transition table */
+    
     public Table(Table table, HsqlName name) {
 
         persistenceScope    = SCOPE_STATEMENT;
@@ -256,23 +220,17 @@ public class Table extends TableBase implements SchemaObject {
         return SchemaObject.TABLE;
     }
 
-    /**
-     *  Returns the HsqlName object fo the table
-     */
+    
     public final HsqlName getName() {
         return tableName;
     }
 
-    /**
-     * Returns the catalog name or null, depending on a database property.
-     */
+    
     public HsqlName getCatalogName() {
         return database.getCatalogName();
     }
 
-    /**
-     * Returns the schema name.
-     */
+    
     public HsqlName getSchemaName() {
         return tableName.schema;
     }
@@ -518,7 +476,7 @@ public class Table extends TableBase implements SchemaObject {
 
     public String[] getSQLForTextSource(boolean withHeader) {
 
-        // readonly for TEXT tables only
+        
         if (isText()) {
             HsqlArrayList list = new HsqlArrayList();
 
@@ -526,14 +484,14 @@ public class Table extends TableBase implements SchemaObject {
                 list.add(getSQLForReadOnly());
             }
 
-            // data source
+            
             String dataSource = ((TextTable) this).getDataSourceDDL();
 
             if (dataSource != null) {
                 list.add(dataSource);
             }
 
-            // header
+            
             String header = ((TextTable) this).getDataSourceHeader();
 
             if (withHeader && header != null && !isReadOnly) {
@@ -648,16 +606,7 @@ public class Table extends TableBase implements SchemaObject {
         return true;
     }
 
-    /**
-     * compares two full table rows based on a set of columns
-     *
-     * @param a a full row
-     * @param b a full row
-     * @param cols array of column indexes to compare
-     * @param coltypes array of column types for the full row
-     *
-     * @return comparison result, -1,0,+1
-     */
+    
     public static int compareRows(Session session, Object[] a, Object[] b,
                                   int[] cols, Type[] coltypes) {
 
@@ -674,9 +623,7 @@ public class Table extends TableBase implements SchemaObject {
         return 0;
     }
 
-    /**
-     * Used to create row id's
-     */
+    
     public int getId() {
         return tableName.hashCode();
     }
@@ -727,24 +674,17 @@ public class Table extends TableBase implements SchemaObject {
         return isDropped;
     }
 
-    /**
-     * returns false if the table has to be recreated in order to add / drop
-     * indexes. Only CACHED tables return false.
-     */
+    
     final boolean isIndexingMutable() {
         return !isIndexCached();
     }
 
-    /**
-     *  Returns true if table is CACHED
-     */
+    
     boolean isIndexCached() {
         return isCached;
     }
 
-    /**
-     * Used by INSERT, DELETE, UPDATE operations
-     */
+    
     void checkDataReadOnly() {
 
         if (isReadOnly) {
@@ -752,12 +692,12 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-// ----------------------------------------------------------------------------
-// akede@users - 1.7.2 patch Files readonly
+
+
     public void setDataReadOnly(boolean value) {
 
-        // Changing the Read-Only mode for the table is only allowed if the
-        // the database can realize it.
+        
+        
         if (!value) {
             if (database.isFilesReadOnly() && isFileBased()) {
                 throw Error.error(ErrorCode.DATA_IS_READONLY);
@@ -769,16 +709,12 @@ public class Table extends TableBase implements SchemaObject {
         isReadOnly = value;
     }
 
-    /**
-     * Text or Cached Tables are normally file based
-     */
+    
     public boolean isFileBased() {
         return isCached || isText;
     }
 
-    /**
-     *  Adds a constraint.
-     */
+    
     public void addConstraint(Constraint c) {
 
         int index = c.getConstraintType()
@@ -901,29 +837,23 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     *  Returns the list of constraints.
-     */
+    
     public Constraint[] getConstraints() {
         return constraintList;
     }
 
-    /**
-     *  Returns the list of FK constraints.
-     */
+    
     public Constraint[] getFKConstraints() {
         return fkConstraints;
     }
 
-    /**
-     *  Returns the primary constraint.
-     */
+    
     public Constraint getPrimaryConstraint() {
         return primaryKeyCols.length == 0 ? null
                                           : constraintList[0];
     }
 
-    /** columnMap is null for deletes */
+    
     void collectFKReadLocks(int[] columnMap, OrderedHashSet set) {
 
         for (int i = 0; i < fkMainConstraints.length; i++) {
@@ -955,7 +885,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /** columnMap is null for deletes */
+    
     void collectFKWriteLocks(int[] columnMap, OrderedHashSet set) {
 
         for (int i = 0; i < fkMainConstraints.length; i++) {
@@ -1003,9 +933,7 @@ public class Table extends TableBase implements SchemaObject {
         return null;
     }
 
-    /**
-     * Returns the UNIQUE or PK constraint with the given column signature.
-     */
+    
     Constraint getUniqueConstraintForColumns(int[] cols) {
 
         for (int i = 0, size = constraintList.length; i < size; i++) {
@@ -1019,9 +947,7 @@ public class Table extends TableBase implements SchemaObject {
         return null;
     }
 
-    /**
-     *  Returns any foreign key constraint equivalent to the column sets
-     */
+    
     Constraint getFKConstraintForColumns(Table tableMain, int[] mainCols,
                                          int[] refCols) {
 
@@ -1036,11 +962,7 @@ public class Table extends TableBase implements SchemaObject {
         return null;
     }
 
-    /**
-     *  Returns any unique Constraint using this index
-     *
-     * @param  index
-     */
+    
     public Constraint getUniqueOrPKConstraintForIndex(Index index) {
 
         for (int i = 0, size = constraintList.length; i < size; i++) {
@@ -1057,12 +979,7 @@ public class Table extends TableBase implements SchemaObject {
         return null;
     }
 
-    /**
-     *  Returns the next constraint of a given type
-     *
-     * @param  from
-     * @param  type
-     */
+    
     int getNextConstraintIndex(int from, int type) {
 
         for (int i = from, size = constraintList.length; i < size; i++) {
@@ -1076,10 +993,7 @@ public class Table extends TableBase implements SchemaObject {
         return -1;
     }
 
-    /**
-     *  Performs the table level checks and adds a column to the table at the
-     *  DDL level. Only used at table creation, not at alter column.
-     */
+    
     public void addColumn(ColumnSchema column) {
 
         String name = column.getName().name;
@@ -1127,13 +1041,7 @@ public class Table extends TableBase implements SchemaObject {
         return identitySequence.peek();
     }
 
-    /**
-     * Match two valid, equal length, columns arrays for type of columns
-     *
-     * @param col column array from this Table
-     * @param other the other Table object
-     * @param othercol column array from the other Table
-     */
+    
     void checkColumnsMatch(int[] col, Table other, int[] othercol) {
 
         for (int i = 0; i < col.length; i++) {
@@ -1156,12 +1064,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     * For removal or addition of columns, constraints and indexes
-     *
-     * Does not work in this form for FK's as Constraint.ConstraintCore
-     * is not transfered to a referencing or referenced table
-     */
+    
     Table moveDefinition(Session session, int newType, ColumnSchema column,
                          Constraint constraint, Index index, int colIndex,
                          int adjust, OrderedHashSet dropConstraints,
@@ -1294,9 +1197,7 @@ public class Table extends TableBase implements SchemaObject {
         return tn;
     }
 
-    /**
-     * Used for drop / retype column.
-     */
+    
     void checkColumnInCheckConstraint(int colIndex) {
 
         for (int i = 0, size = constraintList.length; i < size; i++) {
@@ -1312,11 +1213,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     * Used for retype column. Checks whether column is in an FK or is
-     * referenced by a FK
-     * @param colIndex index
-     */
+    
     void checkColumnInFKConstraint(int colIndex) {
 
         for (int i = 0, size = constraintList.length; i < size; i++) {
@@ -1334,9 +1231,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     * Returns list of constraints dependent only on one column
-     */
+    
     OrderedHashSet getDependentConstraints(int colIndex) {
 
         OrderedHashSet set = new OrderedHashSet();
@@ -1352,9 +1247,7 @@ public class Table extends TableBase implements SchemaObject {
         return set;
     }
 
-    /**
-     * Returns list of constraints dependent on more than one column
-     */
+    
     OrderedHashSet getContainingConstraints(int colIndex) {
 
         OrderedHashSet set = new OrderedHashSet();
@@ -1385,9 +1278,7 @@ public class Table extends TableBase implements SchemaObject {
         return set;
     }
 
-    /**
-     * Returns list of MAIN constraints dependent on this PK or UNIQUE constraint
-     */
+    
     OrderedHashSet getDependentConstraints(Constraint constraint) {
 
         OrderedHashSet set = new OrderedHashSet();
@@ -1439,13 +1330,7 @@ public class Table extends TableBase implements SchemaObject {
         return set;
     }
 
-    /**
-     * Used for column defaults and nullability. Checks whether column is in an
-     * FK with a given referential action type.
-     *
-     * @param colIndex index of column
-     * @param actionType referential action of the FK
-     */
+    
     void checkColumnInFKConstraint(int colIndex, int actionType) {
 
         for (int i = 0, size = constraintList.length; i < size; i++) {
@@ -1464,16 +1349,12 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     *  Returns the identity column index.
-     */
+    
     int getIdentityColumnIndex() {
         return identityColumn;
     }
 
-    /**
-     *  Returns the index of given column name or throws if not found
-     */
+    
     public int getColumnIndex(String name) {
 
         int i = findColumn(name);
@@ -1485,9 +1366,7 @@ public class Table extends TableBase implements SchemaObject {
         return i;
     }
 
-    /**
-     *  Returns the index of given column name or -1 if not found.
-     */
+    
     public int findColumn(String name) {
 
         int index = columnList.getIndex(name);
@@ -1495,9 +1374,7 @@ public class Table extends TableBase implements SchemaObject {
         return index;
     }
 
-    /**
-     * sets the flag for the presence of any default expression
-     */
+    
     void resetDefaultsFlag() {
 
         hasDefaultValues = false;
@@ -1538,9 +1415,7 @@ public class Table extends TableBase implements SchemaObject {
         return null;
     }
 
-    /**
-     *  Finds an existing index for a column
-     */
+    
     synchronized Index getIndexForColumn(Session session, int col) {
 
         int i = bestIndexForColumn[col];
@@ -1551,7 +1426,7 @@ public class Table extends TableBase implements SchemaObject {
 
         switch (tableType) {
 
-//            case TableBase.MEMORY_TABLE :
+
             case TableBase.FUNCTION_TABLE :
             case TableBase.SYSTEM_SUBQUERY :
             case TableBase.INFO_SCHEMA_TABLE :
@@ -1602,17 +1477,12 @@ public class Table extends TableBase implements SchemaObject {
         return ArrayUtil.areAllIntIndexesInBooleanArray(indexes, colNotNull);
     }
 
-    /**
-     *  Shortcut for creating default PK's.
-     */
+    
     public void createPrimaryKey() {
         createPrimaryKey(null, null, false);
     }
 
-    /**
-     *  Creates a single or multi-column primary key and index. sets the
-     *  colTypes array. Finalises the creation of the table. (fredt@users)
-     */
+    
     public void createPrimaryKey(HsqlName indexName, int[] columns,
                                  boolean columnsNotNull) {
 
@@ -1715,16 +1585,12 @@ public class Table extends TableBase implements SchemaObject {
         resetDefaultsFlag();
     }
 
-    /**
-     * Returns direct mapping array.
-     */
+    
     int[] getColumnMap() {
         return defaultColumnMap;
     }
 
-    /**
-     * Returns empty mapping array.
-     */
+    
     int[] getNewColumnMap() {
         return new int[columnCount];
     }
@@ -1781,9 +1647,7 @@ public class Table extends TableBase implements SchemaObject {
         return cols;
     }
 
-    /**
-     *  Returns the Column object at the given index
-     */
+    
     public ColumnSchema getColumn(int i) {
         return (ColumnSchema) columnList.get(i);
     }
@@ -1832,12 +1696,7 @@ public class Table extends TableBase implements SchemaObject {
         return set;
     }
 
-    /**
-     * Returns array for a new row with SQL DEFAULT value for each column n
-     * where exists[n] is false. This provides default values only where
-     * required and avoids evaluating these values where they will be
-     * overwritten.
-     */
+    
     Object[] getNewRowData(Session session) {
 
         Object[] data = new Object[columnCount];
@@ -1860,9 +1719,7 @@ public class Table extends TableBase implements SchemaObject {
         return triggerLists[trigVecIndex].length != 0;
     }
 
-    /**
-     * Adds a trigger.
-     */
+    
     void addTrigger(TriggerDef td, HsqlName otherName) {
 
         int index = triggerList.length;
@@ -1898,9 +1755,7 @@ public class Table extends TableBase implements SchemaObject {
         triggerLists[td.triggerType] = list;
     }
 
-    /**
-     * Returns a trigger.
-     */
+    
     TriggerDef getTrigger(String name) {
 
         for (int i = triggerList.length - 1; i >= 0; i--) {
@@ -1923,9 +1778,7 @@ public class Table extends TableBase implements SchemaObject {
         return -1;
     }
 
-    /**
-     * Drops a trigger.
-     */
+    
     void removeTrigger(TriggerDef trigger) {
 
         TriggerDef td = null;
@@ -1950,7 +1803,7 @@ public class Table extends TableBase implements SchemaObject {
 
         int index = td.triggerType;
 
-        // look in each trigger in list
+        
         for (int j = 0; j < triggerLists[index].length; j++) {
             td = triggerLists[index][j];
 
@@ -1963,12 +1816,10 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     * Used when dropping all triggers.
-     */
+    
     void releaseTriggers() {
 
-        // look in each trigger list of each type of trigger
+        
         for (int i = 0; i < TriggerDef.NUM_TRIGS; i++) {
             for (int j = 0; j < triggerLists[i].length; j++) {
                 triggerLists[i][j].terminate();
@@ -1980,9 +1831,7 @@ public class Table extends TableBase implements SchemaObject {
         triggerList = TriggerDef.emptyArray;
     }
 
-    /**
-     * Returns the index of the Index object of the given name or -1 if not found.
-     */
+    
     int getIndexIndex(String indexName) {
 
         Index[] indexes = indexList;
@@ -1993,13 +1842,11 @@ public class Table extends TableBase implements SchemaObject {
             }
         }
 
-        // no such index
+        
         return -1;
     }
 
-    /**
-     * Returns the Index object of the given name or null if not found.
-     */
+    
     Index getIndex(String indexName) {
 
         Index[] indexes = indexList;
@@ -2009,9 +1856,7 @@ public class Table extends TableBase implements SchemaObject {
                        : indexes[i];
     }
 
-    /**
-     *  Return the position of the constraint within the list
-     */
+    
     int getConstraintIndex(String constraintName) {
 
         for (int i = 0, size = constraintList.length; i < size; i++) {
@@ -2023,9 +1868,7 @@ public class Table extends TableBase implements SchemaObject {
         return -1;
     }
 
-    /**
-     *  return the named constriant
-     */
+    
     public Constraint getConstraint(String constraintName) {
 
         int i = getConstraintIndex(constraintName);
@@ -2034,12 +1877,7 @@ public class Table extends TableBase implements SchemaObject {
                        : constraintList[i];
     }
 
-    /**
-     *  Returns any unique Constraint using this index
-     *
-     * @param  index
-     * @return
-     */
+    
     public Constraint getUniqueConstraintForIndex(Index index) {
 
         for (int i = 0, size = constraintList.length; i < size; i++) {
@@ -2057,9 +1895,7 @@ public class Table extends TableBase implements SchemaObject {
         return null;
     }
 
-    /**
-     * remove a named constraint
-     */
+    
     void removeConstraint(String name) {
 
         int index = getConstraintIndex(name);
@@ -2141,10 +1977,7 @@ public class Table extends TableBase implements SchemaObject {
         return defaultColumnMap;
     }
 
-    /**
-     * Used to create an index automatically for system and temp tables.
-     * Used for internal operation tables with null Session param.
-     */
+    
     Index createIndexForColumns(Session session, int[] columns) {
 
         Index index = null;
@@ -2163,7 +1996,7 @@ public class Table extends TableBase implements SchemaObject {
             case TableBase.INFO_SCHEMA_TABLE :
             case TableBase.TEMP_TABLE : {
 
-                // session may be an unregisterd sys session
+                
                 session.sessionData.persistentStoreCollection.registerIndex(
                     this);
 
@@ -2191,7 +2024,7 @@ public class Table extends TableBase implements SchemaObject {
 
             if (td.hasOldTable()) {
 
-                //
+                
             }
 
             td.pushPair(session, null, null);
@@ -2213,17 +2046,14 @@ public class Table extends TableBase implements SchemaObject {
 
             if (td.hasOldTable()) {
 
-                //
+                
             }
 
             td.pushPair(session, null, null);
         }
     }
 
-    /**
-     *  Fires all row-level triggers of the given set (trigger type)
-     *
-     */
+    
     void fireTriggers(Session session, int trigVecIndex, Object[] oldData,
                       Object[] newData, int[] cols) {
 
@@ -2282,10 +2112,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     *  Enforce max field sizes according to SQL column definition.
-     *  SQL92 13.8
-     */
+    
     public void enforceRowConstraints(Session session, Object[] data) {
 
         for (int i = 0; i < columnCount; i++) {
@@ -2347,7 +2174,7 @@ public class Table extends TableBase implements SchemaObject {
 
         switch (tableType) {
 
-//            case TableBase.MEMORY_TABLE :
+
             case TableBase.FUNCTION_TABLE :
             case TableBase.SYSTEM_SUBQUERY :
             case TableBase.INFO_SCHEMA_TABLE :
@@ -2360,9 +2187,7 @@ public class Table extends TableBase implements SchemaObject {
         return Index.INDEX_NONE;
     }
 
-    /**
-     *  Finds an existing index for a column group
-     */
+    
     synchronized Index getIndexForColumns(Session session, int[] cols) {
 
         int i = bestIndexForColumn[cols[0]];
@@ -2373,7 +2198,7 @@ public class Table extends TableBase implements SchemaObject {
 
         switch (tableType) {
 
-//            case TableBase.MEMORY_TABLE :
+
             case TableBase.FUNCTION_TABLE :
             case TableBase.SYSTEM_SUBQUERY :
             case TableBase.INFO_SCHEMA_TABLE :
@@ -2388,9 +2213,7 @@ public class Table extends TableBase implements SchemaObject {
         return null;
     }
 
-    /**
-     *  Finds an existing index for a full column group
-     */
+    
     Index getFullIndexForColumns(int[] cols) {
 
         for (int i = 0; i < indexList.length; i++) {
@@ -2403,12 +2226,7 @@ public class Table extends TableBase implements SchemaObject {
         return null;
     }
 
-    /**
-     * Finds an existing index for a column set or create one for temporary
-     * tables.
-     *
-     * synchronized required for shared INFORMATION_SCHEMA etc. tables
-     */
+    
     synchronized Index getIndexForColumns(Session session,
                                           OrderedIntHashSet set,
                                           boolean ordered) {
@@ -2440,10 +2258,10 @@ public class Table extends TableBase implements SchemaObject {
             }
         }
 
-        // index is not full;
+        
         switch (tableType) {
 
-//            case TableBase.MEMORY_TABLE :
+
             case TableBase.FUNCTION_TABLE :
             case TableBase.SYSTEM_SUBQUERY :
             case TableBase.INFO_SCHEMA_TABLE :
@@ -2456,10 +2274,7 @@ public class Table extends TableBase implements SchemaObject {
         return selected;
     }
 
-    /**
-     *  Return the list of file pointers to root nodes for this table's
-     *  indexes.
-     */
+    
     public final long[] getIndexRootsArray() {
 
         PersistentStore store =
@@ -2483,13 +2298,7 @@ public class Table extends TableBase implements SchemaObject {
         return roots;
     }
 
-    /**
-     *  Sets the index roots of a cached/text table to specified file
-     *  pointers. If a
-     *  file pointer is -1 then the particular index root is null. A null index
-     *  root signifies an empty table. Accordingly, all index roots should be
-     *  null or all should be a valid file pointer/reference.
-     */
+    
     public void setIndexRoots(long[] roots) {
 
         if (!isCached) {
@@ -2511,9 +2320,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     *  Sets the index roots.
-     */
+    
     void setIndexRoots(Session session, String s) {
 
         if (!isCached) {
@@ -2548,10 +2355,7 @@ public class Table extends TableBase implements SchemaObject {
         setIndexRoots(roots);
     }
 
-    /**
-     *  Mid level method for inserting single rows. Performs constraint checks and
-     *  fires row level triggers.
-     */
+    
     Row insertSingleRow(Session session, PersistentStore store, Object[] data,
                         int[] changedCols) {
 
@@ -2569,7 +2373,7 @@ public class Table extends TableBase implements SchemaObject {
 
         if (isView) {
 
-            // may have domain column
+            
             return null;
         }
 
@@ -2580,9 +2384,7 @@ public class Table extends TableBase implements SchemaObject {
         return row;
     }
 
-    /**
-     * Multi-row insert method. Used for CREATE TABLE AS ... queries.
-     */
+    
     void insertIntoTable(Session session, Result result) {
 
         PersistentStore store = getRowStore(session);
@@ -2597,9 +2399,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     *
-     */
+    
     public void insertNoCheckFromLog(Session session, Object[] data) {
 
         systemUpdateIdentityValue(data);
@@ -2610,10 +2410,7 @@ public class Table extends TableBase implements SchemaObject {
         session.addInsertAction(this, store, row, null);
     }
 
-    /**
-     * Used for system table inserts. No checks. No identity
-     * columns.
-     */
+    
     public int insertSys(Session session, PersistentStore store, Result ins) {
 
         RowSetNavigator nav   = ins.getNavigator();
@@ -2628,10 +2425,7 @@ public class Table extends TableBase implements SchemaObject {
         return count;
     }
 
-    /**
-     * Used for subquery inserts. No checks. No identity
-     * columns.
-     */
+    
     void insertResult(Session session, PersistentStore store, Result ins) {
 
         RowSetNavigator nav = ins.initialiseNavigator();
@@ -2645,11 +2439,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     * Not for general use.
-     * Used by ScriptReader to unconditionally insert a row into
-     * the table when the .script file is read.
-     */
+    
     public void insertFromScript(Session session, PersistentStore store,
                                  Object[] data) {
 
@@ -2692,9 +2482,7 @@ public class Table extends TableBase implements SchemaObject {
         insertData(session, store, data);
     }
 
-    /**
-     * For system operations outside transaction constrol
-     */
+    
     public void insertData(Session session, PersistentStore store,
                            Object[] data) {
 
@@ -2703,9 +2491,7 @@ public class Table extends TableBase implements SchemaObject {
         store.indexRow(session, row);
     }
 
-    /**
-     * Used by the system tables only
-     */
+    
     public void insertSys(Session session, PersistentStore store,
                           Object[] data) {
 
@@ -2714,10 +2500,7 @@ public class Table extends TableBase implements SchemaObject {
         store.indexRow(session, row);
     }
 
-    /**
-     * If there is an identity column in the table, sets
-     * the value and/or adjusts the identiy value for the table.
-     */
+    
     protected void setIdentityColumn(Session session, Object[] data) {
 
         if (identityColumn != -1) {
@@ -2775,10 +2558,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     * If there is an identity column in the table, sets
-     * the max identity value.
-     */
+    
     protected void systemUpdateIdentityValue(Object[] data) {
 
         if (identityColumn != -1) {
@@ -2790,9 +2570,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     * For log statements. Find a single row to delete.
-     */
+    
     public Row getDeleteRowFromLog(Session session, Object[] data) {
 
         Row             row   = null;
@@ -2835,7 +2613,7 @@ public class Table extends TableBase implements SchemaObject {
 
                 Object[] rowdata = row.getData();
 
-                // reached end of range
+                
                 if (bestIndex.compareRowNonUnique(
                         session, rowdata, data, bestIndex.getColumns()) != 0) {
                     row = null;
@@ -2897,9 +2675,7 @@ public class Table extends TableBase implements SchemaObject {
         }
     }
 
-    /**
-     * Path used for all stores
-     */
+    
     public PersistentStore getRowStore(Session session) {
 
         if (store != null) {

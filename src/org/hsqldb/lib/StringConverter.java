@@ -1,71 +1,4 @@
-/*
- * For work developed by the HSQL Development Group:
- *
- * Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- *
- * For work originally developed by the Hypersonic SQL Group:
- *
- * Copyright (c) 1995-2000, The Hypersonic SQL Group.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the Hypersonic SQL Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * on behalf of the Hypersonic SQL Group.
- */
+
 
 
 package org.hsqldb.lib;
@@ -76,17 +9,7 @@ import java.io.UTFDataFormatException;
 
 import org.hsqldb.store.BitMap;
 
-/**
- * Collection of static methods for converting strings between different
- * formats and to and from byte arrays.<p>
- *
- * Includes some methods based on Hypersonic code as indicated.
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.7.2
- */
+
 public class StringConverter {
 
     private static final byte[] HEXBYTES = {
@@ -112,15 +35,7 @@ public class StringConverter {
         return -1;
     }
 
-    /**
-     * Converts a hexadecimal string into a byte array
-     *
-     *
-     * @param s hexadecimal string
-     *
-     * @return byte array for the hex string
-     * @throws IOException
-     */
+    
     public static byte[] hexStringToByteArray(String s) throws IOException {
 
         int     l    = s.length();
@@ -141,7 +56,7 @@ public class StringConverter {
 
             if (n == -1) {
                 throw new IOException(
-                    "hexadecimal string contains non hex character");    //NOI18N
+                    "hexadecimal string contains non hex character");    
             }
 
             if (high) {
@@ -156,7 +71,7 @@ public class StringConverter {
 
         if (!high) {
             throw new IOException(
-                "hexadecimal string with odd number of characters");    //NOI18N
+                "hexadecimal string with odd number of characters");    
         }
 
         if (i < data.length) {
@@ -166,15 +81,7 @@ public class StringConverter {
         return data;
     }
 
-    /**
-     * Compacts a bit string into a BitMap
-     *
-     *
-     * @param s bit string
-     *
-     * @return byte array for the hex string
-     * @throws IOException
-     */
+    
     public static BitMap sqlBitStringToBitMap(String s) throws IOException {
 
         int    l = s.length();
@@ -193,7 +100,7 @@ public class StringConverter {
 
             if (n != 0 && n != 1) {
                 throw new IOException(
-                    "hexadecimal string contains non hex character");    //NOI18N
+                    "hexadecimal string contains non hex character");    
             }
 
             if (n == 1) {
@@ -208,14 +115,7 @@ public class StringConverter {
         return map;
     }
 
-    /**
-     * Converts a byte array into a hexadecimal string
-     *
-     *
-     * @param b byte array
-     *
-     * @return hex string
-     */
+    
     public static String byteArrayToHexString(byte[] b) {
 
         int    len = b.length;
@@ -231,14 +131,7 @@ public class StringConverter {
         return new String(s);
     }
 
-    /**
-     * Converts a byte array into an SQL hexadecimal string
-     *
-     *
-     * @param b byte array
-     *
-     * @return hex string
-     */
+    
     public static String byteArrayToSQLHexString(byte[] b) {
 
         int    len = b.length;
@@ -261,14 +154,7 @@ public class StringConverter {
         return new String(s);
     }
 
-    /**
-     * Converts a byte array into a bit string
-     *
-     *
-     * @param bytes byte array
-     * @param bitCount number of bits
-     * @return hex string
-     */
+    
     public static String byteArrayToBitString(byte[] bytes, int bitCount) {
 
         char[] s = new char[bitCount];
@@ -283,14 +169,7 @@ public class StringConverter {
         return new String(s);
     }
 
-    /**
-     * Converts a byte array into an SQL binary string
-     *
-     *
-     * @param bytes byte array
-     * @param bitCount number of bits
-     * @return hex string
-     */
+    
     public static String byteArrayToSQLBitString(byte[] bytes, int bitCount) {
 
         char[] s = new char[bitCount + 3];
@@ -312,14 +191,7 @@ public class StringConverter {
         return new String(s);
     }
 
-    /**
-     * Converts a byte array into hexadecimal characters which are written as
-     * ASCII to the given output stream.
-     *
-     * @param o output array
-     * @param from offset into output array
-     * @param b input array
-     */
+    
     public static void writeHexBytes(byte[] o, int from, byte[] b) {
 
         int len = b.length;
@@ -342,24 +214,7 @@ public class StringConverter {
         return null;
     }
 
-    /**
-     * Hsqldb specific encoding used only for log files. The SQL statements that
-     * need to be written to the log file (input) are Java Unicode strings.
-     * input is converted into a 7bit escaped ASCII string (output)with the
-     * following transformations. All characters outside the 0x20-7f range are
-     * converted to a escape sequence and added to output. If a backslash
-     * character is immdediately followed by 'u', the backslash character is
-     * converted to escape sequence and added to output. All the remaining
-     * characters in input are added to output without conversion. The escape
-     * sequence is backslash, letter u, xxxx, where xxxx is the hex
-     * representation of the character code. (fredt@users)<p>
-     *
-     * Method based on Hypersonic Code
-     *
-     * @param b output stream to wite to
-     * @param s Java string
-     * @param doubleSingleQuotes boolean
-     */
+    
     public static void stringToUnicodeBytes(HsqlByteArrayOutputStream b,
             String s, boolean doubleSingleQuotes) {
 
@@ -384,7 +239,7 @@ public class StringConverter {
 
             if (c == '\\') {
                 if ((i < len - 1) && (chars[i + 1] == 'u')) {
-                    b.writeNoCheck(c);    // encode the \ as unicode, so 'u' is ignored
+                    b.writeNoCheck(c);    
                     b.writeNoCheck('u');
                     b.writeNoCheck('0');
                     b.writeNoCheck('0');
@@ -396,7 +251,7 @@ public class StringConverter {
                     b.write(c);
                 }
             } else if ((c >= 0x0020) && (c <= 0x007f)) {
-                b.writeNoCheck(c);        // this is 99%
+                b.writeNoCheck(c);        
 
                 if (c == '\'' && doubleSingleQuotes) {
                     b.writeNoCheck(c);
@@ -422,21 +277,12 @@ public class StringConverter {
         }
     }
 
-// fredt@users 20020522 - fix for 557510 - backslash bug
-// this legacy bug resulted from forward reading the input when a backslash
-// was present and manifested itself when a backslash was followed
-// immdediately by a character outside the 0x20-7f range in a database field.
 
-    /**
-     * Hsqldb specific decoding used only for log files. This method converts
-     * the 7 bit escaped ASCII strings in a log file back into Java Unicode
-     * strings. See stringToUnicodeBytes() above. <p>
-     *
-     * Method based on Hypersonic Code
-     *
-     * @param s encoded ASCII string in byte array
-     * @return Java string
-     */
+
+
+
+
+    
     public static String unicodeStringToString(String s) {
 
         if ((s == null) || (s.indexOf("\\u") == -1)) {
@@ -456,7 +302,7 @@ public class StringConverter {
                 if (c1 == 'u') {
                     i++;
 
-                    // 4 characters read should always return 0-15
+                    
                     int k = getNibble(s.charAt(++i)) << 12;
 
                     k      += getNibble(s.charAt(++i)) << 8;
@@ -498,7 +344,7 @@ public class StringConverter {
 
             if (c > 0) {
 
-                /* 0xxxxxxx*/
+                
                 count++;
 
                 buf[bcount++] = (char) c;
@@ -513,7 +359,7 @@ public class StringConverter {
                 case 12 :
                 case 13 :
 
-                    /* 110x xxxx   10xx xxxx*/
+                    
                     count += 2;
 
                     if (count > length) {
@@ -532,7 +378,7 @@ public class StringConverter {
 
                 case 14 :
 
-                    /* 1110 xxxx  10xx xxxx  10xx xxxx */
+                    
                     count += 3;
 
                     if (count > length) {
@@ -553,23 +399,16 @@ public class StringConverter {
 
                 default :
 
-                    /* 10xx xxxx,  1111 xxxx */
+                    
                     throw new UTFDataFormatException();
             }
         }
 
-        // The number of chars produced may be less than length
+        
         return new String(buf, 0, bcount);
     }
 
-    /**
-     * Writes a string to the specified DataOutput using UTF-8 encoding in a
-     * machine-independent manner.
-     * <p>
-     * @param      str   a string to be written.
-     * @param      out   destination to write to
-     * @return     The number of bytes written out.
-     */
+    
     public static int stringToUTFBytes(String str,
                                        HsqlByteArrayOutputStream out) {
 
@@ -630,14 +469,7 @@ public class StringConverter {
         return l;
     }
 
-    /**
-     * Using an output stream, returns a String from an InputStream.
-     *
-     * @param is InputStream to read from
-     * @param encoding character encoding of the string
-     * @throws IOException
-     * @return a Java string
-     */
+    
     public static String inputStreamToString(InputStream is,
             String encoding) throws IOException {
 
@@ -656,21 +488,9 @@ public class StringConverter {
         return new String(baOS.getBuffer(), 0, baOS.size(), encoding);
     }
 
-// fredt@users 20020130 - patch 497872 by Nitin Chauhan - use byte[] of exact size
 
-    /**
-     * Returns the quoted version of the string using the quotechar argument.
-     * doublequote argument indicates whether each instance of quotechar inside
-     * the string is doubled.<p>
-     *
-     * null string argument returns null. If the caller needs the literal
-     * "NULL" it should created it itself<p>
-     *
-     * @param s Java string
-     * @param quoteChar character used for quoting
-     * @param extraQuote true if quoteChar itself should be repeated
-     * @return String
-     */
+
+    
     public static String toQuotedString(String s, char quoteChar,
                                         boolean extraQuote) {
 
@@ -702,13 +522,7 @@ public class StringConverter {
         return new String(b);
     }
 
-    /**
-     * Counts Character c in String s
-     *
-     * @param s Java string
-     * @param c character to count
-     * @return int count
-     */
+    
     static int count(final String s, final char c) {
 
         int pos   = 0;
@@ -724,14 +538,7 @@ public class StringConverter {
         return count;
     }
 
-    /**
-     * Converts the string to an HTML representation in the ASCII character set.
-     *
-     * The string is treated as an SQL statement.
-     *
-     * @param b the byte array
-     * @return UUID string form
-     */
+    
     public static void stringToHtmlBytes(HsqlByteArrayOutputStream b,
                                          String s) {
 
@@ -773,14 +580,7 @@ public class StringConverter {
         }
     }
 
-    /**
-     * Returns a string representation in UUID form from a binary string.
-     *
-     * UUID string is composed of 8-4-4-4-12 hexadecimal characters.
-     *
-     * @param b the byte array
-     * @return UUID string form
-     */
+    
     public static String toStringUUID(byte[] b) {
 
         char[] chars = new char[36];
@@ -810,12 +610,7 @@ public class StringConverter {
         return new String(chars);
     }
 
-    /**
-     * Returns a byte[] representation in UUID form from a UUID string.
-     *
-     * @param s the UUID string
-     * @return byte array
-     */
+    
     public static byte[] toBinaryUUID(String s) {
 
         byte[] bytes = new byte[16];

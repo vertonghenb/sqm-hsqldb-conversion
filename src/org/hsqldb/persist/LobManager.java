@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -67,30 +39,26 @@ import org.hsqldb.types.ClobData;
 import org.hsqldb.types.ClobDataID;
 import org.hsqldb.types.Types;
 
-/**
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since 1.9.0
- */
+
 public class LobManager {
 
     static final String resourceFileName =
         "/org/hsqldb/resources/lob-schema.sql";
     static final String[] starters = new String[]{ "/*" };
 
-    //
+    
     Database         database;
     LobStore         lobStore;
     Session          sysLobSession;
     volatile boolean storeModified;
     byte[]           byteBuffer;
 
-    //
-    //
+    
+    
     int lobBlockSize;
     int totalBlockLimitCount = Integer.MAX_VALUE;
 
-    //
+    
     Statement getLob;
     Statement getLobPart;
     Statement deleteLobCall;
@@ -104,14 +72,14 @@ public class LobManager {
     Statement deleteUnusedLobs;
     Statement getLobCount;
 
-    //
+    
     boolean usageCountChanged;
 
-    //
+    
     ReadWriteLock lock      = new ReentrantReadWriteLock();
     Lock          writeLock = lock.writeLock();
 
-    // LOBS columns
+    
     private interface LOBS {
 
         int BLOCK_ADDR   = 0;
@@ -165,7 +133,7 @@ public class LobManager {
         int LOB_ID     = 1;
     }
 
-    //BLOCK_ADDR INT, BLOCK_COUNT INT, TX_ID BIGINT
+    
     private static final String initialiseBlocksSQL =
         "INSERT INTO SYSTEM_LOBS.BLOCKS VALUES(?,?,?)";
     private static final String getLobSQL =
@@ -314,7 +282,7 @@ public class LobManager {
         return lobStore;
     }
 
-    //
+    
     private long getNewLobID() {
 
         Result result = getNextLobId.execute(sysLobSession);
@@ -618,7 +586,7 @@ public class LobManager {
         try {
             Object[] data = getLobHeader(a.getId());
 
-            // abnormal case
+            
             if (data == null) {
                 return 1;
             }
@@ -627,7 +595,7 @@ public class LobManager {
 
             data = getLobHeader(b.getId());
 
-            // abnormal case
+            
             if (data == null) {
                 return -1;
             }
@@ -648,7 +616,7 @@ public class LobManager {
         }
     }
 
-    // todo - implement as compareText()
+    
     public int compare(ClobData a, String b) {
 
         writeLock.lock();
@@ -768,7 +736,7 @@ public class LobManager {
         return 0;
     }
 
-    /** @todo - word-separator and end block zero issues */
+    
     private int compareText(long aID, long bID) {
 
         Object[] data    = getLobHeader(aID);
@@ -838,9 +806,7 @@ public class LobManager {
         return 0;
     }
 
-    /**
-     * Used for SUBSTRING
-     */
+    
     public Result getLob(long lobID, long offset, long length) {
 
         if (offset == 0) {
@@ -916,7 +882,7 @@ public class LobManager {
 
             createBlockAddresses(newLobID, 0, newBlockCount);
 
-            // copy the contents
+            
             int[][] sourceBlocks = getBlockAddresses(lobID, 0,
                 Integer.MAX_VALUE);
             int[][] targetBlocks = getBlockAddresses(newLobID, 0,
@@ -928,7 +894,7 @@ public class LobManager {
                 return Result.newErrorResult(e);
             }
 
-            // clear the end block unused space
+            
             int endOffset = (int) (byteLength % lobBlockSize);
 
             if (endOffset != 0) {
@@ -947,7 +913,7 @@ public class LobManager {
         }
     }
 
-    // todo - currently returns whole length
+    
     public Result getTruncateLength(long lobID) {
 
         writeLock.lock();
@@ -1054,7 +1020,7 @@ public class LobManager {
                 return Result.newErrorResult(Error.error(ErrorCode.X_0F502));
             }
 
-            //
+            
             int i = 0;
             int blockCount = blockAddresses[i][LOBS.BLOCK_COUNT]
                              + blockAddresses[i][LOBS.BLOCK_OFFSET]
@@ -1127,96 +1093,7 @@ public class LobManager {
         }
     }
 
-/*
-    private Result setBytesBAold(long lobID, byte[] dataBytes, long offset,
-                                 int length) {
 
-        writeLock.lock();
-
-        try {
-            int blockOffset     = (int) (offset / lobBlockSize);
-            int byteBlockOffset = (int) (offset % lobBlockSize);
-            int blockLimit      = (int) ((offset + length) / lobBlockSize);
-            int byteLimitOffset = (int) ((offset + length) % lobBlockSize);
-
-            if (byteLimitOffset == 0) {
-                byteLimitOffset = lobBlockSize;
-            } else {
-                blockLimit++;
-            }
-
-            int[][] blockAddresses = getBlockAddresses(lobID, blockOffset,
-                blockLimit);
-            byte[] newBytes =
-                new byte[(blockLimit - blockOffset) * lobBlockSize];
-
-            if (blockAddresses.length > 0) {
-                int blockAddress = blockAddresses[0][LOBS.BLOCK_ADDR]
-                                   + (blockOffset
-                                      - blockAddresses[0][LOBS.BLOCK_OFFSET]);
-
-                try {
-                    byte[] block = getLobStore().getBlockBytes(blockAddress,
-                        1);
-
-                    System.arraycopy(block, 0, newBytes, 0, lobBlockSize);
-
-                    if (blockAddresses.length > 1) {
-                        blockAddress =
-                            blockAddresses[blockAddresses.length - 1][LOBS.BLOCK_ADDR]
-                            + (blockLimit
-                               - blockAddresses[blockAddresses.length - 1][LOBS.BLOCK_OFFSET]
-                               - 1);
-                        block = getLobStore().getBlockBytes(blockAddress, 1);
-
-                        System.arraycopy(block, 0, newBytes,
-                                         (blockLimit - blockOffset - 1)
-                                         * lobBlockSize, lobBlockSize);
-                    } else if (blockLimit - blockOffset > 1) {
-                        blockAddress =
-                            blockAddresses[0][LOBS.BLOCK_ADDR]
-                            + (blockLimit
-                               - blockAddresses[0][LOBS.BLOCK_OFFSET] - 1);
-                        block = getLobStore().getBlockBytes(blockAddress, 1);
-
-                        System.arraycopy(block, 0, newBytes,
-                                         (blockLimit - blockOffset - 1)
-                                         * lobBlockSize, lobBlockSize);
-                    }
-                } catch (HsqlException e) {
-                    return Result.newErrorResult(e);
-                }
-
-                // should turn into SP
-                divideBlockAddresses(lobID, blockOffset);
-                divideBlockAddresses(lobID, blockLimit);
-                deleteBlockAddresses(lobID, blockOffset, blockLimit);
-            }
-
-            createBlockAddresses(lobID, blockOffset, blockLimit - blockOffset);
-            System.arraycopy(dataBytes, 0, newBytes, byteBlockOffset, length);
-
-            blockAddresses = getBlockAddresses(lobID, blockOffset, blockLimit);
-
-            //
-            try {
-                for (int i = 0; i < blockAddresses.length; i++) {
-                    getLobStore().setBlockBytes(
-                        newBytes, blockAddresses[i][LOBS.BLOCK_ADDR],
-                        blockAddresses[i][LOBS.BLOCK_COUNT]);
-                }
-            } catch (HsqlException e) {
-                return Result.newErrorResult(e);
-            }
-
-            storeModified = true;
-
-            return ResultLob.newLobSetResponse(lobID, 0);
-        } finally {
-            writeLock.unlock();
-        }
-    }
-*/
     private Result setBytesBA(long lobID, long offset, byte[] dataBytes,
                               int dataLength) {
 
@@ -1364,10 +1241,10 @@ public class LobManager {
                         count       += read;
                     }
 
-                    // read more
+                    
                 } catch (IOException e) {
 
-                    // deallocate
+                    
                     return Result.newErrorResult(e);
                 }
 
@@ -1570,9 +1447,7 @@ public class LobManager {
         return result;
     }
 
-    /**
-     * Executes in user session. No synchronization
-     */
+    
     public Result adjustUsageCount(Session session, long lobID, int delta) {
 
         ResultMetaData meta     = updateLobUsage.getParametersMetaData();

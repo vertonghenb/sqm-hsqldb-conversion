@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.rights;
@@ -49,80 +21,48 @@ import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.lib.Set;
 import org.hsqldb.types.Type;
 
-/**
- * A Grantee Object holds the name, access and administrative rights for a
- * particular grantee.<p>
- * It supplies the methods used to grant, revoke, test
- * and check a grantee's access rights to other database objects.
- * It also holds a reference to the common PUBLIC User Object,
- * which represent the special user refered to in
- * GRANT ... TO PUBLIC statements.<p>
- * The check(), isAccessible() and getGrantedClassNames() methods check the
- * rights granted to the PUBLIC User Object, in addition to individually
- * granted rights, in order to decide which rights exist for the user.
- *
- * Method names ending in Direct indicate methods which do not recurse
- * to look through Roles which "this" object is a member of.
- *
- * We use the word "Admin" (e.g., in private variable "admin" and method
- * "isAdmin()) to mean this Grantee has admin priv by any means.
- * We use the word "adminDirect" (e.g., in private variable "adminDirect"
- * and method "isAdminDirect()) to mean this Grantee has admin priv
- * directly.
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @author Blaine Simpson (blaine dot simpson at admc dot com)
- *
- * @version 2.0.1
- * @since 1.8.0
- */
+
 public class Grantee implements SchemaObject {
 
     boolean isRole;
 
-    /**
-     * true if this grantee has database administrator priv directly
-     *  (ie., not by membership in any role)
-     */
+    
     private boolean isAdminDirect = false;
 
-    /** true if this grantee has database administrator priv by any means. */
+    
     private boolean isAdmin = false;
 
-    /** true if this user can create schemas with its own authorisation */
+    
     boolean isSchemaCreator = false;
 
-    /** true if this grantee is PUBLIC. */
+    
     boolean isPublic = false;
 
-    /** true if this grantee is _SYSTEM. */
+    
     boolean isSystem = false;
 
-    /** Grantee name. */
+    
     protected HsqlName granteeName;
 
-    /** map with database object identifier keys and access privileges values */
+    
     private MultiValueHashMap directRightsMap;
 
-    /** contains righs granted direct, or via roles, expept those of PUBLIC */
+    
     HashMap fullRightsMap;
 
-    /** These are the DIRECT roles.  Each of these may contain nested roles */
+    
     OrderedHashSet roles;
 
-    /** map with database object identifier keys and access privileges values */
+    
     private MultiValueHashMap grantedRightsMap;
 
-    /** Needed only to give access to the roles for this database */
+    
     protected GranteeManager granteeManager;
 
-    /**  */
+    
     protected Right ownerRights;
 
-    /**
-     * Constructor.
-     */
+    
     Grantee(HsqlName name, GranteeManager man) {
 
         fullRightsMap       = new HashMap();
@@ -189,21 +129,17 @@ public class Grantee implements SchemaObject {
         return isSystem;
     }
 
-    /**
-     * Gets direct roles, not roles nested within them.
-     */
+    
     public OrderedHashSet getDirectRoles() {
         return roles;
     }
 
-    /**
-     * Gets direct and indirect roles.
-     */
+    
     public OrderedHashSet getAllRoles() {
 
         OrderedHashSet set = getGranteeAndAllRoles();
 
-        // Since we added "Grantee" in addition to Roles, need to remove self.
+        
         set.remove(this);
 
         return set;
@@ -243,9 +179,7 @@ public class Grantee implements SchemaObject {
         return right.canAccess(privilegeType);
     }
 
-    /**
-     * returns true if grantee has any privilege (to any column) of the object
-     */
+    
     public boolean isAccessible(SchemaObject object) {
         return isAccessible(object.getName());
     }
@@ -269,11 +203,7 @@ public class Grantee implements SchemaObject {
         return false;
     }
 
-    /**
-     * Adds to given Set this.sName plus all roles and nested roles.
-     *
-     * @return Given role with new elements added.
-     */
+    
     private OrderedHashSet addGranteeAndRoles(OrderedHashSet set) {
 
         Grantee candidateRole;
@@ -299,12 +229,7 @@ public class Grantee implements SchemaObject {
         return getAllRoles().contains(role);
     }
 
-    /**
-     * Grants the specified rights on the specified database object. <p>
-     *
-     * Keys stored in rightsMap for database tables are their HsqlName
-     * attribute. This allows rights to persist when a table is renamed. <p>
-     */
+    
     void grant(HsqlName name, Right right, Grantee grantor,
                boolean withGrant) {
 
@@ -314,7 +239,7 @@ public class Grantee implements SchemaObject {
 
         if (right == Right.fullRights) {
             if (grantableRights.isEmpty()) {
-                return;    // has no rights
+                return;    
             }
 
             right = grantableRights;
@@ -356,20 +281,14 @@ public class Grantee implements SchemaObject {
 
         if (!grantor.isSystem()) {
 
-            // based on assumption that there is no need to access
+            
             ((Grantee) grantor).grantedRightsMap.put(name, existingRight);
         }
 
         updateAllRights();
     }
 
-    /**
-     * Revokes the specified rights on the specified database object. <p>
-     *
-     * If, after removing the specified rights, no rights remain on the
-     * database object, then the key/value pair for that object is removed
-     * from the rights map
-     */
+    
     void revoke(SchemaObject object, Right right, Grantee grantor,
                 boolean grantOption) {
 
@@ -422,11 +341,7 @@ public class Grantee implements SchemaObject {
         return;
     }
 
-    /**
-     * Revokes all rights on the specified database object.<p>
-     *
-     * This method removes any existing mapping from the rights map
-     */
+    
     void revokeDbObject(HsqlName name) {
 
         directRightsMap.remove(name);
@@ -434,10 +349,7 @@ public class Grantee implements SchemaObject {
         fullRightsMap.remove(name);
     }
 
-    /**
-     * Revokes all rights from this Grantee object.  The map is cleared and
-     * the database administrator role attribute is set false.
-     */
+    
     void clearPrivileges() {
 
         roles.clear();
@@ -520,13 +432,7 @@ public class Grantee implements SchemaObject {
         return Right.emptySet;
     }
 
-    /**
-     * Checks if a right represented by the methods
-     * have been granted on the specified database object. <p>
-     *
-     * This is done by checking that a mapping exists in the rights map
-     * from the dbobject argument. Otherwise, it throws.
-     */
+    
     public void checkSelect(SchemaObject object, boolean[] checkList) {
 
         if (object instanceof Table) {
@@ -662,10 +568,7 @@ public class Grantee implements SchemaObject {
         throw Error.error(ErrorCode.X_42501, object.getName().name);
     }
 
-    /**
-     * Checks if this object can modify schema objects or grant access rights
-     * to them.
-     */
+    
     public void checkSchemaUpdateOrGrantRights(String schemaName) {
 
         if (!hasSchemaUpdateOrGrantRights(schemaName)) {
@@ -673,13 +576,10 @@ public class Grantee implements SchemaObject {
         }
     }
 
-    /**
-     * Checks if this object can modify schema objects or grant access rights
-     * to them.
-     */
+    
     public boolean hasSchemaUpdateOrGrantRights(String schemaName) {
 
-        // If a DBA
+        
         if (isAdmin()) {
             return true;
         }
@@ -687,12 +587,12 @@ public class Grantee implements SchemaObject {
         Grantee schemaOwner =
             granteeManager.database.schemaManager.toSchemaOwner(schemaName);
 
-        // If owner of Schema
+        
         if (schemaOwner == this) {
             return true;
         }
 
-        // If a member of Schema authorization role
+        
         if (hasRole(schemaOwner)) {
             return true;
         }
@@ -742,10 +642,7 @@ public class Grantee implements SchemaObject {
         return false;
     }
 
-    /**
-     * Checks whether this Grantee has administrative privs either directly
-     * or indirectly. Otherwise it throws.
-     */
+    
     public void checkAdmin() {
 
         if (!isAdmin()) {
@@ -753,42 +650,27 @@ public class Grantee implements SchemaObject {
         }
     }
 
-    /**
-     * Returns true if this Grantee has administrative privs either directly
-     * or indirectly.
-     */
+    
     public boolean isAdmin() {
         return isAdmin;
     }
 
-    /**
-     * Returns true if this Grantee can create schemas with own authorization.
-     */
+    
     public boolean isSchemaCreator() {
         return isAdmin || hasRole(granteeManager.schemaRole);
     }
 
-    /**
-     * Returns true if this Grantee can change to a different user.
-     */
+    
     public boolean canChangeAuthorisation() {
         return isAdmin || hasRole(granteeManager.changeAuthRole);
     }
 
-    /**
-     * Returns true if this grantee object is for the PUBLIC role.
-     */
+    
     public boolean isPublic() {
         return isPublic;
     }
 
-    /**
-     * Iteration of all visible grantees, including self. <p>
-     *
-     * For grantees with admin, this is all grantees.
-     * For regular grantees, this is self plus all roles granted directly
-     * or indirectly
-     */
+    
     public OrderedHashSet visibleGrantees() {
 
         OrderedHashSet grantees = new OrderedHashSet();
@@ -839,42 +721,12 @@ public class Grantee implements SchemaObject {
         return right.canAccess((Table) table, columnMap);
     }
 
-    /**
-     * Violates naming convention (for backward compatibility).
-     * Should be "setAdminDirect(boolean").
-     */
+    
     void setAdminDirect() {
         isAdmin = isAdminDirect = true;
     }
 
-    /**
-     * Recursive method used with ROLE Grantee objects to set the fullRightsMap
-     * and admin flag for all the roles.
-     *
-     * If a new ROLE is granted to a ROLE Grantee object, the ROLE should first
-     * be added to the Set of ROLE Grantee objects (roles) for the grantee.
-     * The grantee will be the parameter.
-     *
-     * If the direct permissions granted to an existing ROLE Grentee is
-     * modified no extra initial action is necessary.
-     * The existing Grantee will be the parameter.
-     *
-     * If an existing ROLE is REVOKEed from a ROLE, it should first be removed
-     * from the set of ROLE Grantee objects in the containing ROLE.
-     * The containing ROLE will be the parameter.
-     *
-     * If an existing ROLE is DROPped, all its privileges should be cleared
-     * first. The ROLE will be the parameter. After calling this method on
-     * all other roles, the DROPped role should be removed from all grantees.
-     *
-     * After the initial modification, this method should be called iteratively
-     * on all the ROLE Grantee objects contained in RoleManager.
-     *
-     * The updateAllRights() method is then called iteratively on all the
-     * USER Grantee objects contained in UserManager.
-     * @param role a modified, revoked or dropped role.
-     * @return true if this Grantee has possibly changed as a result
-     */
+    
     boolean updateNestedRoles(Grantee role) {
 
         boolean hasNested = false;
@@ -894,16 +746,9 @@ public class Grantee implements SchemaObject {
         return hasNested || role == this;
     }
 
-    /**
-     * Method used with all Grantee objects to set the full set of rights
-     * according to those inherited form ROLE Grantee objects and those
-     * granted to the object itself.
-     */
+    
 
-    /**
-     * @todo -- see if this is correct and the currentRole.fullRightsMap
-     * is always updated prior to being added to this.fullRightsMap
-     */
+    
     void updateAllRights() {
 
         fullRightsMap.clear();
@@ -925,9 +770,7 @@ public class Grantee implements SchemaObject {
         }
     }
 
-    /**
-     * Full or partial rights are added to existing
-     */
+    
     void addToFullRights(HashMap map) {
 
         Iterator it = map.keySet().iterator();
@@ -957,9 +800,7 @@ public class Grantee implements SchemaObject {
         }
     }
 
-    /**
-     * Full or partial rights are added to existing
-     */
+    
     private void addToFullRights(MultiValueHashMap map) {
 
         Iterator it = map.keySet().iterator();
@@ -1024,38 +865,19 @@ public class Grantee implements SchemaObject {
                                                               .grantableRights;
     }
 
-    /**
-     * Retrieves the map object that represents the rights that have been
-     * granted on database objects.  <p>
-     *
-     * The map has keys and values with the following interpretation: <P>
-     *
-     * <UL>
-     * <LI> The keys are generally (but not limited to) objects having
-     *      an attribute or value equal to the name of an actual database
-     *      object.
-     *
-     * <LI> Specifically, the keys act as database object identifiers.
-     *
-     * <LI> The values are Right objects.
-     * </UL>
-     */
+    
     private MultiValueHashMap getRights() {
 
-        // necessary to create the script
+        
         return directRightsMap;
     }
 
-    /**
-     * Grant a role
-     */
+    
     void grant(Grantee role) {
         roles.add(role);
     }
 
-    /**
-     * Revoke a direct role only
-     */
+    
     void revoke(Grantee role) {
 
         if (!hasRoleDirect(role)) {

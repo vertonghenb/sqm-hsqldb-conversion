@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -53,13 +25,7 @@ import org.hsqldb.types.Collation;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.UserTypeModifier;
 
-/**
- * Parser for DDL statements
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class ParserDDL extends ParserRoutine {
 
     static final int[]   schemaCommands             = new int[] {
@@ -154,7 +120,7 @@ public class ParserDDL extends ParserRoutine {
 
         switch (token.tokenType) {
 
-            // other objects
+            
             case Tokens.ALIAS :
                 return compileCreateAlias();
 
@@ -188,7 +154,7 @@ public class ParserDDL extends ParserRoutine {
             case Tokens.COLLATION :
                 return compileCreateCollation();
 
-            // index
+            
             case Tokens.UNIQUE :
                 read();
                 checkIsThis(Tokens.INDEX);
@@ -570,7 +536,7 @@ public class ParserDDL extends ParserRoutine {
                 }
             }
 
-            // fall through
+            
             default :
                 name = readNewSchemaObjectName(objectType, false);
 
@@ -716,7 +682,7 @@ public class ParserDDL extends ParserRoutine {
                     case Tokens.COLUMN :
                         read();
 
-                    // fall through
+                    
                     default : {
                         checkIsSimpleName();
 
@@ -838,7 +804,7 @@ public class ParserDDL extends ParserRoutine {
         } catch (HsqlException e) {
             lastError = e;
 
-            // may be cursor
+            
             rewind(position);
 
             return null;
@@ -849,7 +815,7 @@ public class ParserDDL extends ParserRoutine {
                     || Tokens.T_MODULE.equals(token.namePrefix)
                     || Tokens.T_SESSION.equals(token.namePrefix))) {
 
-            // valid name
+            
         } else {
             throw unexpectedToken();
         }
@@ -1238,9 +1204,7 @@ public class ParserDDL extends ParserRoutine {
         return st;
     }
 
-    /**
-     * Adds a list of temp constraints to a new table
-     */
+    
     static Table addTableConstraintDefinitions(Session session, Table table,
             HsqlArrayList tempConstraints, HsqlArrayList constraintList,
             boolean addToSchema) {
@@ -1280,7 +1244,7 @@ public class ParserDDL extends ParserRoutine {
                         throw Error.error(ErrorCode.X_42522);
                     }
 
-                    // create an autonamed index
+                    
                     indexName = session.database.nameManager.newAutoName("IDX",
                             c.getName().name, table.getSchemaName(),
                             table.getName(), SchemaObject.INDEX);
@@ -1463,10 +1427,10 @@ public class ParserDDL extends ParserRoutine {
             }
         }
 
-        // -- In a while loop we parse a maximium of two
-        // -- "ON" statements following the foreign key
-        // -- definition this can be
-        // -- ON [UPDATE|DELETE] [NO ACTION|RESTRICT|CASCADE|SET [NULL|DEFAULT]]
+        
+        
+        
+        
         int deleteAction      = SchemaObject.ReferentialAction.NO_ACTION;
         int updateAction      = SchemaObject.ReferentialAction.NO_ACTION;
         OrderedIntHashSet set = new OrderedIntHashSet();
@@ -1666,12 +1630,7 @@ public class ParserDDL extends ParserRoutine {
 
         read();
 
-        /*
-                CREATE SEQUENCE <name>
-                [AS {INTEGER | BIGINT}]
-                [START WITH <value>]
-                [INCREMENT BY <value>]
-        */
+        
         HsqlName name = readNewSchemaObjectName(SchemaObject.SEQUENCE, false);
         NumberSequence sequence = new NumberSequence(name, Type.SQL_INTEGER);
 
@@ -2227,12 +2186,12 @@ public class ParserDDL extends ParserRoutine {
             read();
         }
 
-        //
+        
         if (rangeVars[TriggerDef.OLD_TABLE] != null) {}
 
         if (rangeVars[TriggerDef.NEW_TABLE] != null) {}
 
-        //
+        
         if (Tokens.T_QUEUE.equals(token.tokenString)) {
             read();
 
@@ -2312,7 +2271,7 @@ public class ParserDDL extends ParserRoutine {
             }
         }
 
-        //
+        
         if (hasQueueSize) {
             throw unexpectedToken(Tokens.T_QUEUE);
         }
@@ -2373,15 +2332,7 @@ public class ParserDDL extends ParserRoutine {
         return routine;
     }
 
-    /**
-     * Responsible for handling the creation of table columns during the process
-     * of executing CREATE TABLE or ADD COLUMN etc. statements.
-     *
-     * @param table this table
-     * @param hsqlName column name
-     * @param constraintList list of constraints
-     * @return a Column object with indicated attributes
-     */
+    
     ColumnSchema readColumnDefinitionOrNull(Table table, HsqlName hsqlName,
             HsqlArrayList constraintList) {
 
@@ -2404,7 +2355,7 @@ public class ParserDDL extends ParserRoutine {
                 isGenerated     = true;
                 generatedAlways = true;
 
-                // not yet
+                
                 throw unexpectedToken(Tokens.T_GENERATED);
             }
             case Tokens.IDENTITY : {
@@ -2494,7 +2445,7 @@ public class ParserDDL extends ParserRoutine {
                     }
                 }
 
-                // fall through
+                
                 case Tokens.DEFAULT : {
                     read();
 
@@ -2654,9 +2605,7 @@ public class ParserDDL extends ParserRoutine {
         return column;
     }
 
-    /**
-     * A comma after START WITH is accepted for 1.8.x compatibility
-     */
+    
     private void readSequenceOptions(NumberSequence sequence,
                                      boolean withType, boolean isAlter,
                                      boolean allowComma) {
@@ -2794,12 +2743,7 @@ public class ParserDDL extends ParserRoutine {
         sequence.checkValues();
     }
 
-    /**
-     * Reads and adds a table constraint definition to the list
-     *
-     * @param schemaObject table or domain
-     * @param constraintList list of constraints
-     */
+    
     private void readConstraint(SchemaObject schemaObject,
                                 HsqlArrayList constraintList) {
 
@@ -2912,9 +2856,7 @@ public class ParserDDL extends ParserRoutine {
         }
     }
 
-    /**
-     * Reads column constraints
-     */
+    
     void readColumnConstraints(Table table, ColumnSchema column,
                                HsqlArrayList constraintList) {
 
@@ -2998,7 +2940,7 @@ public class ParserDDL extends ParserRoutine {
                     readThis(Tokens.KEY);
                 }
 
-                // fall through
+                
                 case Tokens.REFERENCES : {
                     OrderedHashSet set = new OrderedHashSet();
 
@@ -3098,11 +3040,7 @@ public class ParserDDL extends ParserRoutine {
         }
     }
 
-    /**
-     * Responsible for handling check constraints section of CREATE TABLE ...
-     *
-     * @param c check constraint
-     */
+    
     void readCheckConstraintCondition(Constraint c) {
 
         readThis(Tokens.OPENBRACKET);
@@ -3302,7 +3240,7 @@ public class ParserDDL extends ParserRoutine {
 
                     switch (token.tokenType) {
 
-                        // not in schema definition
+                        
                         case Tokens.SCHEMA :
                         case Tokens.USER :
                         case Tokens.UNIQUE :
@@ -3341,7 +3279,7 @@ public class ParserDDL extends ParserRoutine {
                             cs.sql = getLastPart(position);
                             break;
 
-                        // no supported
+                        
                         case Tokens.ASSERTION :
                             throw unexpectedToken();
                         case Tokens.TABLE :
@@ -3772,7 +3710,7 @@ public class ParserDDL extends ParserRoutine {
                     case Tokens.DEFAULT : {
                         read();
 
-                        //ALTER TABLE .. ALTER COLUMN .. SET DEFAULT
+                        
                         Type       type = column.getDataType();
                         Expression expr = readDefaultClause(type);
                         String     sql  = getLastPart();
@@ -3787,7 +3725,7 @@ public class ParserDDL extends ParserRoutine {
                     }
                     case Tokens.NOT : {
 
-                        //ALTER TABLE .. ALTER COLUMN .. SET NOT NULL
+                        
                         read();
                         readThis(Tokens.NULL);
 
@@ -3814,7 +3752,7 @@ public class ParserDDL extends ParserRoutine {
                 return compileAlterColumnAddSequence(table, column,
                                                      columnIndex);
 
-            // fall through
+            
             default :
         }
 
@@ -3831,11 +3769,7 @@ public class ParserDDL extends ParserRoutine {
         }
     }
 
-    /**
-     * Allows changes to type of column or addition / removal of an IDENTITY generator.
-     * IDENTITY is removed if it does not appear in new column definition
-     * Constraint definitions are not allowed
-     */
+    
     private Statement compileAlterColumnDataTypeIdentity(Table table,
             ColumnSchema column) {
 
@@ -4153,7 +4087,7 @@ public class ParserDDL extends ParserRoutine {
 
         sequence.checkValues();
 
-//        column.getIdentitySequence().reset(sequence);
+
         String   sql  = getLastPart();
         Object[] args = new Object[] {
             StatementTypes.ALTER_COLUMN_SEQUENCE, table, column, columnIndex,
@@ -4167,9 +4101,7 @@ public class ParserDDL extends ParserRoutine {
                                    null, writeLockNames);
     }
 
-    /**
-     * Responsible for handling tail of ALTER COLUMN ... RENAME ...
-     */
+    
     private Statement compileAlterColumnRename(Table table,
             ColumnSchema column) {
 
@@ -4449,7 +4381,7 @@ public class ParserDDL extends ParserRoutine {
         Grantee        grantor     = null;
         Right          right       = null;
 
-//        SchemaObject   schemaObject;
+
         HsqlName objectName    = null;
         boolean  isTable       = false;
         boolean  isUsage       = false;
@@ -4467,15 +4399,11 @@ public class ParserDDL extends ParserRoutine {
                 isGrantOption = true;
             } else if (token.tokenType == Tokens.HIERARCHY) {
                 throw unsupportedFeature();
-/*
-                read();
-                readThis(Token.OPTION);
-                readThis(Token.FOR);
-*/
+
             }
         }
 
-        // ALL means all the rights the grantor can grant
+        
         if (token.tokenType == Tokens.ALL) {
             read();
 
@@ -4510,7 +4438,7 @@ public class ParserDDL extends ParserRoutine {
                             columnSet = readColumnNames(false);
                         }
 
-                    // fall through
+                    
                     case Tokens.TRIGGER :
                         if (right == null) {
                             right = new Right();
@@ -4719,7 +4647,7 @@ public class ParserDDL extends ParserRoutine {
                 isGrantOption = true;
             }
 
-            /** @todo - implement */
+            
             if (token.tokenType == Tokens.GRANTED) {
                 read();
                 readThis(Tokens.BY);
@@ -4727,7 +4655,7 @@ public class ParserDDL extends ParserRoutine {
                 if (token.tokenType == Tokens.CURRENT_USER) {
                     read();
 
-                    //
+                    
                 } else {
                     readThis(Tokens.CURRENT_ROLE);
 
@@ -4772,11 +4700,7 @@ public class ParserDDL extends ParserRoutine {
 
         if (!grant && token.tokenType == Tokens.ADMIN) {
             throw unsupportedFeature();
-/*
-            read();
-            readThis(Token.OPTION);
-            readThis(Token.FOR);
-*/
+
         }
 
         while (true) {
@@ -4814,11 +4738,7 @@ public class ParserDDL extends ParserRoutine {
         if (grant) {
             if (token.tokenType == Tokens.WITH) {
                 throw unsupportedFeature();
-/*
-                read();
-                readThis(Token.ADMIN);
-                readThis(Token.OPTION);
-*/
+
             }
         }
 
@@ -4829,7 +4749,7 @@ public class ParserDDL extends ParserRoutine {
             if (token.tokenType == Tokens.CURRENT_USER) {
                 read();
 
-                //
+                
             } else {
                 readThis(Tokens.CURRENT_ROLE);
 
@@ -5033,12 +4953,7 @@ public class ParserDDL extends ParserRoutine {
         return new StatementCommand(StatementTypes.ALTER_SESSION, args);
     }
 
-    /**
-     * Retrieves boolean value corresponding to the next token.
-     *
-     * @return   true if next token is "TRUE"; false if next token is "FALSE"
-     * @throws  HsqlException if the next token is neither "TRUE" or "FALSE"
-     */
+    
     boolean processTrueOrFalse() {
 
         if (token.namePrefix != null) {

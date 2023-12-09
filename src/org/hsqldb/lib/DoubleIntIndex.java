@@ -1,55 +1,11 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.lib;
 
 import java.util.NoSuchElementException;
 
-/**
- * Maintains an ordered  integer->integer lookup table, consisting of two
- * columns, one for keys, the other for values.
- *
- * The table is sorted on either the key or value column, depending on the calls to
- * setKeysSearchTarget() or setValuesSearchTarget(). By default, the table is
- * sorted on values.<p>
- *
- * findXXX() methods return the array index into the list
- * pair containing a matching key or value, or  or -1 if not found.<p>
- *
- * Sorting methods originally contributed by Tony Lai.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.8.0
- */
+
 public class DoubleIntIndex implements IntLookup {
 
     private int           count = 0;
@@ -61,7 +17,7 @@ public class DoubleIntIndex implements IntLookup {
     private int[]         keys;
     private int[]         values;
 
-//
+
     private int targetSearchValue;
 
     public DoubleIntIndex(int capacity, boolean fixedSize) {
@@ -91,11 +47,7 @@ public class DoubleIntIndex implements IntLookup {
         return values[i];
     }
 
-    /**
-     * Modifies an existing pair.
-     * @param i the index
-     * @param key the key
-     */
+    
     public synchronized void setKey(int i, int key) {
 
         if (i < 0 || i >= count) {
@@ -109,11 +61,7 @@ public class DoubleIntIndex implements IntLookup {
         keys[i] = key;
     }
 
-    /**
-     * Modifies an existing pair.
-     * @param i the index
-     * @param value the value
-     */
+    
     public synchronized void setValue(int i, int value) {
 
         if (i < 0 || i >= count) {
@@ -135,13 +83,7 @@ public class DoubleIntIndex implements IntLookup {
         return capacity;
     }
 
-    /**
-     * Adds a pair into the table.
-     *
-     * @param key the key
-     * @param value the value
-     * @return true or false depending on success
-     */
+    
     public synchronized boolean addUnsorted(int key, int value) {
 
         if (count == capacity) {
@@ -173,15 +115,7 @@ public class DoubleIntIndex implements IntLookup {
         return true;
     }
 
-    /**
-     * Adds a key, value pair into the table with the guarantee that the key
-     * is equal or larger than the largest existing key. This prevents a sort
-     * from taking place on next call to find()
-     *
-     * @param key the key
-     * @param value the value
-     * @return true or false depending on success
-     */
+    
     public synchronized boolean addSorted(int key, int value) {
 
         if (count == capacity) {
@@ -213,13 +147,7 @@ public class DoubleIntIndex implements IntLookup {
         return true;
     }
 
-    /**
-     * Adds a pair, ensuring no duplicate key xor value already exists in the
-     * current search target column.
-     * @param key the key
-     * @param value the value
-     * @return true or false depending on success
-     */
+    
     public synchronized boolean addUnique(int key, int value) {
 
         if (count == capacity) {
@@ -257,13 +185,7 @@ public class DoubleIntIndex implements IntLookup {
         return true;
     }
 
-    /**
-     * Adds a pair, maintaining sorted order
-     * current search target column.
-     * @param key the key
-     * @param value the value
-     * @return index of added key or -1 if key exists
-     */
+    
     public synchronized int add(int key, int value) {
 
         if (count == capacity) {
@@ -367,10 +289,7 @@ public class DoubleIntIndex implements IntLookup {
         sortOnValues = false;
     }
 
-    /**
-     * @param value the value
-     * @return the index
-     */
+    
     public synchronized int findFirstGreaterEqualKeyIndex(int value) {
 
         int index = findFirstGreaterEqualSlotIndex(value);
@@ -379,10 +298,7 @@ public class DoubleIntIndex implements IntLookup {
                               : index;
     }
 
-    /**
-     * @param value the value
-     * @return the index
-     */
+    
     public synchronized int findFirstEqualKeyIndex(int value) {
 
         if (!sorted) {
@@ -394,14 +310,7 @@ public class DoubleIntIndex implements IntLookup {
         return binaryFirstSearch();
     }
 
-    /**
-     * This method is similar to findFirstGreaterEqualKeyIndex(int) but
-     * returns the index of the empty row past the end of the array if
-     * the search value is larger than all the values / keys in the searched
-     * column.
-     * @param value the value
-     * @return the index
-     */
+    
     public synchronized int findFirstGreaterEqualSlotIndex(int value) {
 
         if (!sorted) {
@@ -413,11 +322,7 @@ public class DoubleIntIndex implements IntLookup {
         return binarySlotSearch();
     }
 
-    /**
-     * Returns the index of the lowest element == the given search target,
-     * or -1
-     * @return index or -1 if not found
-     */
+    
     private int binaryFirstSearch() {
 
         int low     = 0;
@@ -444,10 +349,7 @@ public class DoubleIntIndex implements IntLookup {
                               : found;
     }
 
-    /**
-     * Returns the index of the lowest element > the given search target
-     *     @return the index
-     */
+    
     private int binaryGreaterSearch() {
 
         int low     = 0;
@@ -470,11 +372,7 @@ public class DoubleIntIndex implements IntLookup {
                             : low;
     }
 
-    /**
-     * Returns the index of the lowest element >= the given search target,
-     * or count
-     *     @return the index
-     */
+    
     private int binarySlotSearch() {
 
         int low     = 0;
@@ -496,11 +394,7 @@ public class DoubleIntIndex implements IntLookup {
         return low;
     }
 
-    /**
-     * Returns the index of the lowest element > the given search target
-     * or count or -1 if target is found
-     * @return the index
-     */
+    
     private int binaryEmptySlotSearch() {
 
         int low     = 0;
@@ -543,7 +437,7 @@ public class DoubleIntIndex implements IntLookup {
             i = (r + l) / 2;
 
             if (lessThan(i, l)) {
-                swap(l, i);    // Tri-Median Methode!
+                swap(l, i);    
             }
 
             if (lessThan(r, l)) {
@@ -619,12 +513,7 @@ public class DoubleIntIndex implements IntLookup {
         values[i2] = col2;
     }
 
-    /**
-     * Check if targeted column value in the row indexed i is less than the
-     * search target object.
-     * @param i the index
-     * @return -1, 0 or +1
-     */
+    
     protected int compare(int i) {
 
         if (sortOnValues) {
@@ -644,12 +533,7 @@ public class DoubleIntIndex implements IntLookup {
         return 0;
     }
 
-    /**
-     * Check if row indexed i is less than row indexed j
-     * @param i the first index
-     * @param j the second index
-     * @return true or false
-     */
+    
     protected boolean lessThan(int i, int j) {
 
         if (sortOnValues) {

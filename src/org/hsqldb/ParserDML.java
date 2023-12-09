@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -41,22 +13,14 @@ import org.hsqldb.lib.LongDeque;
 import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.types.Type;
 
-/**
- * Parser for DML statements
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.1
- * @since 1.9.0
- */
+
 public class ParserDML extends ParserDQL {
 
     ParserDML(Session session, Scanner t) {
         super(session, t);
     }
 
-    /**
-     * Retrieves an INSERT Statement from this parse context.
-     */
+    
     StatementDMQL compileInsertStatement(RangeVariable[] outerRanges) {
 
         read();
@@ -150,7 +114,7 @@ public class ParserDML extends ParserDQL {
                         break;
                     }
 
-                    // fall through
+                    
                 } else {
                     rewind(position);
 
@@ -158,7 +122,7 @@ public class ParserDML extends ParserDQL {
                 }
             }
 
-            // fall through
+            
             case Tokens.OVERRIDING : {
                 if (token.tokenType == Tokens.OVERRIDING) {
                     read();
@@ -183,7 +147,7 @@ public class ParserDML extends ParserDQL {
                 }
             }
 
-            // fall through
+            
             case Tokens.VALUES : {
                 read();
 
@@ -423,9 +387,7 @@ public class ParserDML extends ParserDQL {
         return cs;
     }
 
-    /**
-     * Creates a DELETE-type Statement from this parse context.
-     */
+    
     Statement compileDeleteStatement(RangeVariable[] outerRanges) {
 
         Expression condition       = null;
@@ -531,9 +493,7 @@ public class ParserDML extends ParserDQL {
         return cs;
     }
 
-    /**
-     * Creates an UPDATE-type Statement from this parse context.
-     */
+    
     StatementDMQL compileUpdateStatement(RangeVariable[] outerRanges) {
 
         read();
@@ -702,7 +662,7 @@ public class ParserDML extends ParserDQL {
             Expression expr = colExpressions[ix];
             Expression e;
 
-            // no generated column can be updated
+            
             if (targetTable.colGenerated[columnMap[i]]) {
                 throw Error.error(ErrorCode.X_42513);
             }
@@ -925,9 +885,7 @@ public class ParserDML extends ParserDQL {
         }
     }
 
-    /**
-     * Retrieves a MERGE Statement from this parse context.
-     */
+    
     StatementDMQL compileMergeStatement(RangeVariable[] outerRanges) {
 
         boolean[]     insertColumnCheckList;
@@ -954,7 +912,7 @@ public class ParserDML extends ParserDQL {
 
         sourceRange = readTableOrSubquery(outerRanges);
 
-        // parse ON search conditions
+        
         readThis(Tokens.ON);
 
         mergeCondition = XreadBooleanValueExpression();
@@ -969,7 +927,7 @@ public class ParserDML extends ParserDQL {
         RangeVariable[] sourceRangeVars = new RangeVariable[]{ sourceRange };
         RangeVariable[] targetRangeVars = new RangeVariable[]{ targetRange };
 
-        // parse WHEN clause(s) and convert lists to arrays
+        
         insertColumnMap       = table.getColumnMap();
         insertColumnCheckList = table.getNewColumnCheckList();
 
@@ -1075,15 +1033,7 @@ public class ParserDML extends ParserDQL {
         return cs;
     }
 
-    /**
-     * Parses a WHEN clause from a MERGE statement. This can be either a
-     * WHEN MATCHED or WHEN NOT MATCHED clause, or both, and the appropriate
-     * values will be updated.
-     *
-     * If the var that is to hold the data is not null, then we already
-     * encountered this type of clause, which is only allowed once, and at least
-     * one is required.
-     */
+    
     private void readMergeWhen(LongDeque updateColIndexList,
                                OrderedHashSet insertColumnNames,
                                OrderedHashSet updateTargetSet,
@@ -1118,8 +1068,8 @@ public class ParserDML extends ParserDQL {
             readThis(Tokens.THEN);
             readThis(Tokens.INSERT);
 
-            // parse INSERT statement
-            // optional column list
+            
+            
             int brackets = readOpenBrackets();
 
             if (brackets == 1) {
@@ -1155,11 +1105,9 @@ public class ParserDML extends ParserDQL {
         }
     }
 
-    /**
-     * Retrieves a CALL Statement from this parse context.
-     */
+    
 
-    // to do call argument name and type resolution
+    
     StatementDMQL compileCallStatement(RangeVariable[] outerRanges,
                                        boolean isStrictlyProcedure) {
 
@@ -1264,7 +1212,7 @@ public class ParserDML extends ParserDQL {
         ExpressionColumn.checkColumnsResolved(unresolved);
         expression.resolveTypes(session, null);
 
-//        expression.paramMode = PARAM_OUT;
+
         StatementDMQL cs = new StatementProcedure(session, expression,
             compileContext);
 

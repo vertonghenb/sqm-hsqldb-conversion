@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -47,13 +19,7 @@ import org.hsqldb.types.Charset;
 import org.hsqldb.types.Collation;
 import org.hsqldb.types.Type;
 
-/**
- * Implementation of Statement for DDL statements.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.1.1
- * @since 1.9.0
- */
+
 public class StatementSchema extends Statement {
 
     int      order;
@@ -321,10 +287,7 @@ public class StatementSchema extends Statement {
                     }
                 } else if (name.type == SchemaObject.SCHEMA) {
 
-                    /**
-                     * @todo 1.9.0 - review for schemas referenced in
-                     *  external view or trigger definitions
-                     */
+                    
                     checkSchemaUpdateAuthorisation(session, name);
                     schemaManager.checkSchemaNameCanChange(name);
                     schemaManager.renameSchema(name, newName);
@@ -1047,7 +1010,7 @@ public class StatementSchema extends Statement {
                     } else {
                         schemaManager.createSchema(name, owner);
 
-                        // always include authorization
+                        
                         Schema schema = schemaManager.findSchema(name.name);
 
                         this.sql = schema.getSQL();
@@ -1269,17 +1232,7 @@ public class StatementSchema extends Statement {
                 unique       = ((Boolean) arguments[3]).booleanValue();
 
                 try {
-                    /*
-                            Index index        = table.getIndexForColumns(indexColumns);
-
-                            if (index != null
-                                    && ArrayUtil.areEqual(indexColumns, index.getColumns(),
-                                                          indexColumns.length, unique)) {
-                                if (index.isUnique() || !unique) {
-                                    return;
-                                }
-                            }
-                    */
+                    
                     setOrCheckObjectName(session, table.getName(), name, true);
 
                     TableWorks tableWorks = new TableWorks(session, table);
@@ -1353,7 +1306,7 @@ public class StatementSchema extends Statement {
                 break;
             }
 
-            // for logging only
+            
             case StatementTypes.LOG_SCHEMA_STATEMENT :
                 break;
 

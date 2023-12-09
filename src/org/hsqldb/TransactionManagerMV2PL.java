@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -38,17 +10,11 @@ import org.hsqldb.lib.LongDeque;
 import org.hsqldb.persist.CachedObject;
 import org.hsqldb.persist.PersistentStore;
 
-/**
- * Manages rows involved in transactions
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 2.0.0
- */
+
 public class TransactionManagerMV2PL extends TransactionManagerCommon
 implements TransactionManager {
 
-    // functional unit - merged committed transactions
+    
     HsqlDeque committedTransactions          = new HsqlDeque();
     LongDeque committedTransactionTimestamps = new LongDeque();
 
@@ -120,7 +86,7 @@ implements TransactionManager {
 
         try {
 
-            // new actionTimestamp used for commitTimestamp
+            
             session.actionTimestamp         = nextChangeTimestamp();
             session.transactionEndTimestamp = session.actionTimestamp;
 
@@ -145,7 +111,7 @@ implements TransactionManager {
                 session.rowActionList.setSize(limit);
             }
 
-            // session.actionTimestamp is the committed tx timestamp
+            
             if (getFirstLiveTransactionTimestamp() > session.actionTimestamp
                     || session == lobSession) {
                 mergeTransaction(session, list, 0, limit,
@@ -204,10 +170,7 @@ implements TransactionManager {
         endActionTPL(session);
     }
 
-    /**
-     * rollback the row actions from start index in list and
-     * the given timestamp
-     */
+    
     void rollbackPartial(Session session, int start, long timestamp) {
 
         Object[] list  = session.rowActionList.getArray();
@@ -227,8 +190,8 @@ implements TransactionManager {
             }
         }
 
-        // rolled back transactions can always be merged as they have never been
-        // seen by other sessions
+        
+        
         mergeRolledBackTransaction(session, timestamp, list, start, limit);
         finaliseRows(session, list, start, limit, false);
         session.rowActionList.setSize(start);
@@ -273,7 +236,7 @@ implements TransactionManager {
         session.rowActionList.add(action);
     }
 
-// functional unit - accessibility of rows
+
     public boolean canRead(Session session, Row row, int mode, int[] colMap) {
 
         RowAction action = row.rowAction;
@@ -294,10 +257,7 @@ implements TransactionManager {
                                                TransactionManager.ACTION_READ);
     }
 
-    /**
-     * add transaction info to a row just loaded from the cache. called only
-     * for CACHED tables
-     */
+    
     public void setTransactionInfo(CachedObject object) {
 
         if (object.isMemory()) {
@@ -310,9 +270,7 @@ implements TransactionManager {
         row.rowAction = rowact;
     }
 
-    /**
-     * remove the transaction info
-     */
+    
     public void removeTransactionInfo(CachedObject object) {
 
         if (object.isMemory()) {
@@ -322,29 +280,21 @@ implements TransactionManager {
         rowActionMap.remove(object.getPos());
     }
 
-    /**
-     * add a list of actions to the end of queue
-     */
+    
     void addToCommittedQueue(Session session, Object[] list) {
 
         synchronized (committedTransactionTimestamps) {
 
-            // add the txList according to commit timestamp
+            
             committedTransactions.addLast(list);
 
-            // get session commit timestamp
+            
             committedTransactionTimestamps.addLast(session.actionTimestamp);
-/* debug 190
-            if (committedTransactions.size() > 64) {
-                System.out.println("******* excessive transaction queue");
-            }
-// debug 190 */
+
         }
     }
 
-    /**
-     * expire all committed transactions that are no longer in scope
-     */
+    
     void mergeExpiredTransactions(Session session) {
 
         long timestamp = getFirstLiveTransactionTimestamp();
@@ -395,10 +345,7 @@ implements TransactionManager {
         }
     }
 
-    /**
-     * add session to the end of queue when a transaction starts
-     * (depending on isolation mode)
-     */
+    
     public void beginAction(Session session, Statement cs) {
 
         if (session.hasLocks(cs)) {
@@ -424,7 +371,7 @@ implements TransactionManager {
                 if (session.tempSet.isEmpty()) {
                     lockTablesTPL(session, cs);
 
-                    // we don't set other sessions that would now be waiting for this one too
+                    
                 } else {
                     setWaitingSessionTPL(session);
                 }
@@ -436,10 +383,7 @@ implements TransactionManager {
         }
     }
 
-    /**
-     * add session to the end of queue when a transaction starts
-     * (depending on isolation mode)
-     */
+    
     public void beginActionResume(Session session) {
 
         writeLock.lock();
@@ -460,12 +404,7 @@ implements TransactionManager {
         }
     }
 
-    /**
-     * remove session from queue when a transaction ends
-     * and expire any committed transactions
-     * that are no longer required. remove transactions ended before the first
-     * timestamp in liveTransactionsSession queue
-     */
+    
     void endTransaction(Session session) {
 
         long timestamp = session.transactionTimestamp;

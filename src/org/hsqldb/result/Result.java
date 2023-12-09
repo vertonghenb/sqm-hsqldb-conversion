@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.result;
@@ -55,22 +27,7 @@ import org.hsqldb.rowio.RowOutputInterface;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 
-/**
- *  The primary unit of communication between Connection, Server and Session
- *  objects.
- *
- *  An HSQLDB Result object encapsulates all requests (such as to alter or
- *  query session settings, to allocate and execute statements, etc.) and all
- *  responses (such as exception indications, update counts, result sets and
- *  result set metadata). It also implements the HSQL wire protocol for
- *  comunicating all such requests and responses across the network.
- *  Uses a navigator for data.
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.1.1
- * @since 1.9.0
- */
+
 public class Result {
 
     public static final ResultMetaData sessionAttributesMetaData =
@@ -78,7 +35,7 @@ public class Result {
 
     static {
 
-        // required for correct initialisation of static variables
+        
         SqlInvariants.isSystemSchemaName("SYSTEM");
 
         for (int i = 0; i < Session.INFO_LIMIT; i++) {
@@ -104,78 +61,78 @@ public class Result {
     public static final Result updateZeroResult = newUpdateCountResult(0);
     public static final Result updateOneResult  = newUpdateCountResult(1);
 
-    // type of result
+    
     public byte mode;
 
-    // database ID
+    
     int databaseID;
 
-    // session ID
+    
     long sessionID;
 
-    // result id
+    
     private long id;
 
-    // database name for new connection
+    
     private String databaseName;
 
-    // user / password for new connection
-    // error strings in error results
+    
+    
     private String mainString;
     private String subString;
     private String zoneString;
 
-    // vendor error code
+    
     int errorCode;
 
-    // the exception if this is an error
+    
     private HsqlException exception;
 
-    // prepared statement id
+    
     long statementID;
 
-    // statement type based on whether it returns an update count or a result set
-    // type of session info requested
+    
+    
     int statementReturnType;
 
-    // max rows (out)
-    // update count (in)
-    // fetch part result count (in)
-    // time zone seconds (connect)
+    
+    
+    
+    
     public int updateCount;
 
-    // fetch size (in)
+    
     private int fetchSize;
 
-    // secondary result
+    
     private Result chainedResult;
 
-    //
+    
     private int lobCount;
     ResultLob   lobResults;
 
-    /** A Result object's metadata */
+    
     public ResultMetaData metaData;
 
-    /** Additional meta data for parameters used in PREPARE_ACK results */
+    
     public ResultMetaData parameterMetaData;
 
-    /** Additional meta data for required generated columns */
+    
     public ResultMetaData generatedMetaData;
 
-    //
+    
     public int rsProperties;
 
-    //
+    
     public int queryTimeout;
 
-    //
+    
     int generateKeys;
 
-    // simple value for PSM, or parameter array
+    
     public Object valueData;
 
-    //
+    
     public Statement statement;
 
     Result(int mode) {
@@ -418,13 +375,13 @@ public class Result {
             case ResultConstants.ENDTRAN : {
                 int type = in.readInt();
 
-                result.setActionType(type);                     // endtran type
+                result.setActionType(type);                     
 
                 switch (type) {
 
                     case ResultConstants.TX_SAVEPOINT_NAME_RELEASE :
                     case ResultConstants.TX_SAVEPOINT_NAME_ROLLBACK :
-                        result.mainString = in.readString();    // savepoint name
+                        result.mainString = in.readString();    
                         break;
 
                     case ResultConstants.TX_COMMIT :
@@ -440,19 +397,19 @@ public class Result {
                 break;
             }
             case ResultConstants.SETCONNECTATTR : {
-                int type = in.readInt();                        // attr type
+                int type = in.readInt();                        
 
                 result.setConnectionAttrType(type);
 
                 switch (type) {
 
                     case ResultConstants.SQL_ATTR_SAVEPOINT_NAME :
-                        result.mainString = in.readString();    // savepoint name
+                        result.mainString = in.readString();    
                         break;
 
-                    //  case ResultConstants.SQL_ATTR_AUTO_IPD :
-                    //      - always true
-                    //  default: throw - case never happens
+                    
+                    
+                    
                     default :
                         throw Error.runtimeError(ErrorCode.U_S0500, "Result");
                 }
@@ -490,7 +447,7 @@ public class Result {
 
                 if (statement == null) {
 
-                    // invalid statement
+                    
                     result.mode      = ResultConstants.EXECUTE_INVALID;
                     result.valueData = ValuePool.emptyObjectArray;
 
@@ -571,9 +528,7 @@ public class Result {
         return result;
     }
 
-    /**
-     * For interval PSM return values
-     */
+    
     public static Result newPSMResult(int type, String label, Object value) {
 
         Result result = newResult(ResultConstants.VALUE);
@@ -585,9 +540,7 @@ public class Result {
         return result;
     }
 
-    /**
-     * For interval PSM return values
-     */
+    
     public static Result newPSMResult(Object value) {
 
         Result result = newResult(ResultConstants.VALUE);
@@ -597,19 +550,12 @@ public class Result {
         return result;
     }
 
-    /**
-     * For SQLPREPARE
-     * For parparation of SQL parepared statements.
-     */
+    
     public static Result newPrepareStatementRequest() {
         return newResult(ResultConstants.PREPARE);
     }
 
-    /**
-     * For SQLEXECUTE
-     * For execution of SQL prepared statements.
-     * The parameters are set afterwards as the Result is reused
-     */
+    
     public static Result newPreparedExecuteRequest(Type[] types,
             long statementId) {
 
@@ -622,10 +568,7 @@ public class Result {
         return result;
     }
 
-    /**
-     * For CALL_RESPONSE
-     * For execution of SQL callable statements.
-     */
+    
     public static Result newCallResponse(Type[] types, long statementId,
                                          Object[] values) {
 
@@ -638,10 +581,7 @@ public class Result {
         return result;
     }
 
-    /**
-     * For UPDATE_RESULT
-     * The parameters are set afterwards as the Result is reused
-     */
+    
     public static Result newUpdateResultRequest(Type[] types, long id) {
 
         Result result = newResult(ResultConstants.UPDATE_RESULT);
@@ -653,18 +593,12 @@ public class Result {
         return result;
     }
 
-    /**
-     * For UPDATE_RESULT results
-     * The parameters are set by this method as the Result is reused
-     */
+    
     public void setPreparedResultUpdateProperties(Object[] parameterValues) {
         valueData = parameterValues;
     }
 
-    /**
-     * For SQLEXECUTE results
-     * The parameters are set by this method as the Result is reused
-     */
+    
     public void setPreparedExecuteProperties(Object[] parameterValues,
             int maxRows, int fetchSize, int resultProps) {
 
@@ -675,9 +609,7 @@ public class Result {
         this.rsProperties = resultProps;
     }
 
-    /**
-     * For BATCHEXECUTE
-     */
+    
     public void setBatchedPreparedExecuteRequest() {
 
         mode = ResultConstants.BATCHEXECUTE;
@@ -696,9 +628,7 @@ public class Result {
         ((RowSetNavigatorClient) navigator).add(parameterValues);
     }
 
-    /**
-     * For BATCHEXECDIRECT
-     */
+    
     public static Result newBatchedExecuteRequest() {
 
         Type[] types  = new Type[]{ Type.SQL_VARCHAR };
@@ -709,9 +639,7 @@ public class Result {
         return result;
     }
 
-    /**
-     * For BATCHEXERESPONSE for a BATCHEXECUTE or BATCHEXECDIRECT
-     */
+    
     public static Result newBatchedExecuteResponse(int[] updateCounts,
             Result generatedResult, Result e) {
 
@@ -860,17 +788,12 @@ public class Result {
         return r;
     }
 
-    /**
-     * For direct execution of SQL statements. The statement and other
-     *  parameters are set afterwards as the Result is reused
-     */
+    
     public static Result newExecuteDirectRequest() {
         return newResult(ResultConstants.EXECDIRECT);
     }
 
-    /**
-     * For both EXECDIRECT and PREPARE
-     */
+    
     public void setPrepareOrExecuteProperties(String sql, int maxRows,
             int fetchSize, int statementReturnType, int timeout,
             int resultSetProperties, int keyMode, int[] generatedIndexes,
@@ -931,16 +854,12 @@ public class Result {
         return result;
     }
 
-    /**
-     * initially, only used for updatability
-     */
+    
     public int getExecuteProperties() {
         return rsProperties;
     }
 
-    /**
-     * For DATA
-     */
+    
     public void setDataResultProperties(int maxRows, int fetchSize,
                                         int resultSetScrollability,
                                         int resultSetConcurrency,
@@ -1001,9 +920,7 @@ public class Result {
         return result;
     }
 
-    /**
-     * Result structure used for set/get session attributes
-     */
+    
     public static Result newSessionAttributesResult() {
 
         Result result = newResult(ResultConstants.DATA);
@@ -1031,7 +948,7 @@ public class Result {
         return newErrorResult(t, null);
     }
 
-    /** @todo 1.9.0 fredt - move the messages to Error.java */
+    
     public static Result newErrorResult(Throwable t, String statement) {
 
         Result result = newResult(ResultConstants.ERROR);
@@ -1048,9 +965,9 @@ public class Result {
             result.errorCode = result.exception.getErrorCode();
         } else if (t instanceof OutOfMemoryError) {
 
-            // gc() at this point may clear the memory allocated so far
+            
 
-            /** @todo 1.9.0 - review if it's better to gc higher up the stack */
+            
             System.gc();
 
             result.exception  = Error.error(ErrorCode.OUT_OF_MEMORY, t);
@@ -1160,13 +1077,13 @@ public class Result {
             case ResultConstants.ENDTRAN : {
                 int type = getActionType();
 
-                rowOut.writeInt(type);                     // endtran type
+                rowOut.writeInt(type);                     
 
                 switch (type) {
 
                     case ResultConstants.TX_SAVEPOINT_NAME_RELEASE :
                     case ResultConstants.TX_SAVEPOINT_NAME_ROLLBACK :
-                        rowOut.writeString(mainString);    // savepoint name
+                        rowOut.writeString(mainString);    
                         break;
 
                     case ResultConstants.TX_COMMIT :
@@ -1237,16 +1154,16 @@ public class Result {
             case ResultConstants.SETCONNECTATTR : {
                 int type = getConnectionAttrType();
 
-                rowOut.writeInt(type);                     // attr type / updateCount
+                rowOut.writeInt(type);                     
 
                 switch (type) {
 
                     case ResultConstants.SQL_ATTR_SAVEPOINT_NAME :
-                        rowOut.writeString(mainString);    // savepoint name
+                        rowOut.writeString(mainString);    
                         break;
 
-                    // case ResultConstants.SQL_ATTR_AUTO_IPD // always true
-                    // default: // throw, but case never happens
+                    
+                    
                     default :
                         throw Error.runtimeError(ErrorCode.U_S0500, "Result");
                 }
@@ -1579,7 +1496,7 @@ public class Result {
                       null);
     }
 
-//----------- Navigation
+
     public RowSetNavigator navigator;
 
     public RowSetNavigator getNavigator() {

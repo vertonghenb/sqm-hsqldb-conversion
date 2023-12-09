@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -64,13 +36,7 @@ public class TestDbBackup extends junit.framework.TestCase {
         }
     }
 
-    /**
-     * Individual test methods may or may not need a Connection.
-     * If they do, they run setupConn() then use 'conn', and it will be
-     * automatically closed by the tearDown() method.
-     *
-     * @see #tearDown()
-     */
+    
     protected void setupConn(String id) throws SQLException {
         conn = getConnection(id);
         alreadyShut = false;
@@ -93,19 +59,11 @@ public class TestDbBackup extends junit.framework.TestCase {
         conn = null;
     }
 
-    /**
-     * Use setupConn() to set up this Connection for just this individual test.
-     *
-     * @see #setupConn(String)
-     */
+    
     protected Connection conn = null;
     protected boolean alreadyShut = false;
 
-    /**
-     * Remove the specified directory and all of it's descendants.
-     *
-     * @throws IOException if unable to completely remove the specified dir
-     */
+    
     protected void rmR(File dir) throws IOException {
 
         if (!dir.exists()) {
@@ -130,18 +88,12 @@ public class TestDbBackup extends junit.framework.TestCase {
         }
     }
 
-    /**
-     * Accommodate JUnit's test-runner conventions.
-     */
+    
     public TestDbBackup(String s) throws IOException, SQLException {
         super(s);
     }
 
-    /**
-     * JUnit convention for cleanup.
-     *
-     * Called after each test*() method.
-     */
+    
     protected void tearDown() throws IOException, SQLException {
 
         if (baseDir.exists()) {
@@ -154,11 +106,7 @@ public class TestDbBackup extends junit.framework.TestCase {
 
     static boolean verbose = Boolean.getBoolean("VERBOSE");
 
-    /**
-     * Specifically, this method creates and populates "db1", then closes it.
-     *
-     * Invoked before each test*() invocation by JUnit.
-     */
+    
     protected void setUp() throws IOException, SQLException {
         if (verbose) {
             System.err.println("Set-upping");
@@ -185,10 +133,7 @@ public class TestDbBackup extends junit.framework.TestCase {
         }
     }
 
-    /**
-     * Make sure to close after using the returned connection
-     * (like in a finally block).
-     */
+    
     protected Connection getConnection(String id) throws SQLException {
 
         Connection c = DriverManager.getConnection("jdbc:hsqldb:file:"
@@ -205,10 +150,7 @@ public class TestDbBackup extends junit.framework.TestCase {
         return c;
     }
 
-    /**
-     * This method allows to easily run this unit test independent of the other
-     * unit tests, and without dealing with Ant or unrelated test suites.
-     */
+    
     public static void main(String[] sa) {
         if (sa.length > 0 && !sa[sa.length - 1].equals("-g")) {
             TestDbBackup.baseDir = new File(sa[0]);
@@ -255,9 +197,7 @@ public class TestDbBackup extends junit.framework.TestCase {
         mainBackupAndRestore("compressed.tar.gz");
     }
 
-    /**
-     * Test all forms of online backups with explicit filenames.
-     */
+    
     public void testOnlineBackup()
     throws SQLException, IOException, TarMalformatException {
         onlineBackupAndRestore("online.tar", true, false, "db11");
@@ -272,9 +212,9 @@ public class TestDbBackup extends junit.framework.TestCase {
         try {
             setupConn("db1");
             conn.createStatement().executeUpdate("DELETE FROM t");
-            // For this case, we wipe the data that we so carefully set up,
-            // so that we can call this method repeatedly without worrying
-            // about left-over data from a previous run.
+            
+            
+            
             conn.commit();
             conn.createStatement().executeUpdate("INSERT INTO t VALUES(1)");
             conn.createStatement().executeUpdate("INSERT INTO t VALUES(2)");
@@ -319,7 +259,7 @@ public class TestDbBackup extends junit.framework.TestCase {
                 conn.createStatement().executeQuery("SELECT count(*) c FROM t;");
 
             rs.next();
-            // 3 committed, 5 uncommited before saving:
+            
             assertEquals("Wrong table 't' contents", 5, rs.getInt("c"));
         } finally {
             shutdownAndCloseConn();
@@ -379,9 +319,7 @@ public class TestDbBackup extends junit.framework.TestCase {
         fail("Backup from main() did not throw even though DB is open");
     }
 
-    /**
-     * Test that bad explicit filenames are rejected for onilne backups.
-     */
+    
     public void testTarFileNames()
     throws SQLException, IOException, TarMalformatException {
 
@@ -391,7 +329,7 @@ public class TestDbBackup extends junit.framework.TestCase {
             conn.createStatement().executeUpdate("INSERT INTO t VALUES(2)");
             conn.commit();
 
-            // #1:  COMPRESSED -> no-extension
+            
             caught = false;
             try {
                 conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
@@ -404,7 +342,7 @@ public class TestDbBackup extends junit.framework.TestCase {
                 fail("BACKUP did not throw even though requested compression "
                         + "to file '/x/bad'");
             }
-            // #2:  NOT COMPRESSED -> no-extension
+            
             caught = false;
             try {
                 conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
@@ -417,7 +355,7 @@ public class TestDbBackup extends junit.framework.TestCase {
                 fail("BACKUP did not throw even though requested "
                         + "no-compression to file '/x/bad'");
             }
-            // #3:  COMPRESSED -> *.txt
+            
             caught = false;
             try {
                 conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
@@ -430,7 +368,7 @@ public class TestDbBackup extends junit.framework.TestCase {
                 fail("BACKUP did not throw even though requested compression "
                         + "to file '/x/bad.txt'");
             }
-            // #4:  NOT COMPRESSED -> *.txt
+            
             caught = false;
             try {
                 conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
@@ -443,7 +381,7 @@ public class TestDbBackup extends junit.framework.TestCase {
                 fail("BACKUP did not throw even though requested "
                         + "no-compression to file '/x/bad.txt'");
             }
-            // #5:  DEFAULT -> *.tar
+            
             caught = false;
             try {
                 conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
@@ -456,7 +394,7 @@ public class TestDbBackup extends junit.framework.TestCase {
                 fail("BACKUP did not throw even though requested default "
                         + "to file '/x/bad.tar'");
             }
-            // #6:  COMPRESSION -> *.tar
+            
             caught = false;
             try {
                 conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
@@ -469,7 +407,7 @@ public class TestDbBackup extends junit.framework.TestCase {
                 fail("BACKUP did not throw even though requested compression "
                         + "to file '/x/bad.tar'");
             }
-            // #7:  NOT COMPRESSED -> *.tar.gz
+            
             caught = false;
             try {
                 conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
@@ -482,7 +420,7 @@ public class TestDbBackup extends junit.framework.TestCase {
                 fail("BACKUP did not throw even though requested "
                         + "non-compression to file '/x/bad.tar.gz'");
             }
-            // #8:  NOT COMPRESSED -> *.tgz
+            
             caught = false;
             try {
                 conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
@@ -496,8 +434,8 @@ public class TestDbBackup extends junit.framework.TestCase {
                         + "non-compression to file '/x/bad.tgz'");
             }
 
-            // Finally run a test to ensure that the attempts above didn't
-            // fail for some unexpected reason.
+            
+            
             conn.createStatement().executeUpdate("BACKUP DATABASE TO '"
                     + baseDir.getAbsolutePath()
                     + "/positivetest.tar' BLOCKING NOT COMPRESSED");
@@ -507,14 +445,7 @@ public class TestDbBackup extends junit.framework.TestCase {
 
     }
 
-    /**
-     * Test that correct DB names are generated when user supplies just a
-     * directory.
-     *
-     * N.b.  This test may not work right if tests are run at midnight.
-     * This limitation will be removed once we can update the FilenameFilters
-     * with Java 4's java.util.regex.
-     */
+    
     public void testAutoNaming()
     throws SQLException, IOException, TarMalformatException {
 
@@ -595,11 +526,11 @@ public class TestDbBackup extends junit.framework.TestCase {
         private String suffixFormat = "-yyyyMMddTHHmmss.tar";
         public boolean accept(File dir, String name) {
             if (name.length() < suffixFormat.length() + 1) {
-                // Require variable name length >= 1 char
+                
                 return false;
             }
             int suffixPos = name.length() - suffixFormat.length();
-            // Would like to use Java 1.4's java.util.regex here.
+            
             return name.endsWith(".tar")
                     && name.substring(suffixPos,
                     suffixPos + autoMiddlingString.length())
@@ -611,11 +542,11 @@ public class TestDbBackup extends junit.framework.TestCase {
         private String suffixFormat = "-yyyyMMddTHHmmss.tar.gz";
         public boolean accept(File dir, String name) {
             if (name.length() < suffixFormat.length() + 1) {
-                // Require variable name length >= 1 char
+                
                 return false;
             }
             int suffixPos = name.length() - suffixFormat.length();
-            // Would like to use Java 1.4's java.util.regex here.
+            
             return name.endsWith(".tar.gz")
                     && name.substring(suffixPos,
                     suffixPos + autoMiddlingString.length())

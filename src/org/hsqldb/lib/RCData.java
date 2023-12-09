@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.lib;
@@ -42,23 +14,9 @@ import java.sql.SQLException;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
-/* $Id: RCData.java 4254 2011-05-15 02:24:14Z unsaved $ */
 
-/**
- * Manages all the details we need to connect up to JDBC database(s),
- * in a declarative way.
- * <P>
- * The file <CODE>src/org/hsqldb/sample/SqlFileEmbedder.java</CODE>
- * in the HSQLDB distribution provides an example of how to use RCData for your
- * own programs.
- * <P/>
- *
- * @see <A href="../../../../util-guide/sqltool-chapt.html#sqltool_auth-sect"
- *      target="guide">
- *     The RC File section of the HyperSQL Utilities Guide</A>
- * @see org.hsqldb.sample.SqlFileEmbedder
- * @author Blaine Simpson (blaine dot simpson at admc dot com)
- */
+
+
 public class RCData {
 
     public static final String DEFAULT_JDBC_DRIVER   = "org.hsqldb.jdbc.JDBCDriver";
@@ -72,26 +30,9 @@ public class RCData {
         return defaultJdbcDriverName;
     }
 
-    /**
-     * DISABLED DUE TO SECURITY CONCERNS.
-     * Just for testing and debugging.
-     *
-     * N.b. this echoes passwords!
-    public void report() {
-        System.err.println("urlid: " + id + ", url: " + url + ", username: "
-                           + username + ", password: " + password);
-    }
-     */
+    
 
-    /**
-     * Creates a RCDataObject by looking up the given key in the
-     * given authentication file.
-     *
-     * @param dbKey Key to look up in the file.
-     *              If null, then will echo all urlids in the file to stdout.
-     *              (A rather ill-conceived design).
-     * @param file File containing the authentication information.
-     */
+    
     public RCData(File file, String dbKey) throws Exception {
 
         if (file == null) {
@@ -103,7 +44,7 @@ public class RCData {
                                   + "'");
         }
 
-        // System.err.println("Using RC file '" + file + "'");
+        
         StringTokenizer tokenizer = null;
         boolean         thisone   = false;
         String          s;
@@ -137,7 +78,7 @@ public class RCData {
                 try {
                     br.close();
                 } catch (IOException e) {
-                    // Can only report on so many errors at one time
+                    
                 }
 
                 throw new Exception("Corrupt line " + linenum + " in '" + file
@@ -161,7 +102,7 @@ public class RCData {
                         try {
                             br.close();
                         } catch (IOException e) {
-                            // Can only report on so many errors at one time
+                            
                         }
 
                         throw new Exception("Key '" + dbKey + " redefined at"
@@ -196,7 +137,7 @@ public class RCData {
                     try {
                         br.close();
                     } catch (IOException e) {
-                        // Can only report on so many errors at one time
+                        
                     }
 
                     throw new Exception("Bad line " + linenum + " in '" + file
@@ -208,9 +149,9 @@ public class RCData {
             try  {
                 br.close();
             } catch (IOException ioe) {
-                // Can only report on so many errors at one time
+                
             }
-            br = null;  // Encourage GC
+            br = null;  
         }
 
 
@@ -229,20 +170,14 @@ public class RCData {
         }
     }
 
-    /**
-     * Convenience constructor for backward compatibility.
-     *
-     * @see #RCData(String,String,String,String,String,String,String,String)
-     */
+    
     public RCData(String id, String url, String username, String password,
                   String driver, String charset,
                   String truststore) throws Exception {
         this(id, url, username, password, driver, charset, truststore, null);
     }
 
-    /**
-     * Wrapper for unset Transaction Isolation.
-     */
+    
     public RCData(String id, String url, String username, String password,
                   String driver, String charset, String truststore,
                   String libpath) throws Exception {
@@ -250,25 +185,7 @@ public class RCData {
                 libpath, null);
     }
 
-    /**
-     * Creates a new <code>RCData</code> object.
-     *
-     * <P>
-     * The parameters driver, charset, truststore, and libpath are optional.
-     * Setting these parameters to <code>NULL</code> will set them to their
-     * default values.
-     * <P/>
-     *
-     * @param id The identifier for these connection settings
-     * @param url The URL of the database to connect to
-     * @param username The username to log in as
-     * @param password The password of the username
-     * @param driver The JDBC driver to use
-     * @param charset The character set to use
-     * @param truststore The trust store to use
-     * @param libpath The JDBC library to add to CLASSPATH
-     * @throws Exception if the a non-optional parameter is set to <code>NULL</code>
-     */
+    
     public RCData(String id, String url, String username, String password,
                   String driver, String charset, String truststore,
                   String libpath, String ti) throws Exception {
@@ -293,8 +210,7 @@ public class RCData {
         }
     }
 
-    /* Purposefully not using JavaBean paradigm so that these fields can
-     * be used as a traditional, public DO */
+    
     public String id;
     public String url;
     public String username;
@@ -305,28 +221,19 @@ public class RCData {
     public String truststore;
     public String libpath;
 
-    /**
-     * Gets a JDBC Connection using the data of this RCData object.
-     *
-     * @return New JDBC Connection
-     */
+    
     public Connection getConnection()
     throws ClassNotFoundException, SQLException, MalformedURLException {
         return getConnection(null, null);
     }
 
-    /**
-     * Gets a JDBC Connection using the data of this RCData object with
-     * specified override elements
-     *
-     * @return New JDBC Connection
-     */
+    
     public Connection getConnection(String curDriverIn, String curTrustStoreIn)
                                     throws ClassNotFoundException,
                                            MalformedURLException,
                                            SQLException {
 
-        // Local vars to satisfy compiler warnings
+        
         String curDriver = null;
         String curTrustStore = null;
 
@@ -334,7 +241,7 @@ public class RCData {
 
         if (curDriverIn == null) {
 
-            // If explicit driver not specified
+            
             curDriver = ((driver == null) ? DEFAULT_JDBC_DRIVER
                                           : driver);
         } else {
@@ -384,30 +291,26 @@ public class RCData {
         }
 
         Class.forName(curDriver);
-        // This is not necessary for jdbc:odbc or if class loaded by a
-        // service resource file.  Consider checking for that.
+        
+        
 
         Connection c = (userString == null)
                      ? DriverManager.getConnection(urlString)
                      : DriverManager.getConnection(urlString, userString,
                                                    passwordString);
         if (ti != null) RCData.setTI(c, ti);
-        // Would like to verify the setting made by checking
-        // c.getTransactionIsolation().  Unfortunately, the spec allows for
-        // databases to substitute levels according to some rules, and it's
-        // impossible to know what to expect since custom levels are permitted.
-        // Debug:
-        // System.err.println("TI set to " + ti + "\nPOST: "
-        // + SqlTool.tiToString(c.getTransactionIsolation()));
+        
+        
+        
+        
+        
+        
+        
 
         return c;
     }
 
-    /**
-     * Returns a copy of the given String with System property names in the
-     * format <code>${system.property}</code> replaced by the corresponding Java
-     * System Properties.
-     */
+    
     public static String expandSysPropVars(String inString) {
 
         String outString = new String(inString);
@@ -416,7 +319,7 @@ public class RCData {
 
         while (true) {
 
-            // Recursive substitution for ${x} variables.
+            
             varOffset = outString.indexOf("${");
 
             if (varOffset < 0) {
@@ -449,9 +352,7 @@ public class RCData {
         return outString;
     }
 
-    /**
-     * Set Transaction Isolation level on the specified JDBC Connection
-     */
+    
     public static void setTI(Connection c, String tiString)
             throws SQLException {
         int i = -1;
@@ -473,15 +374,7 @@ public class RCData {
         c.setTransactionIsolation(i);
     }
 
-    /**
-     * Return a String representation for the given numerical
-     * java.sql.Connection Transaction level.
-     * <P>
-     * Database implementations are free to provide their own transaction
-     * isolation levels, so you can't depend upon this method to much.
-     * </P>
-     * Returns null, since DB implementations are free to provide
-     */
+    
     public static String tiToString(int ti) {
         switch (ti) {
             case Connection.TRANSACTION_READ_UNCOMMITTED:

@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.cmdline;
@@ -34,29 +6,12 @@ package org.hsqldb.cmdline;
 import org.hsqldb.lib.ValidatingResourceBundle;
 import org.hsqldb.lib.RefCapableRBInterface;
 
-/* $Id: SqltoolRB.java 4809 2011-11-20 21:12:35Z unsaved $ */
 
-/**
- * Resource Bundle for SqlTool and associated classes.
- *
- * Purpose of this class is to wrap a RefCapablePropertyResourceBundle to
- *  reliably detect any possible use of a missing property key as soon as
- *  this class is clinitted.
- * The reason for this is to allow us developers to detect all such errors
- *  before end-users ever use this class.
- * * IMPORTANT:  To add a new ResourceBundle element, add two new lines, one
- * like <PRE>
- *    public static final int NEWKEYID = keyCounter++;
- * </PRE> and one line <PRE>
- *      new Integer(KEY2), "key2",
- * </PRE>
- * Both should be inserted right after all of the other lines of the same type.
- * NEWKEYID is obviously a new constant which you will use in calling code
- * like SqltoolRB.NEWKEYID.
- */
+
+
 public enum SqltoolRB implements RefCapableRBInterface {
     SqlTool_syntax,
-    // SqlTool inline properties:
+    
     passwordFor_prompt,
     SqlTool_varset_badformat,
     SqlTool_abort_continue_mutuallyexclusive,
@@ -72,7 +27,7 @@ public enum SqltoolRB implements RefCapableRBInterface {
     jdbc_established,
     SqlTool_params_redundant,
 
-    // SqlFile class, file references:
+    
     SqlFile_banner,
     buffer_help,
     special_help,
@@ -88,7 +43,7 @@ public enum SqltoolRB implements RefCapableRBInterface {
     rejectreport_bottom,
     macro_help,
 
-    // SqlFile inline properties:
+    
     rawmode_prompt,
     raw_movedtobuffer,
     input_movedtobuffer,

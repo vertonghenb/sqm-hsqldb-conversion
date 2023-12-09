@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.util;
@@ -56,30 +28,22 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
-// sqlbob@users 20020325 - patch 1.7.0 - enhancements
-// sqlbob@users 20020407 - patch 1.7.0 - reengineering
-// weconsultants@users 20041109 - patch 1.8.0 - enhancements:
-//              Added CommonSwing.errorMessage() to handle error messages
-//              for errors so eliminated the mError JLable field and Status HorizontalBox.
-//              Changed dispose on cancel to exit. If "Dup", "Restore" or Transer" needed ust
-//              Press <OK> Conform toprogramming standards
-//              Added spaces to "OK" button to make same size buttons
-//              Added ":" to all labels as in databaseManager.java
-//              Added: Added code from DatabaseManager to store connection settings
 
-/**
- * Opens a connection to a database
- *
- * @author dmarshall@users
- * @version 1.7.2
- * @since 1.7.0
- */
+
+
+
+
+
+
+
+
+
+
+
 class ConnectionDialogSwing extends JDialog
 implements ActionListener, ItemListener {
 
-    /**
-     * Comment for <code>serialVersionUID</code>
-     */
+    
     private static final long serialVersionUID = 1L;
     private Connection        mConnection;
     private JTextField        mName, mDriver, mURL, mUser;
@@ -116,7 +80,7 @@ implements ActionListener, ItemListener {
         Box buttons  = Box.createHorizontalBox();
         Box whole    = Box.createVerticalBox();
 
-        // (weconsultants@users) New code
+        
         Box extra = Box.createHorizontalBox();
 
         main.add(Box.createHorizontalStrut(10));
@@ -155,19 +119,19 @@ implements ActionListener, ItemListener {
         labels.add(Box.createVerticalStrut(10));
         controls.add(Box.createVerticalGlue());
 
-        // (weconsultants@users) New code
+        
         mSettingName.setActionCommand("Select Setting");
         mSettingName.addActionListener(this);
         controls.add(mSettingName);
         controls.add(Box.createHorizontalGlue());
 
-        // (weconsultants@users) New code
+        
         mName = new JTextField();
 
         mName.addActionListener(this);
         controls.add(mName);
 
-        // (weconsultants@users) New code
+        
         clear = new JButton("Clear Names");
 
         clear.setActionCommand("Clear");
@@ -212,7 +176,7 @@ implements ActionListener, ItemListener {
         controls.add(Box.createVerticalGlue());
         controls.add(Box.createVerticalStrut(10));
 
-        // The button bar
+        
         buttons.add(Box.createHorizontalGlue());
         buttons.add(Box.createHorizontalStrut(10));
 
@@ -252,7 +216,7 @@ implements ActionListener, ItemListener {
             mPassword.setText(currentConnectionSetting.getPassword());
         }
 
-        // (ulrivo): full size on screen with less than 640 width
+        
         if (d.width >= 640) {
             setLocation((d.width - size.width) / 2,
                         (d.height - size.height) / 2);
@@ -269,10 +233,10 @@ implements ActionListener, ItemListener {
         ConnectionDialogSwing dialog = new ConnectionDialogSwing(owner,
             title);
 
-//      Added: (weconsultants@users) Default LAF of Native
+
         try {
 
-//            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
             SwingUtilities.updateComponentTreeUI(dialog);
         } catch (Exception e) {
             CommonSwing.errorMessage(e);
@@ -290,7 +254,7 @@ implements ActionListener, ItemListener {
         return l;
     }
 
-    // (weconsultants@users) New code
+    
     public Vector loadRecentConnectionSettings() {
 
         Vector passSettings = new Vector();
@@ -329,7 +293,7 @@ implements ActionListener, ItemListener {
                                      mUser.getText(),
                                      new String(mPassword.getPassword()));
 
-                // (weconsultants@users) New code
+                
                 if (mName.getText() != null
                         && mName.getText().trim().length() != 0) {
                     ConnectionSetting newSetting = new ConnectionSetting(
@@ -347,11 +311,11 @@ implements ActionListener, ItemListener {
                 CommonSwing.errorMessage(e, true);
             } catch (Exception e) {
 
-                // Added: (weconsultants@users)
+                
                 CommonSwing.errorMessage(e);
             }
 
-            // (weconsultants@users) New code
+            
         } else if (s.equals("Select Setting")) {
             String            s2 = (String) mSettingName.getSelectedItem();
             ConnectionSetting setting = (ConnectionSetting) settings.get(s2);
@@ -366,7 +330,7 @@ implements ActionListener, ItemListener {
         } else if (s.equals("ConnectCancel")) {
             dispose();
 
-            // (weconsultants@users) New code
+            
         } else if (s.equals("Clear")) {
             ConnectionDialogCommon.deleteRecentConnectionSettings();
 

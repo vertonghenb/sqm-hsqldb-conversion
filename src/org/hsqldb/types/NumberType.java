@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.types;
@@ -43,13 +15,7 @@ import org.hsqldb.error.ErrorCode;
 import org.hsqldb.lib.java.JavaSystem;
 import org.hsqldb.store.ValuePool;
 
-/**
- * Type subclass for all NUMBER types.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since 1.9.0
- */
+
 public final class NumberType extends Type {
 
     static final int        tinyintPrecision             = 3;
@@ -62,19 +28,19 @@ public final class NumberType extends Type {
     public static final int maxNumericPrecision          = Integer.MAX_VALUE;
     static final int        bigintSquareNumericPrecision = 40;
 
-    //
+    
     public static final int TINYINT_WIDTH  = 8;
     public static final int SMALLINT_WIDTH = 16;
     public static final int INTEGER_WIDTH  = 32;
     public static final int BIGINT_WIDTH   = 64;
-    public static final int DOUBLE_WIDTH   = 128;    // nominal width
-    public static final int DECIMAL_WIDTH  = 256;    // nominal width
+    public static final int DOUBLE_WIDTH   = 128;    
+    public static final int DECIMAL_WIDTH  = 256;    
 
-    //
+    
     public static final Type SQL_NUMERIC_DEFAULT_INT =
         new NumberType(Types.NUMERIC, defaultNumericPrecision, 0);
 
-    //
+    
     public static final BigDecimal MAX_LONG =
         BigDecimal.valueOf(Long.MAX_VALUE);
     public static final BigDecimal MIN_LONG =
@@ -84,11 +50,11 @@ public final class NumberType extends Type {
     public static final BigDecimal MIN_INT =
         BigDecimal.valueOf(Integer.MIN_VALUE);
 
-    //
+    
     public static final BigInteger MIN_LONG_BI = MIN_LONG.toBigInteger();
     public static final BigInteger MAX_LONG_BI = MAX_LONG.toBigInteger();
 
-    //
+    
     final int typeWidth;
 
     public NumberType(int type, long precision, int scale) {
@@ -129,10 +95,7 @@ public final class NumberType extends Type {
         }
     }
 
-    /**
-     * Returns decimal precision for NUMERIC/DECIMAL. Returns binary precision
-     * for other parts.
-     */
+    
     public int getPrecision() {
 
         switch (typeCode) {
@@ -157,9 +120,7 @@ public final class NumberType extends Type {
         }
     }
 
-    /**
-     * Returns decimal precision.
-     */
+    
     public int getDecimalPrecision() {
 
         switch (typeCode) {
@@ -196,7 +157,7 @@ public final class NumberType extends Type {
             case Types.SQL_NUMERIC :
                 if (scale == 0) {
                     if (precision == 0) {
-                        return 646456995;    // precision + "-.".length()}
+                        return 646456995;    
                     }
 
                     return (int) precision + 1;
@@ -211,19 +172,19 @@ public final class NumberType extends Type {
             case Types.SQL_FLOAT :
             case Types.SQL_REAL :
             case Types.SQL_DOUBLE :
-                return 23;                   // String.valueOf(-Double.MAX_VALUE).length();
+                return 23;                   
 
             case Types.SQL_BIGINT :
-                return 20;                   // decimal precision + "-".length();
+                return 20;                   
 
             case Types.SQL_INTEGER :
-                return 11;                   // decimal precision + "-".length();
+                return 11;                   
 
             case Types.SQL_SMALLINT :
-                return 6;                    // decimal precision + "-".length();
+                return 6;                    
 
             case Types.TINYINT :
-                return 4;                    // decimal precision + "-".length();
+                return 4;                    
 
             default :
                 throw Error.runtimeError(ErrorCode.U_S0500, "NumberType");
@@ -550,35 +511,7 @@ public final class NumberType extends Type {
                              newScale);
     }
 
-    /**
-     *  Returns a SQL type "wide" enough to represent the result of the
-     *  expression.<br>
-     *  A type is "wider" than the other if it can represent all its
-     *  numeric values.<BR>
-     *  Arithmetic operation terms are promoted to a type that can
-     *  represent the resulting values and avoid incorrect results.<p>
-     *  FLOAT/REAL/DOUBLE used in an operation results in the same type,
-     *  regardless of the type of the other operand.
-     *  When the result or the expression is converted to the
-     *  type of the target column for storage, an exception is thrown if the
-     *  resulting value cannot be stored in the column<p>
-     *  Types narrower than INTEGER (int) are promoted to
-     *  INTEGER. The order of promotion is as follows<p>
-     *
-     *  INTEGER, BIGINT, NUMERIC/DECIMAL<p>
-     *
-     *  TINYINT and SMALLINT in any combination return INTEGER<br>
-     *  TINYINT/SMALLINT/INTEGER and INTEGER return BIGINT<br>
-     *  TINYINT/SMALLINT/INTEGER and BIGINT return NUMERIC/DECIMAL<br>
-     *  BIGINT and BIGINT return NUMERIC/DECIMAL<br>
-     *  REAL/FLOAT/DOUBLE and any type return REAL/FLOAT/DOUBLE<br>
-     *  NUMERIC/DECIMAL any type other than REAL/FLOAT/DOUBLE returns NUMERIC/DECIMAL<br>
-     *  In the case of NUMERIC/DECIMAL returned, the result precision is always
-     *  large enough to express any value result, while the scale depends on the
-     *  operation:<br>
-     *  For ADD/SUBTRACT/DIVIDE, the scale is the larger of the two<br>
-     *  For MULTIPLY, the scale is the sum of the two scales<br>
-     */
+    
     public Type getCombinedType(Session session, Type other, int operation) {
 
         if (other.typeCode == Types.SQL_ALL_TYPES) {
@@ -601,11 +534,11 @@ public final class NumberType extends Type {
             case OpTypes.SUBTRACT :
             default :
 
-                // all derivatives of equality ops or comparison ops
+                
                 return getAggregateType(other);
         }
 
-        // resolution for ADD and MULTIPLY only
+        
         if (!other.isNumberType()) {
             throw Error.error(ErrorCode.X_42562);
         }
@@ -708,7 +641,7 @@ public final class NumberType extends Type {
                 }
             }
 
-            // fall through
+            
             case Types.SQL_BIGINT : {
                 if (b instanceof Long) {
                     long longa = ((Number) a).longValue();
@@ -737,12 +670,12 @@ public final class NumberType extends Type {
                 }
             }
 
-            // fall through
+            
             case Types.SQL_REAL :
             case Types.SQL_FLOAT :
             case Types.SQL_DOUBLE : {
 
-                /** @todo big-decimal etc */
+                
                 double ad = ((Number) a).doubleValue();
                 double bd = ((Number) b).doubleValue();
 
@@ -764,7 +697,7 @@ public final class NumberType extends Type {
         }
     }
 
-    /** @todo - review usage to see if range enforcement / java type conversion is necessary */
+    
     public Object convertToTypeLimits(SessionInterface session, Object a) {
 
         if (a == null) {
@@ -866,7 +799,7 @@ public final class NumberType extends Type {
                 a = ((ClobData) a).getSubString(
                     session, 0L, (int) ((ClobData) a).length(session));
 
-            // fall through
+            
             case Types.SQL_CHAR :
             case Types.SQL_VARCHAR :
             case Types.VARCHAR_IGNORECASE : {
@@ -969,9 +902,7 @@ public final class NumberType extends Type {
         return convertToType(session, a, otherType);
     }
 
-    /**
-     * Relaxes SQL parameter type enforcement for DECIMAL, allowing long values.
-     */
+    
     public Object convertToDefaultType(SessionInterface session, Object a) {
 
         if (a == null) {
@@ -1046,16 +977,9 @@ public final class NumberType extends Type {
         return convertToDefaultType(session, a);
     }
 
-    /**
-     * Type narrowing from DOUBLE/DECIMAL/NUMERIC to BIGINT / INT / SMALLINT / TINYINT
-     * following SQL rules. When conversion is from a non-integral type,
-     * digits to the right of the decimal point are lost.
-     */
+    
 
-    /**
-     * Converter from a numeric object to Integer. Input is checked to be
-     * within range represented by the given number type.
-     */
+    
     static Integer convertToInt(SessionInterface session, Object a, int type) {
 
         int value;
@@ -1115,10 +1039,7 @@ public final class NumberType extends Type {
         return Integer.valueOf(value);
     }
 
-    /**
-     * Converter from a numeric object to Long. Input is checked to be
-     * within range represented by Long.
-     */
+    
     static Long convertToLong(SessionInterface session, Object a) {
 
         if (a instanceof Integer) {
@@ -1154,10 +1075,7 @@ public final class NumberType extends Type {
         }
     }
 
-    /**
-     * Converter from a numeric object to Double. Input is checked to be
-     * within range represented by Double
-     */
+    
     private static Double convertToDouble(Object a) {
 
         double value;
@@ -1245,7 +1163,7 @@ public final class NumberType extends Type {
             case Types.SQL_DOUBLE :
                 double value = ((Double) a).doubleValue();
 
-                /** @todo - java 5 format change */
+                
                 if (value == Double.NEGATIVE_INFINITY) {
                     return "-1E0/0";
                 }
@@ -1260,7 +1178,7 @@ public final class NumberType extends Type {
 
                 String s = Double.toString(value);
 
-                // ensure the engine treats the value as a DOUBLE, not DECIMAL
+                
                 if (s.indexOf('E') < 0) {
                     s = s.concat("E0");
                 }
@@ -1460,7 +1378,7 @@ public final class NumberType extends Type {
 
                 return ValuePool.getDouble(Double.doubleToLongBits(ad + bd));
 
-//                return new Double(ad + bd);
+
             }
             case Types.SQL_NUMERIC :
             case Types.SQL_DECIMAL : {
@@ -1976,7 +1894,7 @@ public final class NumberType extends Type {
                 return value;
             }
 
-            // fall through
+            
             default :
                 return a;
         }

@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -50,24 +22,18 @@ import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 
-/**
- * Metadata for range variables, including conditions.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class RangeVariable implements Cloneable {
 
     static final RangeVariable[] emptyArray = new RangeVariable[]{};
 
-    //
+    
     public static final int TABLE_RANGE      = 1;
     public static final int TRANSITION_RANGE = 2;
     public static final int PARAMETER_RANGE  = 3;
     public static final int VARIALBE_RANGE   = 4;
 
-    //
+    
     Table                  rangeTable;
     final SimpleName       tableAlias;
     private OrderedHashSet columnAliases;
@@ -81,41 +47,41 @@ public class RangeVariable implements Cloneable {
     boolean[]              usedColumns;
     boolean[]              updatedColumns;
 
-    //
+    
     RangeVariableConditions[] joinConditions;
     RangeVariableConditions[] whereConditions;
     int                       subRangeCount;
 
-    // non-index conditions
+    
     Expression joinCondition;
 
-    //
-    boolean isLeftJoin;     // table joined with LEFT / FULL OUTER JOIN
-    boolean isRightJoin;    // table joined with RIGHT / FULL OUTER JOIN
+    
+    boolean isLeftJoin;     
+    boolean isRightJoin;    
     boolean isBoundary;
 
-    //
+    
     int level;
 
-    //
+    
     int indexDistinctCount;
 
-    //
+    
     int rangePositionInJoin;
 
-    //
+    
     int rangePosition;
 
-    //
+    
     int parsePosition;
 
-    // for variable and parameter lists
+    
     HashMappedList variables;
 
-    // variable, parameter, table
+    
     int rangeType;
 
-    //
+    
     boolean isGenerated;
 
     RangeVariable(HashMappedList variables, SimpleName rangeName,
@@ -287,9 +253,7 @@ public class RangeVariable implements Cloneable {
         return false;
     }
 
-    /**
-     * Used for sort
-     */
+    
     Index getSortIndex() {
 
         if (joinConditions.length == 1) {
@@ -299,9 +263,7 @@ public class RangeVariable implements Cloneable {
         }
     }
 
-    /**
-     * Used for sort
-     */
+    
     boolean setSortIndex(Index index, boolean reversed) {
 
         if (joinConditions.length == 1) {
@@ -365,12 +327,7 @@ public class RangeVariable implements Cloneable {
         return findColumn(e.columnName);
     }
 
-    /**
-     * Retruns index for column
-     *
-     * @param columnName name of column
-     * @return int index or -1 if not found
-     */
+    
     public int findColumn(String columnName) {
 
         if (namedJoinColumnExpressions != null
@@ -498,9 +455,7 @@ public class RangeVariable implements Cloneable {
         return name.equals(rangeTable.getSchemaName().name);
     }
 
-    /**
-     * Add all columns to a list of expressions
-     */
+    
     void addTableColumns(HsqlArrayList exprList) {
 
         if (namedJoinColumns != null) {
@@ -529,9 +484,7 @@ public class RangeVariable implements Cloneable {
         addTableColumns(exprList, exprList.size(), namedJoinColumns);
     }
 
-    /**
-     * Add all columns to a list of expressions
-     */
+    
     int addTableColumns(HsqlArrayList exprList, int position,
                         HashSet exclude) {
 
@@ -584,18 +537,13 @@ public class RangeVariable implements Cloneable {
         expression.nodes = nodes;
     }
 
-    /**
-     * Removes reference to Index to avoid possible memory leaks after alter
-     * table or drop index
-     */
+    
     void setForCheckConstraint() {
         joinConditions[0].rangeIndex = null;
         rangePosition                = 0;
     }
 
-    /**
-     * used before condition processing
-     */
+    
     Expression getJoinCondition() {
         return joinCondition;
     }
@@ -705,7 +653,7 @@ public class RangeVariable implements Cloneable {
                 HsqlList list =
                     subQuery.queryExpression.getUnresolvedExpressions();
 
-                // todo resolve against i ranges
+                
                 HsqlList unresolved = Expression.resolveColumnSet(session,
                     rangeVariables, rangeCount, list, null);
 
@@ -723,14 +671,7 @@ public class RangeVariable implements Cloneable {
         }
     }
 
-    /**
-     * Retreives a String representation of this obejct. <p>
-     *
-     * The returned String describes this object's table, alias
-     * access mode, index, join mode, Start, End and And conditions.
-     *
-     * @return a String representation of this object
-     */
+    
     public String describe(Session session, int blanks) {
 
         StringBuffer sb;
@@ -963,10 +904,10 @@ public class RangeVariable implements Cloneable {
         RangeVariableConditions[] joinConditions;
         int                       condIndex = 0;
 
-        //
+        
         OrderedIntHashSet lookup;
 
-        //
+        
         Object[] currentJoinData = null;
 
         RangeIteratorMain() {
@@ -1042,8 +983,7 @@ public class RangeVariable implements Cloneable {
             return rangeVar.rangePosition;
         }
 
-        /**
-         */
+        
         protected void initialiseIterator() {
 
             if (condIndex == 0) {
@@ -1167,11 +1107,7 @@ public class RangeVariable implements Cloneable {
                     conditions[condIndex].reversed, null);
         }
 
-        /**
-         * Advances to the next available value. <p>
-         *
-         * @return true if a next value is available upon exit
-         */
+        
         protected boolean findNext() {
 
             boolean result = false;
@@ -1509,7 +1445,7 @@ public class RangeVariable implements Cloneable {
                 case OpTypes.GREATER :
                 case OpTypes.GREATER_EQUAL : {
 
-                    // replaces existing condition
+                    
                     if (opType == OpTypes.NOT) {
                         if (indexCols[indexedColumnCount - 1] == colIndex) {
                             nonIndexCondition =
@@ -1615,12 +1551,7 @@ public class RangeVariable implements Cloneable {
             return false;
         }
 
-        /**
-         *
-         * @param exprList list of expressions
-         * @param index Index to use
-         * @param colCount number of columns searched
-         */
+        
         void addIndexCondition(Expression[] exprList, Index index,
                                int colCount) {
 

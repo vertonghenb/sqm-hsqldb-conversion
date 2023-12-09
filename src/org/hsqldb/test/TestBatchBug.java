@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -51,11 +23,11 @@ public class TestBatchBug {
     static final String TEST_TABLE_NAME       = "CSBug";
     static String       FIELD_LIST_WITHOUT_ID = "Kennung, Last_Update ";
 
-// wird in static {} erweitert:
+
     static String FIELD_LIST_WITH_ID    = "ID, ";
     static String SQL_SELECT_ALL_FIELDS = "SELECT ";
 
-// wird in static {} erweitert:
+
     static {
         for (int i = 1; i <= DECIMAL_FIELDS_PER_DATASET; i++) {
             FIELD_LIST_WITHOUT_ID += ", Field_" + i;
@@ -72,7 +44,7 @@ public class TestBatchBug {
 
         try {
 
-// Load the HSQL Database Engine JDBC driver
+
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
 
             String[] urls = {
@@ -110,21 +82,21 @@ public class TestBatchBug {
 
         String cvsFileName = TEST_TABLE_NAME + ".csv";
 
-// Create a statement object
+
         Statement stmt = con.createStatement();
 
-// Try to drop the table
+
         try {
 
             stmt.executeUpdate("DROP TABLE " + TEST_TABLE_NAME + " IF EXISTS");
-        } catch (SQLException e) {    // Ignore Exception, because the table may not yet exist
+        } catch (SQLException e) {    
             System.out.println(e.getMessage());
         }
 
         StringBuffer sql = new StringBuffer();
 
         sql.append("CREATE ");
-        sql.append(tableAttr);    // z.B. "CACHED"
+        sql.append(tableAttr);    
         sql.append(" TABLE ");
         sql.append(TEST_TABLE_NAME);
         sql.append(" (");
@@ -132,7 +104,7 @@ public class TestBatchBug {
         sql.append(", ");
         sql.append("Kennung varchar(20) NOT NULL");
 
-// etwas andere Schreibweise von CURRENT TIMESTAMP
+
         sql.append(", last_update TIMESTAMP ");
         sql.append("DEFAULT CURRENT_TIMESTAMP NOT NULL");
 
@@ -145,17 +117,17 @@ public class TestBatchBug {
         System.out.println(sql.toString());
         stmt.executeUpdate(sql.toString());
 
-// CLEAR TABLE
+
         sql = new StringBuffer();
 
         sql.append("DELETE FROM ");
         sql.append(TEST_TABLE_NAME);
         System.out.println(sql.toString());
         stmt.executeUpdate(sql.toString());
-        stmt.close();    // is no longer used
+        stmt.close();    
     }
 
-// tries to enter 2 records
+
     static void populateTable(Connection con) throws SQLException {
 
         long      startTime = System.currentTimeMillis();
@@ -168,18 +140,18 @@ public class TestBatchBug {
 
         prep.clearParameters();
         prep.setString(1, "xxx");
-        prep.setTimestamp(2, now);    // last_update
+        prep.setTimestamp(2, now);    
 
         for (int ii = 0; ii < DECIMAL_FIELDS_PER_DATASET; ii++) {
-            prep.setDouble(ii + 3, 0.123456789);    // Wert
+            prep.setDouble(ii + 3, 0.123456789);    
         }
 
         prep.addBatch();
         prep.setString(1, "yyy");
-        prep.setTimestamp(2, now);    // last_update
+        prep.setTimestamp(2, now);    
 
         for (int ii = 0; ii < DECIMAL_FIELDS_PER_DATASET; ii++) {
-            prep.setDouble(ii + 3, 0.123456789);    // Wert
+            prep.setDouble(ii + 3, 0.123456789);    
         }
 
         prep.addBatch();

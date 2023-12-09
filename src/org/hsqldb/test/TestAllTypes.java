@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -42,23 +14,19 @@ import java.util.Random;
 
 import org.hsqldb.lib.StopWatch;
 
-/**
- * Test large tables containing columns of different types.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- */
+
 public class TestAllTypes {
 
     protected String url = "jdbc:hsqldb:/hsql/testalltypes/test;hsqldb.sqllog=3";
 
-//    protected String url = "jdbc:hsqldb:hsql://localhost/yourtest";
+
     boolean    network = false;
     String     user;
     String     password;
     Statement  sStatement;
     Connection cConnection;
 
-    // prameters
+    
     boolean reportProgress  = true;
     boolean cachedTable     = true;
     int     cacheScale      = 12;
@@ -70,11 +38,11 @@ public class TestAllTypes {
     boolean refIntegrity    = true;
     boolean createTempTable = false;
 
-    // introduces fragmentation to the .data file
+    
     boolean deleteWhileInsert         = false;
     int     deleteWhileInsertInterval = 10000;
 
-    //
+    
     int bigrows = 1024 * 1024;
 
     protected void setUp() {
@@ -111,11 +79,7 @@ public class TestAllTypes {
         }
     }
 
-    /**
-     * Fill up the cache
-     *
-     *
-     */
+    
     public void testFillUp() {
 
         StopWatch sw        = new StopWatch();
@@ -135,13 +99,13 @@ public class TestAllTypes {
                                                    + " datefield DATE, "
                                                    + " filler VARCHAR(128)); ";
 
-        // adding extra index will slow down inserts a bit
+        
         String ddl4 = "CREATE INDEX idx1 ON TEST (lastname);";
 
-        // adding this index will slow down  inserts a lot
+        
         String ddl5 = "CREATE INDEX idx2 ON TEST (zip);";
 
-        // referential integrity checks will slow down inserts a bit
+        
         String ddl6 =
             "ALTER TABLE test add constraint c1 FOREIGN KEY (zip) REFERENCES zip(zip);";
         String filler = "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -203,13 +167,13 @@ public class TestAllTypes {
                 ps.setDouble(5, randomgen.nextDouble());
                 ps.setBigDecimal(6, null);
 
-//                ps.setDouble(6, randomgen.nextDouble());
+
                 ps.setDate(7, new java.sql.Date(nextIntRandom(randomgen, 1000)
                                                 * 24L * 3600 * 1000));
 
                 String varfiller = filler.substring(0, randomlength);
 
-//                ps.setString(8, nextrandom + varfiller);
+
                 ps.execute();
 
                 if (reportProgress && (i + 1) % 10000 == 0) {
@@ -217,7 +181,7 @@ public class TestAllTypes {
                                        + sw.elapsedTime());
                 }
 
-                // delete and add 4000 rows to introduce fragmentation
+                
                 if (deleteWhileInsert && i != 0
                         && i % deleteWhileInsertInterval == 0) {
                     sStatement.execute("CALL IDENTITY();");
@@ -239,9 +203,9 @@ public class TestAllTypes {
                 }
             }
 
-//            sStatement.execute("INSERT INTO test SELECT * FROM temptest;");
-//            sStatement.execute("DROP TABLE temptest;");
-//            sStatement.execute(ddl7);
+
+
+
             System.out.println("Total insert: " + i);
             System.out.println("Insert time: " + sw.elapsedTime() + " rps: "
                                + (i * 1000 / sw.elapsedTime()));
@@ -274,10 +238,10 @@ public class TestAllTypes {
             sStatement = cConnection.createStatement();
 
             sStatement.execute("SET FILES WRITE DELAY " + writeDelay);
-//            sStatement.execute("SET DATABASE EVENT LOG SQL LEVEL 3");
 
-            // the tests use different indexes
-            // use primary index
+
+            
+            
             sStatement.execute("SELECT count(*) from TEST");
 
             rs = sStatement.getResultSet();
@@ -286,7 +250,7 @@ public class TestAllTypes {
             System.out.println("Row Count: " + rs.getInt(1));
             System.out.println("Time to count: " + sw.elapsedTime());
 
-            // use index on zip
+            
             sw.zero();
             sStatement.execute("SELECT count(*) from TEST where zip > -1");
 
@@ -436,7 +400,7 @@ public class TestAllTypes {
         test.setUp();
         test.testFillUp();
 
-//        test.tearDown();
+
         test.checkResults();
         System.out.println("Total Test Time: " + sw.elapsedTime());
     }

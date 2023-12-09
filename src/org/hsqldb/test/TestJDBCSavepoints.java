@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -45,33 +17,26 @@ import junit.framework.TestResult;
 
 import org.hsqldb.server.Server;
 
-/**
- * Tests JDBC java.sql.Savepoint support in context of new engine SQL-savepoint
- * support and new HSQL protocol extensions for savepoint support. <p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 1.7.2
- * @since 1.7.2
- */
+
 public class TestJDBCSavepoints extends TestCase {
 
-//  You change the url and serverProps to reflect your preferred settings
-    // String serverProps = "database.0=mem:test;dbname.0=;silent=false;trace=true" // debugging
+
+    
     String serverProps =
         "database.0=mem:test;dbname.0=;silent=true;trace=false";
     String url = "jdbc:hsqldb:hsql://localhost";
 
-    // String     url = "jdbc:hsqldb:http://localhost";
+    
     String     user;
     String     password;
     Statement  stmt;
     Connection conn1;
     Connection conn2;
 
-    // Server server;
-    // this exercises everything:
-    // the engine and JDBC savepoint support,
-    // the new HSQL protocol and tunneling HSQL protocol over HTTP
+    
+    
+    
+    
     Server server;
 
     public TestJDBCSavepoints(String name) {
@@ -87,7 +52,7 @@ public class TestJDBCSavepoints extends TestCase {
         conn2    = null;
         server   = new Server();
 
-//        server = new WebServer();
+
         server.putPropertiesFromString(serverProps);
         server.start();
 
@@ -99,7 +64,7 @@ public class TestJDBCSavepoints extends TestCase {
             stmt  = conn1.createStatement();
         } catch (Exception e) {
 
-            //e.printStackTrace();
+            
             System.out.println(this + ".setUp() error: " + e.getMessage());
         }
     }
@@ -110,7 +75,7 @@ public class TestJDBCSavepoints extends TestCase {
             conn1.close();
         } catch (Exception e) {
 
-            //e.printStackTrace();
+            
             System.out.println(this + ".tearDown() error: " + e.getMessage());
         }
 
@@ -118,7 +83,7 @@ public class TestJDBCSavepoints extends TestCase {
             conn2.close();
         } catch (Exception e) {
 
-            //e.printStackTrace();
+            
             System.out.println(this + ".tearDown() error: " + e.getMessage());
         }
 
@@ -150,22 +115,15 @@ public class TestJDBCSavepoints extends TestCase {
         stmt.executeUpdate(sql);
         conn1.setAutoCommit(true);
 
-        //-- Test 1 : The execution of an SQL savepoint statement shall
-        //            raise an exception in the absence of an active
-        //            enclosing transaction
-        // fredt@users - there is always an active transaction when autocommit
-        // is true. The transaction is committed automatically if the next
-        // Statement.execute() or similar call is performed successfully.
-/*
-        msg = "savepoint set successfully in the abscence of an active transaction";
-        try {
-            conn.setSavepoint("savepoint1");
-            assertTrue(msg,false);
-        } catch (Exception e) {}
+        
+        
+        
+        
+        
+        
 
-*/
 
-        //-- setup for following tests
+        
         conn1.setAutoCommit(false);
 
         sql = "insert into t values(?,?,?,?)";
@@ -225,9 +183,9 @@ public class TestJDBCSavepoints extends TestCase {
 
         rs.close();
 
-        //-- Test 2 : count of rows matches # rows inserted (assertion req'd by
-        //            following tests, but not directly related to the feature
-        //            being tested)
+        
+        
+        
         msg = "select count(*) from t value";
 
         try {
@@ -238,9 +196,9 @@ public class TestJDBCSavepoints extends TestCase {
         conn2.setSavepoint("savepoint1");
         conn2.setSavepoint("savepoint2");
 
-        //-- test 3 : A JDBC Savepoint shall be considered invalid if used to
-        //            release an SQL-savepoint in an SQL-session other than that
-        //            of the originating Connection object
+        
+        
+        
         msg = "savepoint released succesfully on non-originating connection";
 
         try {
@@ -248,9 +206,9 @@ public class TestJDBCSavepoints extends TestCase {
             assertTrue(msg, false);
         } catch (Exception e) {}
 
-        //-- test 4 : A JDBC Savepoint shall be invalid if used to roll back to
-        //            an SQL-savepoint in an SQL-session other than that of the
-        //            originating Connection object
+        
+        
+        
         try {
             conn2.rollback(sp1);
 
@@ -260,9 +218,9 @@ public class TestJDBCSavepoints extends TestCase {
             assertTrue(msg, false);
         } catch (Exception e) {}
 
-        //-- test 5 : Direct execution of a <release savepoint> statement shall
-        //            not fail to release an existing indicated savepoint,
-        //            regardless of how the indicated savepoint was created
+        
+        
+        
         msg = "direct execution of <release savepoint> statement failed to "
               + "release JDBC-created SQL-savepoint with identical savepoint name";
 
@@ -275,10 +233,10 @@ public class TestJDBCSavepoints extends TestCase {
             } catch (Exception e2) {}
         }
 
-        //-- test 6 : Direct execution of a <rollback to savepoint> statement
-        //            shall not fail to roll back to an existing indicated
-        //            savepoint due and only due to how the indicated savepoint
-        //            was created
+        
+        
+        
+        
         msg = "direct execution of <rollback to savepoint> statement failed to "
               + "roll back to existing JDBC-created SQL-savepoint with identical "
               + "savepoint name";
@@ -296,7 +254,7 @@ public class TestJDBCSavepoints extends TestCase {
 
         conn1.releaseSavepoint(sp6);
 
-        //-- test 7 : Releasing an SQL-savepoint shall destroy that savepoint
+        
         msg = "savepoint released succesfully > 1 times";
 
         try {
@@ -304,8 +262,8 @@ public class TestJDBCSavepoints extends TestCase {
             assertTrue(msg, false);
         } catch (Exception e) {}
 
-        //-- test 8 : Releasing an SQL-savepoint shall destroy all subsequent SQL-
-        //            savepoints in the same savepoint level
+        
+        
         msg = "savepoint released successfully after preceding savepoint released";
 
         try {
@@ -313,8 +271,8 @@ public class TestJDBCSavepoints extends TestCase {
             assertTrue(msg, false);
         } catch (Exception e) {}
 
-        //-- test 9 : Releasing an SQL-savepoint shall not affect preceding
-        //            savepoints
+        
+        
         msg = "preceding same-point savepoint destroyed by following savepoint release";
 
         try {
@@ -335,16 +293,16 @@ public class TestJDBCSavepoints extends TestCase {
 
         rs.close();
 
-        //-- Test 10 : count of rows matches # rows inserted less the number
-        //             of insertions rolled back
+        
+        
         msg = "select * rowcount after 50 inserts - 10 rolled back:";
 
         try {
             assertEquals(msg, 40, rowcount);
         } catch (Exception e) {}
 
-        //-- test 11 : An SQL-savepoint shall be destroyed in the
-        //            process of rolling back to that savepoint
+        
+        
         msg = "savepoint rolled back succesfully > 1 times";
 
         try {
@@ -362,16 +320,16 @@ public class TestJDBCSavepoints extends TestCase {
 
         rs.close();
 
-        //-- Test 12 : count of rows matches # rows inserted less the number
-        //             of insertions rolled back
+        
+        
         msg = "select count(*) after 50 inserts - 20 rolled back:";
 
         try {
             assertEquals(msg, 30, rowcount);
         } catch (Exception e) {}
 
-        //-- test 13 : An SQL-savepoint shall be destroyed in the
-        //            process of rolling back to that savepoint
+        
+        
         msg = "savepoint released succesfully after use in rollback";
 
         try {
@@ -381,9 +339,9 @@ public class TestJDBCSavepoints extends TestCase {
 
         conn1.rollback(sp1);
 
-        //-- test 14 : All subsequent savepoints (in a savepoint level)
-        //            shall be destroyed by the process of rolling back to
-        //            a preceeding savepoint (in the same savepoint level)
+        
+        
+        
         msg = "savepoint rolled back without raising an exception after "
               + "rollback to a preceeding savepoint";
 
@@ -394,9 +352,9 @@ public class TestJDBCSavepoints extends TestCase {
 
         conn1.rollback();
 
-        //-- test 15 : All subsequent savepoints (in a savepoint level)
-        //            shall be destroyed by the process of
-        //            rolling back the active transaction
+        
+        
+        
         msg = "savepoint released succesfully when it should have been "
               + "destroyed by a full rollback";
 
@@ -413,75 +371,43 @@ public class TestJDBCSavepoints extends TestCase {
         conn1.setAutoCommit(false);
         conn1.createStatement().executeUpdate("savepoint \"savepoint1\"");
 
-        //-- test 16 : A JDBC Savepoint shall be considered invalid if used to
-        //             release an SQL-savepoint other than precisely the
-        //             one created in correspondence to the creation of that
-        //             JDBC Savepoint object
-        // fredt@users - we allow this if the name is valid
-/*
-        msg = "JDBC Savepoint used to successfully release an identically named "
-              + "savepoint in a transaction distinct from the originating "
-              + "transaction";
-        try {
-            conn1.releaseSavepoint(sp1);
-            assertTrue(msg, false);
-        } catch (Exception e) {}
-*/
+        
+        
+        
+        
+        
+
         conn1.setAutoCommit(false);
 
         sp1 = conn1.setSavepoint("savepoint1");
 
         conn1.createStatement().executeUpdate("savepoint \"savepoint1\"");
 
-        //-- test 17 : A JDBC Savepoint shall be considered invalid if used to
-        //             release an SQL-savepoint other than precisely the
-        //             one created in correspondence to the creation of that
-        //             JDBC Savepoint object
-        // fredt@users - we allow this if the name is valid
-/*
-        msg = "JDBC Savepoint used to successfully release an identically named "
-              + "savepoint in a transaction other than the originating "
-              + "transaction";
-        try {
-            conn1.releaseSavepoint(sp1);
-            assertTrue(msg, false);
-        } catch (Exception e) {}
-*/
+        
+        
+        
+        
+        
 
-        //-- test 18 : A JDBC Savepoint shall be considered invalid if used to
-        //             roll back to an SQL-savepoint other than precisely the
-        //             one created in correspondence to the creation of that
-        //             JDBC Savepoint object
-        // fredt@users - we allow this if the name is valid
-/*
-        msg = "JDBC Savepoint used to successfully to roll back to an "
-              + "identically named savepoint in a transaction distinct "
-              + "from the originating transaction";
-        try {
-            conn1.rollback(sp1);
-            assertTrue(msg, false);
-        } catch (Exception e) {}
-*/
+
+        
+        
+        
+        
+        
+
         conn1.setAutoCommit(false);
 
         sp1 = conn1.setSavepoint("savepoint1");
 
         conn1.createStatement().executeUpdate("savepoint \"savepoint1\"");
 
-        //-- test 19 : A JDBC Savepoint shall be considered invalid if used to
-        //             roll back to an SQL-savepoint other than precisely the
-        //             one created in correspondence to the creation of that
-        //             JDBC Savepoint object
-        // fredt@users - we allow this if the name is valid
-/*
-        msg = "JDBC Savepoint used to successfully release an identically named "
-              + "savepoint in a transaction other than the originating "
-              + "transaction";
-        try {
-            conn1.releaseSavepoint(sp1);
-            assertTrue(msg, false);
-        } catch (Exception e) {}
-*/
+        
+        
+        
+        
+        
+
     }
 
     public void testJDBCAutoSavepoints() throws Exception {
@@ -501,7 +427,7 @@ public class TestJDBCSavepoints extends TestCase {
 
         stmt.executeUpdate(sql);
 
-        //-- setup for following tests
+        
         conn1.setAutoCommit(false);
 
         sql = "insert into t values(?,?,?,?)";
@@ -538,9 +464,7 @@ public class TestJDBCSavepoints extends TestCase {
         rs.close();
     }
 
-    /**
-     * @param args the command line arguments
-     */
+    
     public static void main(String[] args) throws Exception {
 
         TestResult            result;

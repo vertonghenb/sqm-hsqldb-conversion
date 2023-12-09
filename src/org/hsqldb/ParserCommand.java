@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -46,13 +18,7 @@ import org.hsqldb.types.Charset;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Parser for session and management statements
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.8
- * @since 1.9.0
- */
+
 public class ParserCommand extends ParserDDL {
 
     ParserCommand(Session session, Scanner t) {
@@ -137,7 +103,7 @@ public class ParserCommand extends ParserDDL {
 
         switch (token.tokenType) {
 
-            // DQL
+            
             case Tokens.WITH :
             case Tokens.OPENBRACKET :
             case Tokens.SELECT :
@@ -153,7 +119,7 @@ public class ParserCommand extends ParserDDL {
                 break;
             }
 
-            // DML
+            
             case Tokens.INSERT : {
                 cs = compileInsertStatement(RangeVariable.emptyArray);
 
@@ -180,7 +146,7 @@ public class ParserCommand extends ParserDDL {
                 break;
             }
 
-            // PROCEDURE
+            
             case Tokens.CALL : {
                 cs = compileCallStatement(
                     session.sessionContext.sessionVariablesRange, false);
@@ -188,12 +154,12 @@ public class ParserCommand extends ParserDDL {
                 break;
             }
 
-            // SQL SESSION
+            
             case Tokens.SET :
                 cs = compileSet();
                 break;
 
-            // diagnostic
+            
             case Tokens.GET :
                 cs = compileGetStatement(
                     session.sessionContext.sessionVariablesRange);
@@ -219,7 +185,7 @@ public class ParserCommand extends ParserDDL {
                 cs = compileReleaseSavepoint();
                 break;
 
-            // DDL
+            
             case Tokens.CREATE :
                 cs = compileCreate();
                 break;
@@ -241,7 +207,7 @@ public class ParserCommand extends ParserDDL {
                 cs = compileComment();
                 break;
 
-            // HSQL SESSION
+            
             case Tokens.LOCK :
                 cs = compileLock();
                 break;
@@ -254,7 +220,7 @@ public class ParserCommand extends ParserDDL {
                 cs = compileDisconnect();
                 break;
 
-            // HSQL COMMAND
+            
             case Tokens.SCRIPT :
                 cs = compileScript();
                 break;
@@ -288,10 +254,10 @@ public class ParserCommand extends ParserDDL {
                 throw unexpectedToken();
         }
 
-        // SET_SESSION_AUTHORIZATION is translated dynamically at runtime for logging
+        
         switch (cs.type) {
 
-            // these are set at compile time for logging
+            
             case StatementTypes.COMMIT_WORK :
             case StatementTypes.ROLLBACK_WORK :
             case StatementTypes.SET_USER_PASSWORD :
@@ -707,7 +673,7 @@ public class ParserCommand extends ParserDDL {
                     StatementTypes.SET_SESSION_AUTOCOMMIT, args);
             }
 
-            // deprecated
+            
             case Tokens.READONLY : {
                 read();
 
@@ -736,7 +702,7 @@ public class ParserCommand extends ParserDDL {
                     StatementTypes.SET_SESSION_RESULT_MAX_ROWS, args);
             }
 
-            // for backward compatibility
+            
             case Tokens.DEFAULT : {
                 read();
                 readThis(Tokens.TABLE);
@@ -802,7 +768,7 @@ public class ParserCommand extends ParserDDL {
                             new HsqlName[]{ t.getName() });
                     }
 
-                    // deprecated
+                    
                     case Tokens.READONLY : {
                         read();
 
@@ -1580,11 +1546,7 @@ public class ParserCommand extends ParserDDL {
         return args;
     }
 
-    /**
-     * Responsible for  handling the execution of COMMIT [WORK]
-     *
-     * @throws  HsqlException
-     */
+    
     private Statement compileCommit() {
 
         boolean chain = false;
@@ -1901,7 +1863,7 @@ public class ParserCommand extends ParserDDL {
                 read();
                 break;
 
-            // only semicolon is accepted here
+            
         }
 
         if (token.tokenType == Tokens.SEMICOLON) {
@@ -1923,9 +1885,9 @@ public class ParserCommand extends ParserDDL {
     private Statement compileBackup() {
 
         String  path;
-        Boolean blockingMode = null;    // Defaults to blocking
-        Boolean scriptMode   = null;    // Defaults to non-script
-        Boolean compression  = null;    // Defaults to compressed
+        Boolean blockingMode = null;    
+        Boolean scriptMode   = null;    
+        Boolean compression  = null;    
 
         read();
         readThis(Tokens.DATABASE);
@@ -2044,7 +2006,7 @@ public class ParserCommand extends ParserDDL {
         } else if (token.tokenType == Tokens.SEMICOLON) {
             read();
 
-            // only semicolon is accepted here
+            
         }
 
         if (token.tokenType != Tokens.X_ENDPARSE) {
@@ -2114,7 +2076,7 @@ public class ParserCommand extends ParserDDL {
             Exception e = Error.error(ErrorCode.X_S0522);
         }
 
-        // SET TABLE <table> SOURCE ON
+        
         if (token.tokenType == Tokens.ON) {
             read();
 

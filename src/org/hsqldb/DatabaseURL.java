@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -36,15 +8,9 @@ import java.util.Locale;
 import org.hsqldb.persist.HsqlProperties;
 import org.hsqldb.server.ServerConstants;
 
-/*
- * Parses a connection URL into parts.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.8.0
- */
 
-// patch 1.9.0 by Blaine Simpson - IPv6 support
+
+
 public class DatabaseURL {
 
     static final String        S_DOT               = ".";
@@ -61,10 +27,7 @@ public class DatabaseURL {
     public static final String url_connection_type = "connection_type";
     public static final String url_database        = "database";
 
-    /**
-     * Returns true if type represents an in-process connection to a file backed
-     * database.
-     */
+    
     public static boolean isFileBasedDatabaseType(String type) {
 
         if (type == S_FILE || type == S_RES) {
@@ -74,9 +37,7 @@ public class DatabaseURL {
         return false;
     }
 
-    /**
-     * Returns true if type represents an in-process connection to database.
-     */
+    
     public static boolean isInProcessDatabaseType(String type) {
 
         if (type == S_FILE || type == S_RES || type == S_MEM) {
@@ -86,45 +47,7 @@ public class DatabaseURL {
         return false;
     }
 
-    /**
-     * Parses the url into components that are returned in a properties object.
-     *
-     * <p> The following components are isolated:
-     *
-     * <p>
-     * <ul> url: the original url
-     *
-     * <p> connection_type: a static string that indicate the protocol. If the
-     * url does not begin with a valid protocol, null is returned by this method
-     * instead of the properties object.
-     *
-     * <p> host: name of host in networked modes in lowercase
-     *
-     * <p> port: port number in networked mode, or 0 if not present
-     *
-     * <p> path: path of the resource on server in networked modes, minimum
-     * (slash) with path elements appended apart from servlet path which is
-     * (slash) plus the name of the servlet
-     *
-     * <p> database: database name. For memory, networked modes,
-     * this is returned in lowercase, for file: and res: databases the original case of
-     * characters is preserved. Returns empty string if name is not present in
-     * the url.
-     *
-     * <p> for each protocol if port number is not in the url
-     *
-     * <p> Additional connection properties specified as key/value pairs.
-     * </ul>
-     *
-     * @return null returned if the part that should represent the port is not
-     *   an integer or the part for database name is empty. Empty
-     *   HsqlProperties returned if if url does not begin with valid protocol
-     *   and could refer to another JDBC driver.
-     * @param url String
-     * @param hasPrefix indicates URL prefix is present
-     * @param noPath indicates empty path and verbatim use of path elements as
-     * database
-     */
+    
     public static HsqlProperties parseURL(String url, boolean hasPrefix,
                                           boolean noPath) {
 
@@ -180,10 +103,10 @@ public class DatabaseURL {
 
         int postUrlPos = url.length();
 
-        // postUrlPos is the END position in url String,
-        // wrt what remains to be processed.
-        // I.e., if postUrlPos is 100, url no longer needs to examined at
-        // index 100 or later.
+        
+        
+        
+        
         int semiPos = url.indexOf(';', pos);
 
         if (semiPos > -1) {
@@ -192,7 +115,7 @@ public class DatabaseURL {
             extraProps = HsqlProperties.delimitedArgPairsToProps(arguments,
                     "=", ";", null);
 
-            // validity checks are performed by engine
+            
             props.addProperties(extraProps);
         }
 
@@ -229,7 +152,7 @@ public class DatabaseURL {
         } else if (type == S_DOT) {
             type = S_MEM;
 
-            // keep pos
+            
         } else {
             pos += type.length();
         }
@@ -238,7 +161,7 @@ public class DatabaseURL {
 
         if (isNetwork) {
 
-            // First capture 3 segments:  host + port + path
+            
             String pathSeg = null;
             String hostSeg = null;
             String portSeg = null;
@@ -247,23 +170,23 @@ public class DatabaseURL {
             if (endPos > 0 && endPos < postUrlPos) {
                 pathSeg = url.substring(endPos, postUrlPos);
 
-                // N.b. pathSeg necessarily begins with /.
+                
             } else {
                 endPos = postUrlPos;
             }
 
-            // Processing different for ipv6 host address and all others:
+            
             if (url.charAt(pos) == '[') {
 
-                // ipv6
+                
                 int endIpv6 = url.indexOf(']', pos + 2);
 
-                // Notice 2 instead of 1 to require non-empty addr segment
+                
                 if (endIpv6 < 0 || endIpv6 >= endPos) {
                     return null;
 
-                    // Wish could throw something with a useful message for user
-                    // here.
+                    
+                    
                 }
 
                 hostSeg = urlImage.substring(pos + 1, endIpv6);
@@ -273,12 +196,12 @@ public class DatabaseURL {
                 }
             } else {
 
-                // non-ipv6
+                
                 int colPos = url.indexOf(':', pos + 1);
 
                 if (colPos > -1 && colPos < endPos) {
 
-                    // portSeg will be non-empty, but could contain just ":"
+                    
                     portSeg = url.substring(colPos, endPos);
                 } else {
                     colPos = -1;
@@ -288,13 +211,13 @@ public class DatabaseURL {
                                                                : endPos);
             }
 
-            // At this point, the entire url has been parsed into
-            // hostSeg + portSeg + pathSeg.
+            
+            
             if (portSeg != null) {
                 if (portSeg.length() < 2 || portSeg.charAt(0) != ':') {
 
-                    // Wish could throw something with a useful message for user
-                    // here.
+                    
+                    
                     return null;
                 }
 
@@ -302,7 +225,7 @@ public class DatabaseURL {
                     port = Integer.parseInt(portSeg.substring(1));
                 } catch (NumberFormatException e) {
 
-                    // System.err.println("NFE for (" + portSeg + ')'); debug
+                    
                     return null;
                 }
             }
@@ -326,11 +249,7 @@ public class DatabaseURL {
                 }
             }
 
-            /* Just for debug.  Remove once stable:
-            System.err.println("Host seg (" + hostSeg + "), Port val (" + port
-                    + "), Path val (" + pathSeg + "), path (" + path
-                    + "), db (" + database + ')');
-             */
+            
             props.setProperty("port", port);
             props.setProperty("host", hostSeg);
             props.setProperty("path", path);

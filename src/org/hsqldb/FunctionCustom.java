@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -68,16 +40,7 @@ import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Implementation of HSQLDB functions that are not defined by the
- * SQL standard.<p>
- *
- * Some functions are translated into equivalent SQL Standard functions.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.1.1
- * @since 1.9.0
- */
+
 public class FunctionCustom extends FunctionSQL {
 
     public static final String[] openGroupNumericFunctions = {
@@ -101,7 +64,7 @@ public class FunctionCustom extends FunctionSQL {
         "DATABASE", "IFNULL", "USER"
     };
 
-    //
+    
     private static final int FUNC_ACOS                     = 71;
     private static final int FUNC_ACTION_ID                = 72;
     private static final int FUNC_ASCII                    = 73;
@@ -188,12 +151,12 @@ public class FunctionCustom extends FunctionSQL {
     private static final int FUNC_UUID                     = 154;
     private static final int FUNC_UNIX_TIMESTAMP           = 155;
 
-    //
+    
     static final IntKeyIntValueHashMap customRegularFuncMap =
         new IntKeyIntValueHashMap();
 
     static {
-        //J-
+        
 
         nonDeterministicFuncSet.add(FUNC_ACTION_ID);
         nonDeterministicFuncSet.add(FUNC_CRYPT_KEY);
@@ -217,7 +180,7 @@ public class FunctionCustom extends FunctionSQL {
         nonDeterministicFuncSet.add(FUNC_UUID);
         nonDeterministicFuncSet.add(FUNC_UNIX_TIMESTAMP);
 
-        //
+        
         customRegularFuncMap.put(Tokens.ACOS, FUNC_ACOS);
         customRegularFuncMap.put(Tokens.ACTION_ID, FUNC_ACTION_ID);
         customRegularFuncMap.put(Tokens.ARRAY_SORT, FUNC_SORT_ARRAY);
@@ -326,7 +289,7 @@ public class FunctionCustom extends FunctionSQL {
         customRegularFuncMap.put(Tokens.UUID, FUNC_UUID);
         customRegularFuncMap.put(Tokens.WEEK, FUNC_EXTRACT);
         customRegularFuncMap.put(Tokens.YEAR, FUNC_EXTRACT);
-        //J+
+        
     }
 
     static final IntKeyIntValueHashMap customValueFuncMap =
@@ -650,7 +613,7 @@ public class FunctionCustom extends FunctionSQL {
 
             case FUNC_POSITION_CHAR : {
 
-                // LOCATE
+                
                 Expression[] newNodes = new Expression[4];
 
                 newNodes[0] = nodes[0];
@@ -1086,7 +1049,7 @@ public class FunctionCustom extends FunctionSQL {
                 }
             }
 
-            // fall through
+            
             case FUNC_TRUNCATE : {
                 int offset = 0;
 
@@ -1329,7 +1292,7 @@ public class FunctionCustom extends FunctionSQL {
                 return new Double(java.lang.Math.toRadians(d));
             }
 
-            //
+            
             case FUNC_SIGN : {
                 if (data[0] == null) {
                     return null;
@@ -1939,7 +1902,7 @@ public class FunctionCustom extends FunctionSQL {
                 funcType           = FUNC_TIMESTAMPADD;
             }
 
-            // fall through
+            
             case FUNC_TIMESTAMPADD :
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_BIGINT;
@@ -1985,7 +1948,7 @@ public class FunctionCustom extends FunctionSQL {
                 funcType = FUNC_TIMESTAMPDIFF;
             }
 
-            // fall through
+            
             case FUNC_TIMESTAMPDIFF : {
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = nodes[2].dataType;
@@ -2092,13 +2055,13 @@ public class FunctionCustom extends FunctionSQL {
                     break;
                 } else if (nodes[0].dataType.isNumberType()) {
 
-                    //
+                    
                 } else {
                     throw Error.error(ErrorCode.X_42561);
                 }
             }
 
-            // fall through
+            
             case FUNC_TRUNCATE : {
                 Number offset = null;
 
@@ -2167,7 +2130,7 @@ public class FunctionCustom extends FunctionSQL {
                     throw Error.error(ErrorCode.X_42563);
                 }
 
-                // fixed maximum as format is a variable
+                
                 dataType = CharacterType.getCharacterType(Types.SQL_VARCHAR,
                         64);
 
@@ -2178,22 +2141,12 @@ public class FunctionCustom extends FunctionSQL {
                     nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
 
-/*
-                if (nodes[1] != null) {
-                    if (nodes[1].dataType == null) {
-                        nodes[1].dataType = Type.SQL_VARCHAR_DEFAULT;
-                    }
 
-                    if (!nodes[1].dataType.isCharacterType()) {
-                        throw Error.error(ErrorCode.X_42563);
-                    }
-                }
-*/
                 if (!nodes[0].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42563);
                 }
 
-                // fixed maximum as format is a variable
+                
                 dataType = Type.SQL_DECIMAL_DEFAULT;
 
                 return;
@@ -2796,13 +2749,13 @@ public class FunctionCustom extends FunctionSQL {
 
             case FUNC_POSITION_CHAR : {
 
-                // LOCATE
+                
                 StringBuffer sb = new StringBuffer(Tokens.T_LOCATE).append(
-                    Tokens.T_OPENBRACKET).append(nodes[0].getSQL())         //
-                    .append(Tokens.T_COMMA).append(nodes[1].getSQL());      //
+                    Tokens.T_OPENBRACKET).append(nodes[0].getSQL())         
+                    .append(Tokens.T_COMMA).append(nodes[1].getSQL());      
 
                 if (nodes.length > 3 && nodes[3] != null) {
-                    sb.append(Tokens.T_COMMA).append(nodes[3].getSQL());    //
+                    sb.append(Tokens.T_COMMA).append(nodes[3].getSQL());    
                 }
 
                 sb.append(Tokens.T_CLOSEBRACKET).toString();
@@ -2891,9 +2844,9 @@ public class FunctionCustom extends FunctionSQL {
                     ((Number) nodes[0].getValue(null)).intValue());
 
                 return new StringBuffer(Tokens.T_TIMESTAMPADD).append(
-                    Tokens.T_OPENBRACKET).append(token)                     //
-                    .append(Tokens.T_COMMA).append(nodes[1].getSQL())       //
-                    .append(Tokens.T_COMMA).append(nodes[2].getSQL())       //
+                    Tokens.T_OPENBRACKET).append(token)                     
+                    .append(Tokens.T_COMMA).append(nodes[1].getSQL())       
+                    .append(Tokens.T_COMMA).append(nodes[2].getSQL())       
                     .append(Tokens.T_CLOSEBRACKET).toString();
             }
             case FUNC_TIMESTAMPDIFF : {
@@ -2901,9 +2854,9 @@ public class FunctionCustom extends FunctionSQL {
                     ((Number) nodes[0].getValue(null)).intValue());
 
                 return new StringBuffer(Tokens.T_TIMESTAMPDIFF).append(
-                    Tokens.T_OPENBRACKET).append(token)                     //
-                    .append(Tokens.T_COMMA).append(nodes[1].getSQL())       //
-                    .append(Tokens.T_COMMA).append(nodes[2].getSQL())       //
+                    Tokens.T_OPENBRACKET).append(token)                     
+                    .append(Tokens.T_COMMA).append(nodes[1].getSQL())       
+                    .append(Tokens.T_COMMA).append(nodes[2].getSQL())       
                     .append(Tokens.T_CLOSEBRACKET).toString();
             }
             case FUNC_UNIX_TIMESTAMP :
@@ -2956,7 +2909,7 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_HEXTORAW :
             case FUNC_RAWTOHEX :
             case FUNC_LOB_ID : {
-                return new StringBuffer(name).append('(')                   //
+                return new StringBuffer(name).append('(')                   
                     .append(nodes[0].getSQL()).append(')').toString();
             }
             case FUNC_ATAN2 :
@@ -2977,14 +2930,14 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_REGEXP_MATCHES :
             case FUNC_REGEXP_SUBSTRING :
             case FUNC_REGEXP_SUBSTRING_ARRAY : {
-                return new StringBuffer(name).append('(')                   //
-                    .append(nodes[0].getSQL()).append(Tokens.T_COMMA)       //
+                return new StringBuffer(name).append('(')                   
+                    .append(nodes[0].getSQL()).append(Tokens.T_COMMA)       
                     .append(nodes[1].getSQL()).append(')').toString();
             }
             case FUNC_DIAGNOSTICS : {
                 StringBuffer sb = new StringBuffer(name).append('(');
 
-                //exprSubType == ExpressionColumn.idx_row_count
+                
                 sb.append(Tokens.T_ROW_COUNT);
                 sb.append(')');
 
@@ -2992,9 +2945,9 @@ public class FunctionCustom extends FunctionSQL {
             }
             case FUNC_SEQUENCE_ARRAY :
             case FUNC_REPLACE : {
-                return new StringBuffer(name).append('(')                   //
-                    .append(nodes[0].getSQL()).append(Tokens.T_COMMA)       //
-                    .append(nodes[1].getSQL()).append(Tokens.T_COMMA)       //
+                return new StringBuffer(name).append('(')                   
+                    .append(nodes[0].getSQL()).append(Tokens.T_COMMA)       
+                    .append(nodes[1].getSQL()).append(Tokens.T_COMMA)       
                     .append(nodes[2].getSQL()).append(')').toString();
             }
             default :
@@ -3002,19 +2955,7 @@ public class FunctionCustom extends FunctionSQL {
         }
     }
 
-    /**
-     * Returns a four character code representing the sound of the given
-     * <code>String</code>. Non-ASCCI characters in the
-     * input <code>String</code> are ignored. <p>
-     *
-     * This method was rewritten for HSQLDB to comply with the description at
-     * <a href="http://www.archives.gov/genealogy/census/soundex.html">
-     * http://www.archives.gov/genealogy/census/soundex.html </a>.<p>
-     * @param s the <code>String</code> for which to calculate the 4 character
-     *      <code>SOUNDEX</code> value
-     * @return the 4 character <code>SOUNDEX</code> value for the given
-     *      <code>String</code>
-     */
+    
     public static char[] soundex(String s) {
 
         if (s == null) {

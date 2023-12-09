@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.util;
@@ -67,38 +39,13 @@ import java.awt.image.MemoryImageSource;
 import org.hsqldb.lib.RCData;
 import org.hsqldb.lib.java.JavaSystem;
 
-// sqlbob@users 20020401 - patch 1.7.0 by sqlbob (RMP) - enhancements
-// sqlbob@users 20020401 - patch 537501 by ulrivo - command line arguments
-// sqlbob@users 20020407 - patch 1.7.0 - reengineering
-// nickferguson@users 20021005 - patch 1.7.1 - enhancements
-/*
- * unsaved@users 20050426 - Switched default switch method from "-switch" to
- * "--switch" because "-switch" usage is ambiguous as used here.  Single
- * switches should be reserved for single-letter switches which can be mixed
- * like * "-u -r -l" = "-url".  -blaine
-*/
 
-/**
- * AWT Tool for manageing a JDBC database.<p>
- * <pre>
- *             Usage: java DatabaseManagerSwing [--options]
- *             where options include:
- *              --driver <classname>  jdbc driver class
- *              --url <name>          jdbc url
- *              --user <name>         username used for connection
- *              --password <password> password for this user
- *              --urlid <urlid>       get connection info from RC file
- *              --rcfile <file>       use instead of default (with urlid)
- *              --dir <path>          default directory
- *              --script <file>       reads from script file
- *</pre>
- *
- * Originally in HypersonicSQL. Extended in various versions of HSQLDB.
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
- * @version 2.2.1
- * @since Hypersonic SQL
- */
+
+
+
+
+
+
 public class DatabaseManager extends Applet
 implements ActionListener, WindowListener, KeyListener {
 
@@ -106,7 +53,7 @@ implements ActionListener, WindowListener, KeyListener {
     static final int       iMaxRecent   = 24;
     private static boolean TT_AVAILABLE = false;
 
-//#ifdef JAVA2FULL
+
     static {
         try {
             Class.forName(DatabaseManager.class.getPackage().getName()
@@ -116,7 +63,7 @@ implements ActionListener, WindowListener, KeyListener {
         } catch (Throwable t) {}
     }
 
-//#endif
+
     private static final String HELP_TEXT =
         "See the forums, mailing lists, and HSQLDB User Guide\n"
         + "at http://hsqldb.org.\n\n"
@@ -133,7 +80,7 @@ implements ActionListener, WindowListener, KeyListener {
         + "http://hsqldb.org  (User Guide available at this site).\n\n\n"
         + "You may use and redistribute according to the HSQLDB\n"
         + "license documented in the source code and at the web\n"
-        + "site above."          //
+        + "site above."          
         + (TT_AVAILABLE ? "\n\nTransferTool options are available."
                         : "");
     Connection       cConn;
@@ -148,7 +95,7 @@ implements ActionListener, WindowListener, KeyListener {
     Tree             tTree;
     Panel            pResult;
     long             lTime;
-    int              iResult;    // 0: grid; 1: text
+    int              iResult;    
     Grid             gResult;
     TextArea         txtResult;
     boolean          bHelp;
@@ -157,7 +104,7 @@ implements ActionListener, WindowListener, KeyListener {
     static boolean   bMustExit;
     String           ifHuge = "";
 
-    // (ulrivo): variables set by arguments from the commandline
+    
     static String defDriver   = "org.hsqldb.jdbcDriver";
     static String defURL      = "jdbc:hsqldb:mem:.";
     static String defUser     = "SA";
@@ -235,16 +182,12 @@ implements ActionListener, WindowListener, KeyListener {
         m.connect(c);
     }
 
-    /**
-     * Run with --help switch for usage instructions.
-     *
-     * @throws IllegalArgumentException for the obvious reason
-     */
+    
     public static void main(String[] arg) {
 
         System.getProperties().put("sun.java2d.noddraw", "true");
 
-        // (ulrivo): read all arguments from the command line
+        
         String  currentArg;
         String  lowerArg;
         String  urlid        = null;
@@ -264,7 +207,7 @@ implements ActionListener, WindowListener, KeyListener {
 
             if (lowerArg.equals("-noexit") || lowerArg.equals("-help")) {
 
-                //
+                
             } else if (i == arg.length - 1) {
                 throw new IllegalArgumentException("No value for argument "
                                                    + currentArg);
@@ -303,17 +246,13 @@ implements ActionListener, WindowListener, KeyListener {
 
                 return;
             } else {
-                /* Syntax ERRORS should either throw or exit with non-0 status.
-                 * In our case, it may be unsafe to exit, so we throw.
-                 * (I.e. should provide easy way for caller to programmatically
-                 * determine that there was an invocation problem).
-                 */
+                
                 throw new IllegalArgumentException(
                     "invalid argrument " + currentArg + " try:  java... "
                     + DatabaseManagerSwing.class.getName() + " --help");
 
-                // No reason to localize, since the main syntax message is
-                // not localized.
+                
+                
             }
         }
 
@@ -408,7 +347,7 @@ implements ActionListener, WindowListener, KeyListener {
 
         MenuBar bar = new MenuBar();
 
-        // used shortcuts: CERGTSIUDOLM
+        
         String[] fitems = {
             "-Connect...", "--", "-Open Script...", "-Save Script...",
             "-Save Result...", "-Save Result csv...", "--", "-Exit"
@@ -465,8 +404,8 @@ implements ActionListener, WindowListener, KeyListener {
         hItem.addActionListener(this);
         hMenu.add(hItem);
 
-        //bar.add(hMenu);
-        // Command above disabled only until a help display bug is fixed.
+        
+        
         fMain.setMenuBar(bar);
         fMain.setSize(640, 480);
         fMain.add("Center", this);
@@ -477,7 +416,7 @@ implements ActionListener, WindowListener, KeyListener {
         Dimension d    = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension size = fMain.getSize();
 
-        // (ulrivo): full size on screen with less than 640 width
+        
         if (d.width >= 640) {
             fMain.setLocation((d.width - size.width) / 2,
                               (d.height - size.height) / 2);
@@ -488,7 +427,7 @@ implements ActionListener, WindowListener, KeyListener {
 
         fMain.show();
 
-        // (ulrivo): load query from command line
+        
         if (defScript != null) {
             if (defDirectory != null) {
                 defScript = defDirectory + File.separator + defScript;
@@ -502,14 +441,12 @@ implements ActionListener, WindowListener, KeyListener {
 
     void addMenu(MenuBar b, String name, String[] items) {
 
-        /* It's a very poor design to encapsulate menu creation this way.
-         * Can't customize the menus this way (e.g. shortcut keys,
-         * mnemonics, disabling, etc. */
+        
         Menu menu = new Menu(name);
 
         if (name.equals("Tools") && !TT_AVAILABLE) {
 
-            // Terrible place to do this.  Forced to due to method design.
+            
             menu.setEnabled(false);
         }
 
@@ -601,7 +538,7 @@ implements ActionListener, WindowListener, KeyListener {
             FileDialog f = new FileDialog(fMain, "Open Script",
                                           FileDialog.LOAD);
 
-            // (ulrivo): set default directory if set from command line
+            
             if (defDirectory != null) {
                 f.setDirectory(defDirectory);
             }
@@ -628,7 +565,7 @@ implements ActionListener, WindowListener, KeyListener {
             FileDialog f = new FileDialog(fMain, "Save Script",
                                           FileDialog.SAVE);
 
-            // (ulrivo): set default directory if set from command line
+            
             if (defDirectory != null) {
                 f.setDirectory(defDirectory);
             }
@@ -645,7 +582,7 @@ implements ActionListener, WindowListener, KeyListener {
             FileDialog f = new FileDialog(fMain, "Save Result CSV",
                                           FileDialog.SAVE);
 
-            // (ulrivo): set default directory if set from command line
+            
             if (defDirectory != null) {
                 f.setDirectory(defDirectory);
             }
@@ -667,7 +604,7 @@ implements ActionListener, WindowListener, KeyListener {
             FileDialog f = new FileDialog(fMain, "Save Result",
                                           FileDialog.SAVE);
 
-            // (ulrivo): set default directory if set from command line
+            
             if (defDirectory != null) {
                 f.setDirectory(defDirectory);
             }
@@ -810,9 +747,7 @@ implements ActionListener, WindowListener, KeyListener {
 
     public void windowOpened(WindowEvent e) {}
 
-    /**
-     * Clear SQL Statements.
-     */
+    
     void clear() {
 
         ifHuge = "";
@@ -820,9 +755,7 @@ implements ActionListener, WindowListener, KeyListener {
         txtCommand.setText(ifHuge);
     }
 
-    /**
-     * Adjust this method for large strings...ie multi megabtypes.
-     */
+    
     void execute() {
 
         String sCmd = null;
@@ -904,7 +837,7 @@ implements ActionListener, WindowListener, KeyListener {
 
         if (iResult == 0) {
 
-            // in case 'help' has removed the grid
+            
             if (bHelp) {
                 pResult.removeAll();
                 pResult.add("Center", gResult);
@@ -1072,7 +1005,7 @@ implements ActionListener, WindowListener, KeyListener {
 
                     if (r.equals("(null)")) {
 
-                        // null is formatted as (null)
+                        
                         r = "";
                     }
 
@@ -1221,7 +1154,7 @@ implements ActionListener, WindowListener, KeyListener {
 
         tTree = new Tree();
 
-        // (ulrivo): screen with less than 640 width
+        
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 
         if (d.width >= 640) {
@@ -1257,11 +1190,11 @@ implements ActionListener, WindowListener, KeyListener {
                 "TABLE", "GLOBAL TEMPORARY", "VIEW"
             };
 
-            // fredt@users Schema support
+            
             Vector schemas = new Vector();
             Vector tables  = new Vector();
 
-            // sqlbob@users Added remarks.
+            
             Vector    remarks = new Vector();
             ResultSet result  = dMeta.getTables(null, null, null, usertables);
 
@@ -1282,7 +1215,7 @@ implements ActionListener, WindowListener, KeyListener {
 
                 tTree.addRow(key, name, "+", color_table);
 
-                // sqlbob@users Added remarks.
+                
                 String remark = (String) remarks.elementAt(i);
 
                 if ((schema != null) && !schema.trim().equals("")) {

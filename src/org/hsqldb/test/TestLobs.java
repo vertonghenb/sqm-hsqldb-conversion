@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -60,8 +32,8 @@ public class TestLobs extends TestBase {
 
         super(name);
 
-//        super(name, "jdbc:hsqldb:file:test3", false, false);
-//        super(name, "jdbc:hsqldb:mem:test3", false, false);
+
+
     }
 
     protected void setUp() {
@@ -157,7 +129,7 @@ public class TestLobs extends TestBase {
             PreparedStatement ps = connection.prepareStatement(
                 "INSERT INTO blo(id, b) values(2, ?)");
 
-            //st.executeUpdate("INSERT INTO blo (id, b) VALUES (1, x'A003')");
+            
             ps.setBlob(1, new SerialBlob(baR1));
             ps.executeUpdate();
 
@@ -171,7 +143,7 @@ public class TestLobs extends TestBase {
 
             System.out.println("Size of retrieved blob: " + blob1.length());
 
-            //System.out.println("Value = (" + rs.getString("b") + ')');
+            
             byte[] baOut = blob1.getBytes(1, (int) blob1.length());
 
             if (baOut.length != baR1.length) {
@@ -194,7 +166,7 @@ public class TestLobs extends TestBase {
                 assertTrue("No row with id 2", false);
             }
 
-//            ba = rs.getBytes("b"); doesn't convert but throws ClassCast
+
             blob1 = rs.getBlob("b");
             ba    = blob1.getBytes(1, baR2.length);
 
@@ -211,7 +183,7 @@ public class TestLobs extends TestBase {
             rs.close();
             connection.rollback();
 
-            // again with stream
+            
             ps.setBinaryStream(1, new HsqlByteArrayInputStream(baR1),
                                baR1.length);
             ps.executeUpdate();
@@ -226,7 +198,7 @@ public class TestLobs extends TestBase {
 
             System.out.println("Size of retrieved blob: " + blob1.length());
 
-            //System.out.println("Value = (" + rs.getString("b") + ')');
+            
             baOut = blob1.getBytes(1, (int) blob1.length());
 
             if (baOut.length != baR1.length) {
@@ -344,14 +316,14 @@ public class TestLobs extends TestBase {
 
             assertTrue(data1 == data2 && data1 > 0);
 
-            //
+            
             Clob   clob3  = new JDBCClob(data);
             Reader reader = clob3.getCharacterStream();
 
             ps.setCharacterStream(3, reader, (int) clob3.length());
             ps.executeUpdate();
 
-            //
+            
             reader = clob2.getCharacterStream();
 
             try {
@@ -386,7 +358,7 @@ public class TestLobs extends TestBase {
                 + "varid = ? AND scalabilitypassivated = 'N' AND scopeguid = ?";
             PreparedStatement ps = connection.prepareStatement(dml0);
 
-            //
+            
             String resourceFileName  = "/org/hsqldb/resources/lob-schema.sql";
             InputStreamReader reader = null;
 
@@ -415,7 +387,7 @@ public class TestLobs extends TestBase {
                 }
             } catch (Exception e) {}
 
-            //
+            
             ps.setString(1, "test-id-2");
             ps.setLong(2, 23456789123457L);
             ps.setCharacterStream(3, reader, 100);
@@ -429,7 +401,7 @@ public class TestLobs extends TestBase {
 
             int[] results = ps.executeBatch();
 
-            //
+            
             try {
                 InputStream fis =
                     getClass().getResourceAsStream(resourceFileName);
@@ -478,7 +450,7 @@ public class TestLobs extends TestBase {
 
             connection.setAutoCommit(false);
 
-            //
+            
             JDBCClob dataClob =
                 new JDBCClob("the quick brown fox jumps on the lazy dog");
             Reader    reader = null;
@@ -549,7 +521,7 @@ public class TestLobs extends TestBase {
 
             connection.setAutoCommit(false);
 
-            //
+            
             JDBCClob dataClob =
                 new JDBCClob("the quick brown fox jumps on the lazy dog");
             Reader    reader = null;
@@ -775,53 +747,7 @@ public class TestLobs extends TestBase {
 
     }
 
-/*
-    public static void main(String[] args) throws SQLException {
-         Connection con = null;
-         PreparedStatement st = null;
-         ResultSet rs = null;
-         try {
 
-             DriverManager.registerDriver(new org.hsqldb.jdbc.JDBCDriver());
-             con = DriverManager.getConnection("jdbc:hsqldb:hsql://localhost:7001",
- "sa", null);
-//            con = DriverManager.getConnection("jdbc:hsqldb:mem:mymemdb", "sa", null);
-
-//            con.createStatement().execute("drop table aaa");
-             con.createStatement().execute("create table aaa (a integer, b blob)");
-
-             String insert = "insert into aaa values (1, ?)";
-
-             st = con.prepareStatement(insert);
-
-             byte[] b = {0, 1};
-
-             Blob blob = con.createBlob();
-             blob.setBytes(1, b);
-             st.setBlob(1, blob);
-
-//            this does not work too !!!
-//            st.setBytes(1, b);
-
-             System.out.println("execute");
-             st.execute();
-             System.out.println("execute end");
-             con.commit();
-             System.out.println("commit");
-
-             con.createStatement().execute("shutdown script");
-         } catch (SQLException e) {
-             e.printStackTrace();
-         } finally {
-             if (st != null) {
-                 st.close();
-             }
-             if (con != null) {
-                 con.close();
-             }
-         }
-     }
-*/
 
     protected void tearDown() {
 

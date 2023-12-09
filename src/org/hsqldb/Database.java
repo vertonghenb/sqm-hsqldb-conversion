@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -51,19 +23,11 @@ import org.hsqldb.rights.UserManager;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Collation;
 
-// incorporates following contributions
-// boucherb@users - javadoc comments
-// Ocke Jansen (oj@openoffice dot org) - file access api
 
-/**
- * Database is the root class for HSQL Database Engine database. <p>
- *
- * It holds the data structures that form an HSQLDB database instance.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since 1.9.0
- */
+
+
+
+
 public class Database {
 
     int                        databaseID;
@@ -75,26 +39,20 @@ public class Database {
     public Collation           collation;
     public DatabaseInformation dbInfo;
 
-    /** indicates the state of the database */
+    
     private volatile int dbState;
     public Logger        logger;
 
-    /** true means that all tables are readonly. */
+    
     boolean databaseReadOnly;
 
-    /**
-     * true means that all CACHED and TEXT tables are readonly.
-     *  MEMORY tables are updatable but updates are not persisted.
-     */
+    
     private boolean filesReadOnly;
 
-    /** true means filesReadOnly */
+    
     private boolean filesInJar;
 
-    /**
-     * Defaults are used in version upgrades, but overridden by
-     *  databaseProperties or URL properties for new databases.
-     */
+    
     public boolean                sqlEnforceTypes        = false;
     public boolean                sqlEnforceRefs         = false;
     public boolean                sqlEnforceSize         = true;
@@ -119,30 +77,30 @@ public class Database {
     private final boolean         shutdownOnNoConnection;
     int                           resultMaxMemoryRows;
 
-    // schema invarient objects
+    
     public UserManager     userManager;
     public GranteeManager  granteeManager;
     public HsqlNameManager nameManager;
 
-    // session related objects
+    
     public SessionManager     sessionManager;
     public TransactionManager txManager;
     public int defaultIsolationLevel = SessionInterface.TX_READ_COMMITTED;
     public boolean            txConflictRollback = true;
 
-    // schema objects
+    
     public SchemaManager schemaManager;
 
-    //
+    
     public PersistentStoreCollectionDatabase persistentStoreCollection;
 
-    //
+    
     public LobManager lobManager;
 
-    //
+    
     public CheckpointRunner checkpointRunner;
 
-    //
+    
     public static final int DATABASE_ONLINE       = 1;
     public static final int DATABASE_OPENING      = 2;
     public static final int DATABASE_CLOSING      = 3;
@@ -152,17 +110,7 @@ public class Database {
     public static final int CLOSEMODE_COMPACT     = 3;
     public static final int CLOSEMODE_SCRIPT      = 4;
 
-    /**
-     *  Constructs a new Database object.
-     *
-     * @param type is the type of the database: "mem:", "file:", "res:"
-     * @param path is the given path to the database files
-     * @param canonicalPath is the canonical path
-     * @param props property overrides placed on the connect URL
-     * @exception  HsqlException if the specified name and path
-     *      combination is illegal or unavailable, or the database files the
-     *      name and path resolves to are in use by another process
-     */
+    
     Database(String type, String path, String canonicalPath,
              HsqlProperties props) {
 
@@ -184,9 +132,7 @@ public class Database {
         lobManager = new LobManager(this);
     }
 
-    /**
-     * Opens this database.  The database should be opened after construction.
-     */
+    
     synchronized void open() {
 
         if (!isShutdown()) {
@@ -196,11 +142,7 @@ public class Database {
         reopen();
     }
 
-    /**
-     * Opens this database.  The database should be opened after construction.
-     * or reopened by the close(int closemode) method during a
-     * "shutdown compact". Closes the log if there is an error.
-     */
+    
     void reopen() {
 
         boolean isNew = false;
@@ -226,7 +168,7 @@ public class Database {
             schemaManager.setSchemaChangeTimestamp();
             schemaManager.createSystemTables();
 
-            // completed metadata
+            
             logger.openPersistence();
 
             isNew = logger.isNewDatabase;
@@ -264,9 +206,7 @@ public class Database {
         setState(DATABASE_ONLINE);
     }
 
-    /**
-     * Clears the data structuress, making them elligible for garbage collection.
-     */
+    
     void clearStructures() {
 
         if (schemaManager != null) {
@@ -282,16 +222,12 @@ public class Database {
         checkpointRunner = null;
     }
 
-    /**
-     *  Returns the database ID.
-     */
+    
     public int getDatabaseID() {
         return this.databaseID;
     }
 
-    /**
-     * Returns a unique String identifier for the database.
-     */
+    
     public String getUniqueName() {
         return databaseUniqueName;
     }
@@ -300,16 +236,12 @@ public class Database {
         databaseUniqueName = name;
     }
 
-    /**
-     *  Returns the type of the database: "mem", "file", "res"
-     */
+    
     public String getType() {
         return databaseType;
     }
 
-    /**
-     *  Returns the path of the database
-     */
+    
     public String getPath() {
         return path;
     }
@@ -318,16 +250,12 @@ public class Database {
         return nameManager.getCatalogName();
     }
 
-    /**
-     *  Returns the database properties.
-     */
+    
     public HsqlDatabaseProperties getProperties() {
         return databaseProperties;
     }
 
-    /**
-     * Returns the SessionManager for the database.
-     */
+    
     public SessionManager getSessionManager() {
         return sessionManager;
     }
@@ -336,22 +264,12 @@ public class Database {
         return databaseReadOnly;
     }
 
-    /**
-     *  Returns true if database has been shut down, false otherwise
-     */
+    
     boolean isShutdown() {
         return dbState == DATABASE_SHUTDOWN;
     }
 
-    /**
-     *  Constructs a new Session that operates within (is connected to) the
-     *  context of this Database object. <p>
-     *
-     *  If successful, the new Session object initially operates on behalf of
-     *  the user specified by the supplied user name.
-     *
-     * Throws if username or password is invalid.
-     */
+    
     synchronized Session connect(String username, String password,
                                  String zoneString, int timeZoneSeconds) {
 
@@ -366,65 +284,43 @@ public class Database {
         return session;
     }
 
-    /**
-     *  Puts this Database object in global read-only mode. After
-     *  this call, all existing and future sessions are limited to read-only
-     *  transactions. Any following attempts to update the state of the
-     *  database will result in throwing an HsqlException.
-     */
+    
     public void setReadOnly() {
         databaseReadOnly = true;
         filesReadOnly    = true;
     }
 
-    /**
-     * After this call all CACHED and TEXT tables will be set to read-only
-     * mode. Changes to MEMORY tables will NOT
-     * be stored or updated in the script file. This mode is intended for
-     * use with read-only media where data should not be persisted.
-     */
+    
     public void setFilesReadOnly() {
         filesReadOnly = true;
     }
 
-    /**
-     * Is this in filesReadOnly mode?
-     */
+    
     public boolean isFilesReadOnly() {
         return filesReadOnly;
     }
 
-    /**
-     * Is this in filesInJar mode?
-     */
+    
     public boolean isFilesInJar() {
         return filesInJar;
     }
 
-    /**
-     *  Returns the UserManager for this Database.
-     */
+    
     public UserManager getUserManager() {
         return userManager;
     }
 
-    /**
-     *  Returns the GranteeManager for this Database.
-     */
+    
     public GranteeManager getGranteeManager() {
         return granteeManager;
     }
 
-    /**
-     *  Sets the isReferentialIntegrity attribute.
-     */
+    
     public void setReferentialIntegrity(boolean ref) {
         isReferentialIntegrity = ref;
     }
 
-    /**
-     *  Is referential integrity currently enforced?
-     */
+    
     public boolean isReferentialIntegrity() {
         return isReferentialIntegrity;
     }
@@ -513,10 +409,7 @@ public class Database {
         sqlSyntaxPgs = mode;
     }
 
-    /**
-     *  Called by the garbage collector on this Databases object when garbage
-     *  collection determines that there are no more references to it.
-     */
+    
     protected void finalize() {
 
         if (getState() != DATABASE_ONLINE) {
@@ -525,7 +418,7 @@ public class Database {
 
         try {
             close(CLOSEMODE_IMMEDIATELY);
-        } catch (HsqlException e) {    // it's too late now
+        } catch (HsqlException e) {    
         }
     }
 
@@ -539,28 +432,12 @@ public class Database {
         }
     }
 
-    /**
-     *  Closes this Database using the specified mode. <p>
-     *
-     * <ol>
-     *  <LI> closemode -1 performs SHUTDOWN IMMEDIATELY, equivalent
-     *       to a poweroff or crash.
-     *
-     *  <LI> closemode 0 performs a normal SHUTDOWN that
-     *      checkpoints the database normally.
-     *
-     *  <LI> closemode 1 performs a shutdown compact that scripts
-     *       out the contents of any CACHED tables to the log then
-     *       deletes the existing *.data file that contains the data
-     *       for all CACHED table before the normal checkpoint process
-     *       which in turn creates a new, compact *.data file.
-     * </ol>
-     */
+    
     public void close(int closemode) {
 
         HsqlException he = null;
 
-        // multiple simultaneous close
+        
         synchronized (this) {
             if (getState() != DATABASE_ONLINE) {
                 return;
@@ -575,10 +452,7 @@ public class Database {
             closemode = CLOSEMODE_IMMEDIATELY;
         }
 
-        /**
-         * @todo  fredt - impact of possible error conditions in closing the log
-         * should be investigated for the CLOSEMODE_COMPACT mode
-         */
+        
         logger.closePersistence(closemode);
         lobManager.close();
         sessionManager.close();
@@ -604,12 +478,12 @@ public class Database {
         setState(DATABASE_SHUTDOWN);
         clearStructures();
 
-        // fredt - this could change to avoid removing a db from the
-        // DatabaseManager repository if there are pending getDatabase()
-        // calls
+        
+        
+        
         DatabaseManager.removeDatabase(this);
 
-        // todo - when hsqldb.sql. logging is supported, add another call
+        
         FrameworkLogger.clearLoggers("hsqldb.db." + getUniqueName());
 
         if (he != null) {
@@ -690,14 +564,12 @@ public class Database {
         return array;
     }
 
-    /**
-     * Returns the schema and authorisation statements for the database.
-     */
+    
     public Result getScript(boolean indexRoots) {
 
         Result r = Result.newSingleColumnResult("COMMAND");
 
-        // properties
+        
         String[] list = logger.getPropertiesSQL();
 
         addRows(r, list);
@@ -710,39 +582,39 @@ public class Database {
 
         addRows(r, list);
 
-        // schemas and schema objects such as tables, sequences, etc.
+        
         list = schemaManager.getSQLArray();
 
         addRows(r, list);
 
-        // optional comments on tables etc.
+        
         list = schemaManager.getCommentsArray();
 
         addRows(r, list);
 
-        // index roots
+        
         if (indexRoots) {
             list = schemaManager.getIndexRootsSQL();
 
             addRows(r, list);
         }
 
-        // text headers - readonly - clustered
+        
         list = schemaManager.getTablePropsSQL(!indexRoots);
 
         addRows(r, list);
 
-        // password complexity
+        
         list = getUserManager().getAuthenticationSQL();
 
         addRows(r, list);
 
-        // user session start schema names
+        
         list = getUserManager().getInitialSchemaSQL();
 
         addRows(r, list);
 
-        // grantee rights
+        
         list = getGranteeManager().getRightstSQL();
 
         addRows(r, list);
@@ -796,8 +668,8 @@ public class Database {
                 waiting = false;
             } catch (Exception e) {
 
-                // ignore exceptions
-                // may be InterruptedException or IOException
+                
+                
             }
         }
 

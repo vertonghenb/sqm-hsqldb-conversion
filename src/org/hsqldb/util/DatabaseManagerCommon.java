@@ -1,71 +1,4 @@
-/*
- * For work developed by the HSQL Development Group:
- *
- * Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- *
- * For work originally developed by the Hypersonic SQL Group:
- *
- * Copyright (c) 1995-2000, The Hypersonic SQL Group.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the Hypersonic SQL Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * on behalf of the Hypersonic SQL Group.
- */
+
 
 
 package org.hsqldb.util;
@@ -78,23 +11,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
 
-// sqlbob@users 20020401 - patch 1.7.0 by sqlbob (RMP) - enhancements
-// sqlbob@users 20020407 - patch 1.7.0 - reengineering
-// nickferguson@users 20021005 - patch 1.7.1 - enhancements
-// fredt@users 20021012 - patch 1.7.1 - changes to test database DDL
-// weconsultants@users 20041116 - patch 1.8.0 - in 'TestHelp' added 'IF EXISTS for both DROPS.
-//                                Now catching the execption that was never caught before.
 
-/**
- * Common code in Swing and AWT versions of DatabaseManager
- *
- * New class based on Hypersonic original
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
- * @author Bob Preston (sqlbob@users dot sourceforge.net)
- * @version 1.8.0
- * @since 1.7.0
- */
+
+
+
+
+
+
+
 class DatabaseManagerCommon {
 
     private static Random rRandom    = new Random(100);
@@ -106,7 +30,7 @@ class DatabaseManagerCommon {
         + "[INTO [CACHED|TEMP|TEXT] newTable] \n" + "FROM tableList \n"
         + "[WHERE Expression] \n"
         + "[ORDER BY selectExpression [{ASC | DESC}] [, ...] ] \n"
-        + "[GROUP BY Expression [, ...] ] \n"                             //
+        + "[GROUP BY Expression [, ...] ] \n"                             
         + "[UNION [ALL] selectStatement]"
     };
     static String[] insertHelp = {
@@ -155,16 +79,16 @@ class DatabaseManagerCommon {
         "SET AUTOCOMMIT { TRUE | FALSE }\n"
         + "SET DATABASE COLLATION \"<collationname>\"\n"
         + "SET FILES CHECKPOINT DEFRAG <size>\n"
-        + "SET DATABASE INITIAL SCHEMA <schemaname>\n"                             //
-        + "SET FILES LOG SIZE <size>\n"                                          //
-        + "SET MAXROWS maxrows\n"                                         //
-        + "SET PASSWORD <password>\n"                                     //
+        + "SET DATABASE INITIAL SCHEMA <schemaname>\n"                             
+        + "SET FILES LOG SIZE <size>\n"                                          
+        + "SET MAXROWS maxrows\n"                                         
+        + "SET PASSWORD <password>\n"                                     
         + "SET FILES READ { ONLY | WRITE }\n"
         + "SET SCHEMA <schemaname>\n"
         + "SET TABLE <tablename> READ { ONLY | WRITE }\n"
         + "SET TABLE <tablename> SOURCE { ON | OFF }\n"
         + "SET TABLE <tablename> SOURCE \"<file>\" [DESC]\n"
-        + "\n\n"                                                          //
+        + "\n\n"                                                          
         + "(HSQLDB SQL only)"
     };
     static String[] testHelp = {
@@ -184,8 +108,8 @@ class DatabaseManagerCommon {
         + "- lines starting with --#<count> means set new count\n"
     };
     static String[] testDataSql = {
-        "SELECT * FROM Product",                                          //
-        "SELECT * FROM Invoice",                                          //
+        "SELECT * FROM Product",                                          
+        "SELECT * FROM Invoice",                                          
         "SELECT * FROM Item",
         "SELECT * FROM Customer a INNER JOIN Invoice i ON a.ID=i.CustomerID",
         "SELECT * FROM Customer a LEFT OUTER JOIN Invoice i ON a.ID=i.CustomerID",
@@ -230,7 +154,7 @@ class DatabaseManagerCommon {
 
         for (int i = 0; i < demo.length; i++) {
 
-            // drop table may fail
+            
             try {
                 sStatement.execute(demo[i]);
             } catch (SQLException e) {
@@ -296,12 +220,7 @@ class DatabaseManagerCommon {
         return ("SELECT * FROM Customer");
     }
 
-    /**
-     * Redid this file to remove sizing requirements and to make it faster
-     * Speeded it up 10 fold.
-     *
-     * @param file
-     */
+    
     static String readFile(String file) {
 
         try {
@@ -339,9 +258,7 @@ class DatabaseManagerCommon {
         }
     }
 
-    /**
-     * @throws SQLException
-     */
+    
     static long testStatement(Statement sStatement, String sql,
                               int max) throws SQLException {
 

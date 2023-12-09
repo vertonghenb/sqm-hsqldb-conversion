@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -50,38 +22,30 @@ import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Implementation of Statement for DML statements.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
 
-// support for MERGE statement originally contributed by Justin Spadea (jzs9783@users dot sourceforge.net)
+
+
 public class StatementDML extends StatementDMQL {
 
     Expression[] targets;
     boolean      isTruncate;
 
-    //
+    
     boolean        isSimpleInsert;
     int            generatedType;
     ResultMetaData generatedInputMetaData;
 
-    /** column indexes for generated values */
+    
     int[] generatedIndexes;
 
-    /** ResultMetaData for generated values */
+    
     ResultMetaData generatedResultMetaData;
 
     public StatementDML(int type, int group, HsqlName schemaName) {
         super(type, group, schemaName);
     }
 
-    /**
-     * Instantiate this as a DELETE statement
-     */
+    
     StatementDML(Session session, Table targetTable,
                  RangeVariable[] rangeVars, CompileContext compileContext,
                  boolean restartIdentity, int type) {
@@ -106,9 +70,7 @@ public class StatementDML extends StatementDMQL {
         targetRangeVariables[0].addAllColumns();
     }
 
-    /**
-     * Instantiate this as an UPDATE statement.
-     */
+    
     StatementDML(Session session, Expression[] targets, Table targetTable,
                  RangeVariable rangeVars[], int[] updateColumnMap,
                  Expression[] colExpressions, boolean[] checkColumns,
@@ -133,9 +95,7 @@ public class StatementDML extends StatementDMQL {
         targetRangeVariables[0].addAllColumns();
     }
 
-    /**
-     * Instantiate this as a MERGE statement.
-     */
+    
     StatementDML(Session session, Expression[] targets,
                  RangeVariable[] targetRangeVars, int[] insertColMap,
                  int[] updateColMap, boolean[] checkColumns,
@@ -164,9 +124,7 @@ public class StatementDML extends StatementDMQL {
         checkAccessRights(session);
     }
 
-    /**
-     * Instantiate this as a CURSOR operation statement.
-     */
+    
     StatementDML() {
         super(StatementTypes.UPDATE_CURSOR, StatementTypes.X_SQL_DATA_CHANGE,
               null);
@@ -218,7 +176,7 @@ public class StatementDML extends StatementDMQL {
         return result;
     }
 
-    // this fk references -> other  :  other read lock
+    
     void collectTableNamesForRead(OrderedHashSet set) {
 
         if (baseTable.isView()) {
@@ -302,7 +260,7 @@ public class StatementDML extends StatementDMQL {
 
     void collectTableNamesForWrite(OrderedHashSet set) {
 
-        // other fk references this :  if constraint trigger action  : other write lock
+        
         if (baseTable.isView()) {
             getTriggerTableNames(set, true);
         } else if (!baseTable.isTemp()) {
@@ -321,15 +279,10 @@ public class StatementDML extends StatementDMQL {
         }
     }
 
-    /**
-     * @todo - fredt - low priority - this does not work with different prepare calls
-     * with the same SQL statement, but different generated column requests
-     * To fix, add comment encapsulating the generated column list to SQL
-     * to differentiate between the two invocations
-     */
+    
     public void setGeneratedColumnInfo(int generate, ResultMetaData meta) {
 
-        // also supports INSERT_SELECT
+        
         if (type != StatementTypes.INSERT) {
             return;
         }
@@ -480,11 +433,7 @@ public class StatementDML extends StatementDMQL {
         }
     }
 
-    /**
-     * Executes an UPDATE statement.
-     *
-     * @return Result object
-     */
+    
     Result executeUpdateStatement(Session session) {
 
         int          count          = 0;
@@ -533,16 +482,7 @@ public class StatementDML extends StatementDMQL {
 
         rowset.endMainDataSet();
         it.release();
-/* debug 190
-        if (rowset.size() == 0) {
-            System.out.println(targetTable.getName().name + " zero update: session "
-                               + session.getId());
-        } else if (rowset.size() >1) {
-           System.out.println("multiple update: session "
-                              + session.getId() + ", " + rowset.size());
-       }
 
-//* debug 190 */
         rowset.beforeFirst();
 
         count = update(session, baseTable, rowset, generatedNavigator);
@@ -587,7 +527,7 @@ public class StatementDML extends StatementDMQL {
                     int        colIndex = columnMap[i];
                     Expression e        = expr.nodes[j];
 
-                    // transitional - still supporting null for identity generation
+                    
                     if (targetTable.identityColumn == colIndex) {
                         if (e.getType() == OpTypes.VALUE
                                 && e.valueData == null) {
@@ -658,11 +598,7 @@ public class StatementDML extends StatementDMQL {
         return data;
     }
 
-    /**
-     * Executes a MERGE statement.
-     *
-     * @return Result object
-     */
+    
     Result executeMergeStatement(Session session) {
 
         Type[]          colTypes           = baseTable.getColumnTypes();
@@ -677,15 +613,15 @@ public class StatementDML extends StatementDMQL {
 
         int count = 0;
 
-        // data generated for non-matching rows
+        
         RowSetNavigatorClient newData = new RowSetNavigatorClient(8);
 
-        // rowset for update operation
+        
         RowSetNavigatorDataChange updateRowSet =
             session.sessionContext.getRowSetDataChange();
         RangeVariable[] joinRangeIterators = targetRangeVariables;
 
-        // populate insert and update lists
+        
         RangeIterator[] rangeIterators =
             new RangeIterator[joinRangeIterators.length];
 
@@ -722,9 +658,9 @@ public class StatementDML extends StatementDMQL {
                 continue;
             }
 
-            // row matches!
+            
             if (updateExpressions.length != 0) {
-                Row row = it.getCurrentRow();    // this is always the second iterator
+                Row row = it.getCurrentRow();    
 
                 session.sessionData.startRowProcessing();
 
@@ -752,14 +688,14 @@ public class StatementDML extends StatementDMQL {
             rangeIterators[i].reset();
         }
 
-        // run the transaction as a whole, updating and inserting where needed
-        // update any matched rows
+        
+        
         if (updateExpressions.length != 0) {
             count = update(session, baseTable, updateRowSet,
                            generatedNavigator);
         }
 
-        // insert any non-matched rows
+        
         if (newData.getSize() > 0) {
             insertRowSet(session, generatedNavigator, newData);
 
@@ -820,7 +756,7 @@ public class StatementDML extends StatementDMQL {
         while (newData.hasNext()) {
             Object[] data = (Object[]) newData.getNext();
 
-            // for identity using global sequence
+            
             session.sessionData.startRowProcessing();
             baseTable.insertSingleRow(session, store, data, null);
 
@@ -943,7 +879,7 @@ public class StatementDML extends StatementDMQL {
                 }
             } else {
 
-                // DYNAMIC_PARAM and PARAMETER expressions may have wider values
+                
                 value = type.convertToType(session, value, e.dataType);
             }
 
@@ -953,45 +889,23 @@ public class StatementDML extends StatementDMQL {
         return data;
     }
 
-    /**
-     * Highest level multiple row update method.<p>
-     *
-     * Following clauses from SQL Standard section 11.8 are enforced 9) Let ISS
-     * be the innermost SQL-statement being executed. 10) If evaluation of these
-     * General Rules during the execution of ISS would cause an update of some
-     * site to a value that is distinct from the value to which that site was
-     * previously updated during the execution of ISS, then an exception
-     * condition is raised: triggered data change violation. 11) If evaluation
-     * of these General Rules during the execution of ISS would cause deletion
-     * of a row containing a site that is identified for replacement in that
-     * row, then an exception condition is raised: triggered data change
-     * violation.
-     *
-     * @param session Session
-     * @param table Table
-     * @param updateList RowSetNavigatorDataChange
-     * @return int
-     */
+    
     int update(Session session, Table table,
                RowSetNavigatorDataChange navigator,
                RowSetNavigator generatedNavigator) {
 
         int rowCount = navigator.getSize();
 
-        // set identity column where null and check columns
+        
         for (int i = 0; i < rowCount; i++) {
             navigator.next();
 
             Object[] data = navigator.getCurrentChangedData();
 
-            // for identity using global sequence
+            
             session.sessionData.startRowProcessing();
 
-            /**
-             * @todo 1.9.0 - make optional using database property -
-             * this means the identity column can be set to null to force
-             * creation of a new identity value
-             */
+            
             table.setIdentityColumn(session, data);
             table.setGeneratedColumns(session, data);
         }
@@ -1069,7 +983,7 @@ public class StatementDML extends StatementDMQL {
                 generatedNavigator.add(generatedValues);
             }
 
-//            newRow.rowAction.updatedAction = row.rowAction;
+
         }
 
         navigator.beforeFirst();
@@ -1132,11 +1046,7 @@ public class StatementDML extends StatementDMQL {
         return rowCount;
     }
 
-    /**
-     * Executes a DELETE statement.
-     *
-     * @return the result of executing the statement
-     */
+    
     Result executeDeleteStatement(Session session) {
 
         int count = 0;
@@ -1200,10 +1110,7 @@ public class StatementDML extends StatementDMQL {
         return Result.updateOneResult;
     }
 
-    /**
-     *  Highest level multiple row delete method. Corresponds to an SQL
-     *  DELETE.
-     */
+    
     int delete(Session session, Table table,
                RowSetNavigatorDataChange navigator) {
 
@@ -1284,7 +1191,7 @@ public class StatementDML extends StatementDMQL {
                 Row newRow = currentTable.insertSingleRow(session, store,
                     data, changedColumns);
 
-//                newRow.rowAction.updatedAction = row.rowAction;
+
             }
 
             navigator.beforeFirst();
@@ -1454,7 +1361,7 @@ public class StatementDML extends StatementDMQL {
                 Row      refRow  = refiterator.getNextRow();
                 Object[] refData = null;
 
-                /** @todo use MATCH */
+                
                 if (c.core.refIndex.compareRowNonUnique(
                         session, refRow.getData(), row.getData(),
                         c.core.mainCols) != 0) {
@@ -1537,7 +1444,7 @@ public class StatementDML extends StatementDMQL {
                             continue;
                         }
 
-                    // fall through
+                    
                     case SchemaObject.ReferentialAction.RESTRICT : {
                         int errorCode = c.core.deleteAction
                                         == SchemaObject.ReferentialAction
@@ -1570,7 +1477,7 @@ public class StatementDML extends StatementDMQL {
 
                 if (refData == null) {
 
-                    // happens only with enforceDeleteOrUpdate=false and updated row is already deleted
+                    
                     continue;
                 }
 

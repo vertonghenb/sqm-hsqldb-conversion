@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.scriptio;
@@ -56,39 +28,11 @@ import org.hsqldb.navigator.RowIterator;
 import org.hsqldb.navigator.RowSetNavigator;
 import org.hsqldb.result.Result;
 
-//import org.hsqldb.lib.StopWatch;
 
-/**
- * @todo - can lock the database engine as readonly in a wrapper for this when
- * used at checkpoint
- */
 
-/**
- * Handles all logging to file operations. A log consists of three kinds of
- * blocks:<p>
- *
- * DDL BLOCK: definition of DB objects, users and rights at startup time<br>
- * DATA BLOCK: all data for MEMORY tables at startup time<br>
- * LOG BLOCK: SQL statements logged since startup or the last CHECKPOINT<br>
- *
- * The implementation of this class and its subclasses support the formats
- * used for writing the data. Since 1.7.2 the data can also be
- * written as binray in order to speed up shutdown and startup.<p>
- *
- * From 1.7.2, two separate files are used, one for the DDL + DATA BLOCK and
- * the other for the LOG BLOCK.<p>
- *
- * A related use for this class is for saving a current snapshot of the
- * database data to a user-defined file. This happens in the SHUTDOWN COMPACT
- * process or done as a result of the SCRIPT command. In this case, the
- * DATA block contains the CACHED table data as well.<p>
- *
- * DatabaseScriptReader and its subclasses read back the data at startup time.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.1.1
- * @since 1.7.2
- */
+
+
+
 public abstract class ScriptWriterBase implements Runnable {
 
     Database            database;
@@ -99,14 +43,11 @@ public abstract class ScriptWriterBase implements Runnable {
     HsqlName            schemaToLog;
     boolean             isClosed;
 
-    //
+    
     boolean isCompressed;
     boolean isCrypt;
 
-    /**
-     * this determines if the script is the normal script (false) used
-     * internally by the engine or a user-initiated snapshot of the DB (true)
-     */
+    
     boolean          isDump;
     boolean          includeCachedData;
     long             byteCount;
@@ -116,7 +57,7 @@ public abstract class ScriptWriterBase implements Runnable {
     static final int INSERT             = 0;
     static final int INSERT_WITH_SCHEMA = 1;
 
-    /** the last schema for last sessionId */
+    
     Session                      currentSession;
     public static final String[] LIST_SCRIPT_FORMATS = new String[] {
         Tokens.T_TEXT, Tokens.T_BINARY, null, Tokens.T_COMPRESSED
@@ -132,7 +73,7 @@ public abstract class ScriptWriterBase implements Runnable {
         this.includeCachedData = includeCachedData;
         currentSession         = database.sessionManager.getSysSession();
 
-        // start with neutral schema - no SET SCHEMA to log
+        
         schemaToLog = currentSession.loggedSchema =
             currentSession.currentSchema;
         fileStreamOut = new BufferedOutputStream(outputStream, 1 << 14);
@@ -162,7 +103,7 @@ public abstract class ScriptWriterBase implements Runnable {
         outFile                = file;
         currentSession         = database.sessionManager.getSysSession();
 
-        // start with neutral schema - no SET SCHEMA to log
+        
         schemaToLog = currentSession.loggedSchema =
             currentSession.currentSchema;
 
@@ -171,9 +112,7 @@ public abstract class ScriptWriterBase implements Runnable {
 
     protected abstract void initBuffers();
 
-    /**
-     *  Called internally or externally in write delay intervals.
-     */
+    
     public void sync() {
 
         if (isClosed) {
@@ -199,11 +138,7 @@ public abstract class ScriptWriterBase implements Runnable {
                 outDescriptor.sync();
 
                 syncCount++;
-/*
-                System.out.println(
-                    this.outFile + " FD.sync done at "
-                    + new java.sql.Timestamp(System.currentTimeMillis()));
-*/
+
             } catch (IOException e) {
                 database.logger.logWarningEvent("ScriptWriter synch error: ",
                                                 e);
@@ -251,10 +186,7 @@ public abstract class ScriptWriterBase implements Runnable {
         }
     }
 
-    /**
-     *  File is opened in append mode although in current usage the file
-     *  never pre-exists
-     */
+    
     protected void openFile() {
 
         try {
@@ -284,7 +216,7 @@ public abstract class ScriptWriterBase implements Runnable {
 
     protected void writeExistingData() throws IOException {
 
-        // start with blank schema - SET SCHEMA to log
+        
         currentSession.loggedSchema = null;
 
         String[] schemas = database.schemaManager.getSchemaNamesArray();
@@ -298,10 +230,10 @@ public abstract class ScriptWriterBase implements Runnable {
             while (tables.hasNext()) {
                 Table t = (Table) tables.next();
 
-                // write all memory table data
-                // write cached table data unless index roots have been written
-                // write all text table data apart from readonly text tables
-                // unless index roots have been written
+                
+                
+                
+                
                 boolean script = false;
 
                 switch (t.getTableType()) {
@@ -386,10 +318,10 @@ public abstract class ScriptWriterBase implements Runnable {
     public abstract void writeCommitStatement(Session session)
     throws IOException;
 
-    //
+    
     private Object timerTask;
 
-    // long write delay for scripts : 60s
+    
     protected volatile int writeDelay = 60000;
 
     public void run() {
@@ -399,11 +331,11 @@ public abstract class ScriptWriterBase implements Runnable {
                 sync();
             }
 
-            /** @todo: can do Cache.cleanUp() here, too */
+            
         } catch (Exception e) {
 
-            // ignore exceptions
-            // may be InterruptedException or IOException
+            
+            
         }
     }
 

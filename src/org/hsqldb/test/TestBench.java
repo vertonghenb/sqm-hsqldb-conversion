@@ -1,46 +1,11 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
 
-// nbazin@users - enhancements to the original code
-// fredt@users - 20050202 - corrected getRandomID(int) to return a randomly distributed value
-/*
- *  This is a sample implementation of the Transaction Processing Performance
- *  Council Benchmark B coded in Java and ANSI SQL2.
- *
- *  This version is using one connection per thread to parallellize
- *  server operations.
- * @author Mark Matthews (mark@mysql.com)
- */
+
+
+
 import java.io.PrintStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -54,13 +19,13 @@ import java.sql.CallableStatement;
 
 class TestBench {
 
-    /* tpc bm b scaling rules */
-    public static int tps       = 1;                     /* the tps scaling factor: here it is 1 */
-    public static int nbranches = 1;                     /* number of branches in 1 tps db       */
-    public static int ntellers  = 10;                    /* number of tellers in  1 tps db       */
-    public static int naccounts = 100000;                /* number of accounts in 1 tps db       */
-    public static int nhistory = 864000;                 /* number of history recs in 1 tps db   */
-    public static int       rounds              = 10;    /* number of rounds to run the test     */
+    
+    public static int tps       = 1;                     
+    public static int nbranches = 1;                     
+    public static int ntellers  = 10;                    
+    public static int naccounts = 100000;                
+    public static int nhistory = 864000;                 
+    public static int       rounds              = 10;    
     public static final int TELLER              = 0;
     public static final int BRANCH              = 1;
     public static final int ACCOUNT             = 2;
@@ -77,11 +42,7 @@ class TestBench {
     static boolean          verbose             = true;
     MemoryWatcherThread     MemoryWatcher;
 
-    /* main program,    creates a 1-tps database:  i.e. 1 branch, 10 tellers,...
-     *                    runs one TPC BM B transaction
-     * example command line:
-     * -driver  org.hsqldb.jdbc.JDBCDriver -url jdbc:hsqldb:/hsql/jdbcbench/test -user SA -clients 20 -tpc 10000
-     */
+    
     public static void main(String[] Args) {
 
         String  DriverName         = "";
@@ -260,7 +221,7 @@ class TestBench {
                 }
             } catch (Exception E1) {}
 
-//            System.exit(0);
+
         }
     }
 
@@ -272,7 +233,7 @@ class TestBench {
         Enumeration e        = null;
         Connection  guardian = null;
 
-        //
+        
         start_time = System.currentTimeMillis();
 
         for (int i = 0; i < n_clients; i++) {
@@ -290,9 +251,7 @@ class TestBench {
             vClient.addElement(Client);
         }
 
-        /*
-         ** Barrier to complete this test session
-         */
+        
         e = vClient.elements();
 
         while (e.hasMoreElements()) {
@@ -370,10 +329,10 @@ class TestBench {
             Statement Stmt       = Conn.createStatement();
             String    Query;
 
-//
-//            Stmt.execute("SET WRITE_DELAY 1000 MILLIS;");
-//            Stmt.execute("SET DATABASE DEFAULT TABLE TYPE CACHED");
-//
+
+
+
+
             Query = "SELECT count(*) ";
             Query += "FROM   accounts";
 
@@ -433,7 +392,7 @@ class TestBench {
 
             Query = "CREATE TABLE branches ( "
                     + "Bid         INTEGER NOT NULL PRIMARY KEY, "
-                    + "Bbalance    INTEGER," + "filler      CHAR(88))";    /* pad to 100 bytes */
+                    + "Bbalance    INTEGER," + "filler      CHAR(88))";    
 
             Stmt.execute(Query);
             Stmt.clearWarnings();
@@ -441,7 +400,7 @@ class TestBench {
             Query = "CREATE TABLE tellers ("
                     + "Tid         INTEGER NOT NULL PRIMARY KEY,"
                     + "Bid         INTEGER," + "Tbalance    INTEGER,"
-                    + "filler      CHAR(84))";                             /* pad to 100 bytes */
+                    + "filler      CHAR(84))";                             
 
             if (createExtension.length() > 0) {
                 Query += createExtension;
@@ -453,7 +412,7 @@ class TestBench {
             Query = "CREATE TABLE accounts ("
                     + "Aid         INTEGER NOT NULL PRIMARY KEY, "
                     + "Bid         INTEGER, " + "Abalance    INTEGER, "
-                    + "filler      CHAR(84))";                             /* pad to 100 bytes */
+                    + "filler      CHAR(84))";                             
 
             if (createExtension.length() > 0) {
                 Query += createExtension;
@@ -465,7 +424,7 @@ class TestBench {
             Query = "CREATE TABLE history (" + "Tid         INTEGER, "
                     + "Bid         INTEGER, " + "Aid         INTEGER, "
                     + "delta       INTEGER, " + "tstime        TIMESTAMP, "
-                    + "filler      CHAR(22))";                             /* pad to 50 bytes  */
+                    + "filler      CHAR(22))";                             
 
             Stmt.execute(Query);
             Stmt.clearWarnings();
@@ -490,12 +449,7 @@ class TestBench {
                 e.printStackTrace();
             }
 
-/*
-            Stmt.execute("SET TABLE ACCOUNTS SOURCE \"ACCOUNTS.TXT\"");
-            Stmt.execute("SET TABLE BRANCHES SOURCE \"BBRANCHES.TXT\"");
-            Stmt.execute("SET TABLE TELLERS SOURCE \"TELLERS.TXT\"");
-            Stmt.execute("SET TABLE HISTORY SOURCE \"HISTORY.TXT\"");
-*/
+
             Conn.commit();
             Stmt.close();
         } catch (Exception E) {
@@ -528,11 +482,7 @@ class TestBench {
             Stmt.clearWarnings();
             Conn.commit();
 
-            /* prime database using TPC BM B scaling rules.
-             **  Note that for each branch and teller:
-             **      branch_id = teller_id  / ntellers
-             **      branch_id = account_id / naccounts
-             */
+            
             PreparedStatement pstmt = null;
 
             try {
@@ -601,7 +551,7 @@ class TestBench {
             System.out.println("\t" + (naccounts * tps)
                                + "\t records inserted");
 
-            // for tests
+            
             if (ShutdownCommand.length() > 0) {
                 Stmt.execute(ShutdownCommand);
                 System.out.println("database shutdown");
@@ -614,7 +564,7 @@ class TestBench {
         }
 
         connectClose(Conn);
-    }    /* end of CreateDatabase    */
+    }    
 
     public static int getRandomInt(int lo, int hi) {
 
@@ -816,21 +766,7 @@ class TestBench {
                 incrementTransactionCount();
             }
 
-/*
-            count = ntrans * 20;
 
-            try {
-                Conn.setReadOnly(true);
-                while (count-- > 0) {
-                    int account = TestBench.getRandomID(ACCOUNT);
-
-                    pstmt2.setInt(1, account);
-                    pstmt2.executeQuery();
-                    Conn.commit();
-                    incrementTransactionCount();
-                }
-            } catch (SQLException e) {}
-*/
             try {
                 if (pstmt1 != null) {
                     pstmt1.close();
@@ -861,9 +797,7 @@ class TestBench {
             Conn = null;
         }
 
-        /*
-         **  doOne() - Executes a single TPC BM B transaction.
-         */
+        
         int doOne(int bid, int tid, int aid, int delta) {
 
             int aBalance = 0;
@@ -921,8 +855,8 @@ class TestBench {
             }
 
             return 0;
-        }    /* end of DoOne         */
-    }    /* end of class ClientThread */
+        }    
+    }    
 
     class ClientThreadProcedure extends Thread {
 
@@ -989,9 +923,7 @@ class TestBench {
             Conn = null;
         }
 
-        /*
-         **  doOne() - Executes a single TPC BM B transaction.
-         */
+        
         int doOne(int bid, int tid, int aid, int delta) {
 
             int aBalance = 0;
@@ -1035,8 +967,8 @@ class TestBench {
             }
 
             return 0;
-        }    /* end of DoOne         */
-    }    /* end of class ClientThread */
+        }    
+    }    
 
     class MemoryWatcherThread extends Thread {
 
@@ -1085,5 +1017,5 @@ class TestBench {
                 } catch (InterruptedException E) {}
             }
         }
-    }    /* end of class MemoryWatcherThread */
+    }    
 }

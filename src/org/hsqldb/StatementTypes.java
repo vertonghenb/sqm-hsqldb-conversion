@@ -1,43 +1,9 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
 
-/*
- * Codes based on SQL Standards for different types of statement.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public interface StatementTypes {
 
     int ALLOCATE_CURSOR                  = 1;
@@ -60,7 +26,7 @@ public interface StatementTypes {
     int DELETE_CURSOR                    = 18;
     int DELETE_WHERE                     = 19;
     int DESCRIBE                         = 20;
-    int SELECT_DIRECT_SINGLE             = 21;    // identifier is SELECT
+    int SELECT_DIRECT_SINGLE             = 21;    
     int DISCONNECT                       = 22;
     int CREATE_DOMAIN                    = 23;
     int DROP_ASSERTION                   = 24;
@@ -84,7 +50,7 @@ public interface StatementTypes {
     int DYNAMIC_FETCH                    = 39;
     int DYNAMIC_OPEN                     = 40;
     int SELECT_CURSOR                    = 85;
-    int SELECT_SINGLE_DYNAMIC            = 41;    // identifier is SELECT
+    int SELECT_SINGLE_DYNAMIC            = 41;    
     int DYNAMIC_UPDATE_CURSOR            = 42;
     int EXECUTE_IMMEDIATE                = 43;
     int EXECUTE                          = 44;
@@ -109,7 +75,7 @@ public interface StatementTypes {
     int SAVEPOINT                        = 63;
     int CREATE_SCHEMA                    = 64;
     int CREATE_ROUTINE                   = 14;
-    int SELECT_SINGLE                    = 65;    // identifier is SELECT
+    int SELECT_SINGLE                    = 65;    
     int CREATE_SEQUENCE                  = 133;
     int SET_CATALOG                      = 66;
     int SET_CONNECTION                   = 67;
@@ -136,7 +102,7 @@ public interface StatementTypes {
     int CREATE_TYPE                      = 83;
     int CREATE_ORDERING                  = 114;
     int CREATE_VIEW                      = 84;
-    int ASSIGNMENT                       = 5;     // PSM
+    int ASSIGNMENT                       = 5;     
     int CASE                             = 86;
     int BEGIN_END                        = 12;
     int DROP_MODULE                      = 28;
@@ -151,7 +117,7 @@ public interface StatementTypes {
     int CREATE_MODULE                    = 51;
     int WHILE                            = 97;
 
-    //
+    
     int ALTER_FOREIGN_TABLE         = 104;
     int ALTER_USER_MAPPING          = 123;
     int DROP_FOREIGN_DATA_WRAPPER   = 121;
@@ -167,14 +133,14 @@ public interface StatementTypes {
     int SET_PASSTHROUGH             = 126;
     int CREATE_USER_MAPPING         = 122;
 
-    // hsqldb database
+    
     int DATABASE_BACKUP     = 1001;
     int DATABASE_CHECKPOINT = 1002;
     int DATABASE_SHUTDOWN   = 1003;
     int DATABASE_SCRIPT     = 1004;
     int ALTER_SESSION       = 1005;
 
-    // hsqldb database settings
+    
     int SET_DATABASE_FILES_BACKUP_INCREMENT    = 1011;
     int SET_DATABASE_FILES_CACHE_ROWS          = 1012;
     int SET_DATABASE_FILES_CACHE_SIZE          = 1013;
@@ -210,12 +176,12 @@ public interface StatementTypes {
     int SET_DATABASE_TRANSACTION_CONFLICT      = 1051;
     int SET_DATABASE_UNIQUE_NAME               = 1052;
 
-    // hsqldb user settings
+    
     int SET_USER_LOCAL          = 1060;
     int SET_USER_INITIAL_SCHEMA = 1061;
     int SET_USER_PASSWORD       = 1062;
 
-    // hsqldb session
+    
     int TRANSACTION_LOCK_TABLE         = 1063;
     int SET_SESSION_AUTOCOMMIT         = 1064;
     int SET_SESSION_RESULT_MAX_ROWS    = 1065;
@@ -223,7 +189,7 @@ public interface StatementTypes {
     int ROLLBACK_SAVEPOINT             = 1067;
     int DECLARE_SESSION_TABLE          = 1068;
 
-    // hsqldb schema
+    
     int ALTER_INDEX                 = 1069;
     int ALTER_VIEW                  = 1070;
     int COMMENT                     = 1071;
@@ -247,7 +213,7 @@ public interface StatementTypes {
     int ALTER_COLUMN_DROP_GENERATED = 1089;
     int ALTER_COLUMN_TYPE_IDENTITY  = 1090;
 
-    //
+    
     int EXPLAIN_PLAN            = 1191;
     int RENAME_OBJECT           = 1192;
     int SET_TABLE_INDEX         = 1193;
@@ -258,14 +224,14 @@ public interface StatementTypes {
     int SET_TABLE_CLUSTERED     = 1198;
     int LOG_SCHEMA_STATEMENT    = 1199;
 
-    // hsqldb sql implementation
-    int CONDITION = 1201;                         // element of IF
+    
+    int CONDITION = 1201;                         
     int HANDLER   = 1202;
     int DDL       = 1203;
     int CHECK     = 1204;
     int TRUNCATE  = 1205;
 
-    // hsqldb groups
+    
     int X_SQL_SCHEMA_DEFINITION      = 2001;
     int X_SQL_SCHEMA_MANIPULATION    = 2002;
     int X_SQL_DATA                   = 2003;
@@ -283,7 +249,7 @@ public interface StatementTypes {
     int X_HSQLDB_TRANSACTION         = 2015;
     int X_DYNAMIC                    = 2016;
 
-    // Expected types of Result returned for an SQL statement
+    
     int RETURN_ANY    = 0;
     int RETURN_COUNT  = 1;
     int RETURN_RESULT = 2;

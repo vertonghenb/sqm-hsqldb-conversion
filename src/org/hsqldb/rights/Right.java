@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.rights;
@@ -41,14 +13,7 @@ import org.hsqldb.lib.HashSet;
 import org.hsqldb.lib.HsqlArrayList;
 import org.hsqldb.lib.OrderedHashSet;
 
-/**
- * Represents the set of rights on a database object
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- *
- * @version 2.0.1
- * @since 1.9.0
- */
+
 public final class Right {
 
     boolean        isFull;
@@ -64,12 +29,12 @@ public final class Right {
     OrderedHashSet referencesColumnSet;
     OrderedHashSet triggerColumnSet;
 
-    //
+    
     Right   grantableRights;
     Grantee grantor;
     Grantee grantee;
 
-    //
+    
     public static final OrderedHashSet emptySet      = new OrderedHashSet();
     public static final Right          fullRights    = new Right();
     public static final Right          noRights      = new Right();
@@ -133,9 +98,7 @@ public final class Right {
         return right;
     }
 
-    /**
-     * Supports column level GRANT
-     */
+    
     public void add(Right right) {
 
         if (isFull) {
@@ -207,9 +170,7 @@ public final class Right {
         }
     }
 
-    /**
-     * supports column level REVOKE
-     */
+    
     public void remove(SchemaObject object, Right right) {
 
         if (right.isFull) {
@@ -322,9 +283,7 @@ public final class Right {
             referencesColumnSet = triggerColumnSet = null;
     }
 
-    /**
-     * supports column level GRANT / REVOKE
-     */
+    
     public boolean isEmpty() {
 
         if (isFull || isFullSelect || isFullInsert || isFullUpdate
@@ -386,7 +345,7 @@ public final class Right {
         return set;
     }
 
-    // construction
+    
     public boolean contains(Right right) {
 
         if (isFull) {
@@ -481,9 +440,7 @@ public final class Right {
         return emptySet;
     }
 
-    /**
-     * Supports column level checks
-     */
+    
     static boolean containsAllColumns(OrderedHashSet columnSet, Table table,
                                       boolean[] columnCheckList) {
 
@@ -525,9 +482,7 @@ public final class Right {
         return true;
     }
 
-    /**
-     * Supports column level rights
-     */
+    
     boolean canSelect(Table table, boolean[] columnCheckList) {
 
         if (isFull || isFullSelect) {
@@ -537,9 +492,7 @@ public final class Right {
         return containsAllColumns(selectColumnSet, table, columnCheckList);
     }
 
-    /**
-     * Supports column level rights
-     */
+    
     boolean canInsert(Table table, boolean[] columnCheckList) {
 
         if (isFull || isFullInsert) {
@@ -549,9 +502,7 @@ public final class Right {
         return containsAllColumns(insertColumnSet, table, columnCheckList);
     }
 
-    /**
-     * Supports column level rights
-     */
+    
     boolean canUpdate(Table table, boolean[] columnCheckList) {
 
         if (isFull || isFullUpdate) {
@@ -561,9 +512,7 @@ public final class Right {
         return containsAllColumns(updateColumnSet, table, columnCheckList);
     }
 
-    /**
-     * Supports column level rights
-     */
+    
     boolean canReference(Table table, boolean[] columnCheckList) {
 
         if (isFull || isFullReferences) {
@@ -573,9 +522,7 @@ public final class Right {
         return containsAllColumns(referencesColumnSet, table, columnCheckList);
     }
 
-    /**
-     * Supports column level rights
-     */
+    
     boolean canTrigger(Table table, boolean[] columnCheckList) {
 
         if (isFull || isFullTrigger) {
@@ -645,9 +592,7 @@ public final class Right {
         return result;
     }
 
-    /**
-     * Supports column level rights
-     */
+    
     public boolean canAccess(int privilegeType) {
 
         if (isFull) {
@@ -744,9 +689,7 @@ public final class Right {
         return result;
     }
 
-    /**
-     * supports column level GRANT
-     */
+    
     String getTableRightsSQL(Table table) {
 
         StringBuffer sb = new StringBuffer();
@@ -952,12 +895,7 @@ public final class Right {
         }
     }
 
-    /**
-     * Used solely by org.hsqldb.dbinfo in existing system tables lacking column
-     * level reporting.<p>
-     *
-     * Returns names of individual rights instead of ALL
-     */
+    
     String[] getTableRightsArray() {
 
         if (isFull) {

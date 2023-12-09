@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -37,24 +9,12 @@ import java.sql.SQLException;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
 
-/**
- * See AbstractTestOdbc for more general ODBC test information.
- *
- * Standard test methods perform the named test, then perform a simple
- * (non-prepared) query to verify the state of the server is healthy enough
- * to successfully serve a query.
- * (We may or many not add test(s) to verify behavior when no static query
- * follows).
- *
- * @see AbstractTestOdbc
- */
+
 public class TestOdbcService extends AbstractTestOdbc {
 
     public TestOdbcService() {}
 
-    /**
-     * Accommodate JUnit's test-runner conventions.
-     */
+    
     public TestOdbcService(String s) {
         super(s);
     }
@@ -79,10 +39,7 @@ public class TestOdbcService extends AbstractTestOdbc {
         }
     }
 
-    /**
-     * Tests with input and output parameters, and rerunning query with
-     * modified input parameters.
-     */
+    
     public void testFullyPreparedQuery() {
         try {
             ResultSet rs;
@@ -133,7 +90,7 @@ public class TestOdbcService extends AbstractTestOdbc {
             assertFalse("Too many rows fetched", rs.next());
             rs.close();
 
-            verifySimpleQueryOutput(); // Verify server state still good
+            verifySimpleQueryOutput(); 
         } catch (SQLException se) {
             junit.framework.AssertionFailedError ase
                 = new junit.framework.AssertionFailedError(se.getMessage());
@@ -153,9 +110,7 @@ public class TestOdbcService extends AbstractTestOdbc {
         }
     }
 
-    /**
-     * Assumes none of the records above i=20 have been modified.
-     */
+    
     public void verifySimpleQueryOutput() throws SQLException {
         ResultSet rs = netConn.createStatement().executeQuery(
             "SELECT i, 3, vc, 'str' FROM nullmix WHERE i > 20 ORDER BY i");
@@ -320,7 +275,7 @@ public class TestOdbcService extends AbstractTestOdbc {
             assertFalse("Too many rows fetched", rs.next());
             rs.close();
 
-            verifySimpleQueryOutput(); // Verify server state still good
+            verifySimpleQueryOutput(); 
         } catch (SQLException se) {
             junit.framework.AssertionFailedError ase
                 = new junit.framework.AssertionFailedError(se.getMessage());
@@ -378,9 +333,9 @@ public class TestOdbcService extends AbstractTestOdbc {
         st.executeUpdate("CREATE TABLE nullmix "
                 + "(i INT NOT NULL, vc VARCHAR(20), xtra VARCHAR(20))");
 
-        // Would be more elegant and efficient to use a prepared statement
-        // here, but our we want this setup to be as simple as possible, and
-        // leave feature testing for the actual unit tests.
+        
+        
+        
         st.executeUpdate("INSERT INTO nullmix (i, vc) values(10, 'ten')");
         st.executeUpdate("INSERT INTO nullmix (i, vc) values(5, 'five')");
         st.executeUpdate("INSERT INTO nullmix (i, vc) values(15, 'fifteen')");

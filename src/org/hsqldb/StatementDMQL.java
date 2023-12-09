@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -45,107 +17,78 @@ import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.rights.Grantee;
 import org.hsqldb.store.ValuePool;
 
-/**
- * Statement implementation for DML and base DQL statements.
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.7.2
- */
 
-// fredt@users 20040404 - patch 1.7.2 - fixed type resolution for parameters
-// boucherb@users 200404xx - patch 1.7.2 - changed parameter naming scheme for SQLCI client usability/support
-// fredt@users 20050609 - 1.8.0 - fixed EXPLAIN PLAN by implementing describe(Session)
-// fredt@users - 1.9.0 - support for generated column reporting
-// fredt@users - 1.9.0 - support for multi-row inserts
+
+
+
+
+
+
 public abstract class StatementDMQL extends Statement {
 
     public static final String PCOL_PREFIX        = "@p";
     static final String        RETURN_COLUMN_NAME = "@p0";
 
-    /** target table for INSERT_XXX, UPDATE and DELETE and MERGE */
+    
     Table targetTable;
     Table baseTable;
 
-    /** column map of query expression */
+    
     int[]           baseColumnMap;
     RangeVariable[] targetRangeVariables = RangeVariable.emptyArray;
 
-    /** source table for MERGE */
+    
     Table sourceTable;
 
-    /** condition expression for UPDATE, MERGE and DELETE */
+    
     Expression condition;
 
-    /** for TRUNCATE variation of DELETE */
+    
     boolean restartIdentity;
 
-    /** column map for INSERT operation direct or via MERGE */
+    
     int[] insertColumnMap = ValuePool.emptyIntArray;
 
-    /** column map for UPDATE operation direct or via MERGE */
+    
     int[] updateColumnMap     = ValuePool.emptyIntArray;
     int[] baseUpdateColumnMap = ValuePool.emptyIntArray;
 
-    /** Column value Expressions for UPDATE and MERGE. */
+    
     Expression[] updateExpressions = Expression.emptyArray;
 
-    /** Column value Expressions for MERGE */
+    
     Expression[][] multiColumnValues;
 
-    /** INSERT_VALUES */
+    
     Expression insertExpression;
 
-    /**
-     * Flags indicating which columns' values will/will not be
-     * explicitly set.
-     */
+    
     boolean[] insertCheckColumns;
     boolean[] updateCheckColumns;
 
-    /**
-     * VIEW check
-     */
+    
     Expression    updatableTableCheck;
     RangeVariable checkRangeVariable;
 
-    /**
-     * Select to be evaluated when this is an INSERT_SELECT or
-     * SELECT statement
-     */
+    
     QueryExpression queryExpression;
 
-    /**
-     * Name of cursor
-     */
+    
     SimpleName cursorName;
 
-    /**
-     * Parse-order array of Expression objects, all of type PARAMETER ,
-     * involved in some way in any INSERT_XXX, UPDATE, DELETE, SELECT or
-     * CALL CompiledStatement
-     */
+    
     ExpressionColumn[] parameters;
 
-    /**
-     * ResultMetaData for parameters
-     */
+    
     ResultMetaData parameterMetaData;
 
-    /**
-     * Subqueries inverse usage depth order
-     */
+    
     SubQuery[] subqueries = SubQuery.emptySubqueryArray;
 
-    /**
-     * Total number of RangeIterator objects used
-     */
+    
     int rangeIteratorCount;
 
-    /**
-     * Database objects used
-     */
+    
     NumberSequence[] sequences;
     Routine[]        routines;
     RangeVariable[]  rangeVariables;
@@ -285,7 +228,7 @@ public abstract class StatementDMQL extends Statement {
         for (int i = 0; i < subqueries.length; i++) {
             SubQuery sq = subqueries[i];
 
-            // VIEW working tables may be reused in a single query but they are filled only once
+            
             if (!subqueryPopFlags.add(sq)) {
                 continue;
             }
@@ -391,11 +334,7 @@ public abstract class StatementDMQL extends Statement {
         }
     }
 
-    /**
-     * Determines if the authorizations are adequate
-     * to execute the compiled object. Completion requires the list of
-     * all database objects in a compiled statement.
-     */
+    
     void checkAccessRights(Session session) {
 
         if (targetTable != null && !targetTable.isTemp()) {
@@ -497,10 +436,7 @@ public abstract class StatementDMQL extends Statement {
         return null;
     }
 
-    /**
-     * Returns the metadata, which is empty if the CompiledStatement does not
-     * generate a Result.
-     */
+    
     public ResultMetaData getResultMetaData() {
 
         switch (type) {
@@ -516,11 +452,9 @@ public abstract class StatementDMQL extends Statement {
         }
     }
 
-    /** @todo 1.9.0 - build the metadata only once and reuse */
+    
 
-    /**
-     * Returns the metadata for the placeholder parameters.
-     */
+    
     public ResultMetaData getParametersMetaData() {
         return parameterMetaData;
     }
@@ -539,33 +473,33 @@ public abstract class StatementDMQL extends Statement {
             return;
         }
 
-// NO:  Not yet
-//        hasReturnValue = (type == CALL && !expression.isProcedureCall());
-//
-//        if (hasReturnValue) {
-//            outlen++;
-//            offset = 1;
-//        }
+
+
+
+
+
+
+
         parameterMetaData =
             ResultMetaData.newParameterMetaData(parameters.length);
 
-// NO: Not yet
-//        if (hasReturnValue) {
-//            e = expression;
-//            out.sName[0]       = DIProcedureInfo.RETURN_COLUMN_NAME;
-//            out.sClassName[0]  = e.getValueClassName();
-//            out.colType[0]     = e.getDataType();
-//            out.colSize[0]     = e.getColumnSize();
-//            out.colScale[0]    = e.getColumnScale();
-//            out.nullability[0] = e.nullability;
-//            out.isIdentity[0]  = false;
-//            out.paramMode[0]   = expression.PARAM_OUT;
-//        }
+
+
+
+
+
+
+
+
+
+
+
+
         for (int i = 0; i < parameters.length; i++) {
             idx = i + offset;
 
-            // always i + 1.  We currently use the convention of @p0 to name the
-            // return value OUT parameter
+            
+            
             parameterMetaData.columnLabels[idx] = StatementDMQL.PCOL_PREFIX
                                                   + (i + 1);
             parameterMetaData.columnTypes[idx] = parameters[i].dataType;
@@ -590,9 +524,7 @@ public abstract class StatementDMQL extends Statement {
         }
     }
 
-    /**
-     * Retrieves a String representation of this object.
-     */
+    
     public String describe(Session session) {
 
         try {
@@ -604,9 +536,7 @@ public abstract class StatementDMQL extends Statement {
         }
     }
 
-    /**
-     * Provides the toString() implementation.
-     */
+    
     String describeImpl(Session session) throws Exception {
 
         StringBuffer sb;

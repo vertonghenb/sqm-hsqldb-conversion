@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -43,13 +15,7 @@ import org.hsqldb.lib.Iterator;
 import org.hsqldb.lib.Set;
 import org.hsqldb.lib.StringUtil;
 
-/**
- * Manages a .properties file for a database.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.8
- * @since 1.7.0
- */
+
 public class HsqlDatabaseProperties extends HsqlProperties {
 
     private static final String hsqldb_method_class_names =
@@ -72,19 +38,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
         } catch (Exception e) {}
     }
 
-    /**
-     * If the system property "hsqldb.method_class_names" is not set, then
-     * static methods of all available Java classes can be accessed as functions
-     * in HSQLDB. If the property is set, then only the list of semicolon
-     * seperated method names becomes accessible. An empty property value means
-     * no class is accessible.<p>
-     *
-     * A property value that ends with .* is treated as a wild card and allows
-     * access to all classe or method names formed by substitution of the
-     * asterisk.<p>
-     *
-     * All methods of java.lang.Math are always accessible.
-     */
+    
     public static boolean supportsJavaMethod(String name) {
 
         if (accessibleJavaMethodNames == null) {
@@ -117,12 +71,12 @@ public class HsqlDatabaseProperties extends HsqlProperties {
         return false;
     }
 
-    // accessibility
+    
     public static final int SYSTEM_PROPERTY = 0;
     public static final int FILE_PROPERTY   = 1;
     public static final int SQL_PROPERTY    = 2;
 
-    // db files modified
+    
     public static final int     FILES_NOT_MODIFIED = 0;
     public static final int     FILES_MODIFIED     = 1;
     public static final int     FILES_MODIFIED_NEW = 2;
@@ -132,11 +86,11 @@ public class HsqlDatabaseProperties extends HsqlProperties {
     private static final String MODIFIED_YES_NEW   = "yes-new-files";
     private static final String MODIFIED_NO_NEW    = "no-new-files";
 
-    // allowed property metadata
+    
     private static final HashMap dbMeta   = new HashMap(67);
     private static final HashMap textMeta = new HashMap(17);
 
-    // versions
+    
     public static final String VERSION_STRING_1_8_0 = "1.8.0";
     public static final String THIS_VERSION         = "2.2.8";
     public static final String THIS_FULL_VERSION    = "2.2.8";
@@ -146,46 +100,44 @@ public class HsqlDatabaseProperties extends HsqlProperties {
                                MINOR                = 2,
                                REVISION             = 8;
 
-    /**
-     * system properties supported by HSQLDB
-     */
+    
     public static final String system_lockfile_poll_retries_property =
         "hsqldb.lockfile_poll_retries";
     public static final String system_max_char_or_varchar_display_size =
         "hsqldb.max_char_or_varchar_display_size";
 
-    //
+    
     public static final String hsqldb_inc_backup = "hsqldb.inc_backup";
 
-    //
+    
     public static final String  hsqldb_version  = "version";
     public static final String  hsqldb_readonly = "readonly";
     private static final String hsqldb_modified = "modified";
 
-    //
+    
     public static final String runtime_gc_interval = "runtime.gc_interval";
 
-    //
+    
     public static final String url_ifexists        = "ifexists";
     public static final String url_create          = "create";
     public static final String url_default_schema  = "default_schema";
     public static final String url_check_props     = "check_props";
     public static final String url_get_column_name = "get_column_name";
 
-    //
+    
     public static final String url_storage_class_name = "storage_class_name";
     public static final String url_fileaccess_class_name =
         "fileaccess_class_name";
     public static final String url_storage_key = "storage_key";
     public static final String url_shutdown    = "shutdown";
 
-    //
+    
     public static final String url_crypt_key      = "crypt_key";
     public static final String url_crypt_type     = "crypt_type";
     public static final String url_crypt_provider = "crypt_provider";
     public static final String url_crypt_lobs     = "crypt_lobs";
 
-    //
+    
     public static final String hsqldb_tx       = "hsqldb.tx";
     public static final String hsqldb_tx_level = "hsqldb.tx_level";
     public static final String hsqldb_tx_conflict_rollback =
@@ -218,12 +170,12 @@ public class HsqlDatabaseProperties extends HsqlProperties {
     public static final String hsqldb_full_log_replay =
         "hsqldb.full_log_replay";
 
-    //
+    
     public static final String sql_ref_integrity       = "sql.ref_integrity";
     public static final String sql_compare_in_locale = "sql.compare_in_locale";
     public static final String sql_enforce_size        = "sql.enforce_size";
     public static final String sql_enforce_strict_size =
-        "sql.enforce_strict_size";    // synonym for sql_enforce_size
+        "sql.enforce_strict_size";    
     public static final String sql_enforce_refs  = "sql.enforce_refs";
     public static final String sql_enforce_names = "sql.enforce_names";
     public static final String sql_enforce_types = "sql.enforce_types";
@@ -245,7 +197,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
     public static final String sql_identity_is_pk = "sql.identity_is_pk";
     public static final String sql_longvar_is_lob = "sql.longvar_is_lob";
 
-    //
+    
     public static final String textdb_cache_scale = "textdb.cache_scale";
     public static final String textdb_cache_size_scale =
         "textdb.cache_size_scale";
@@ -263,7 +215,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
 
     static {
 
-        // text table defaults
+        
         textMeta.put(textdb_allow_full_path,
                      HsqlProperties.getMeta(textdb_allow_full_path,
                                             SYSTEM_PROPERTY, false));
@@ -299,7 +251,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
                                             100, 10, 1000000));
         dbMeta.putAll(textMeta);
 
-        // string defaults for protected props
+        
         dbMeta.put(hsqldb_version,
                    HsqlProperties.getMeta(hsqldb_version, FILE_PROPERTY,
                                           null));
@@ -307,7 +259,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
                    HsqlProperties.getMeta(hsqldb_modified, FILE_PROPERTY,
                                           null));
 
-        // boolean defaults for protected props
+        
         dbMeta.put(hsqldb_readonly,
                    HsqlProperties.getMeta(hsqldb_readonly, FILE_PROPERTY,
                                           false));
@@ -315,7 +267,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
                    HsqlProperties.getMeta(hsqldb_files_readonly,
                                           FILE_PROPERTY, false));
 
-        // string defaults for user defined props
+        
         dbMeta.put(hsqldb_tx,
                    HsqlProperties.getMeta(hsqldb_tx, SQL_PROPERTY, "LOCKS"));
         dbMeta.put(hsqldb_tx_level,
@@ -328,7 +280,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
                    HsqlProperties.getMeta(hsqldb_default_table_type,
                                           SQL_PROPERTY, "MEMORY"));
 
-        // boolean defaults for user defined props
+        
         dbMeta.put(hsqldb_tx_conflict_rollback,
                    HsqlProperties.getMeta(hsqldb_tx_conflict_rollback,
                                           SQL_PROPERTY, true));
@@ -354,7 +306,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
                    HsqlProperties.getMeta(sql_ref_integrity, SQL_PROPERTY,
                                           true));
 
-        // SQL reserved words not allowed as some identifiers
+        
         dbMeta.put(sql_enforce_names,
                    HsqlProperties.getMeta(sql_enforce_names, SQL_PROPERTY,
                                           false));
@@ -362,7 +314,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
                    HsqlProperties.getMeta(sql_enforce_refs, SQL_PROPERTY,
                                           false));
 
-        // char padding to size and exception if data is too long
+        
         dbMeta.put(sql_enforce_size,
                    HsqlProperties.getMeta(sql_enforce_size, SQL_PROPERTY,
                                           true));
@@ -423,7 +375,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
                    HsqlProperties.getMeta(hsqldb_write_delay_millis,
                                           SQL_PROPERTY, 500, 0, 10000));
 
-        // integral defaults for user-defined props - sets
+        
         dbMeta.put(hsqldb_applog,
                    HsqlProperties.getMeta(hsqldb_applog, SQL_PROPERTY, 0, 0,
                                           3));
@@ -441,14 +393,14 @@ public class HsqlDatabaseProperties extends HsqlProperties {
             1, 2, 4, 8, 16, 32
         }));
 
-        // this property is normally 8 - or 1 for old databases from early versions
+        
         dbMeta.put(hsqldb_cache_file_scale,
                    HsqlProperties.getMeta(hsqldb_cache_file_scale,
                                           SQL_PROPERTY, 8, new int[] {
             1, 8, 16, 32, 64, 128, 256, 512, 1024
         }));
 
-        // integral defaults for user defined props - ranges
+        
         dbMeta.put(hsqldb_log_size,
                    HsqlProperties.getMeta(hsqldb_log_size, SQL_PROPERTY, 50,
                                           0, 1000));
@@ -489,11 +441,11 @@ public class HsqlDatabaseProperties extends HsqlProperties {
 
     void setNewDatabaseProperties() {
 
-        // version of a new database
+        
         setProperty(hsqldb_version, THIS_VERSION);
         setProperty(hsqldb_modified, MODIFIED_NO_NEW);
 
-        // OOo related code
+        
         if (database.logger.isStoredFileAccess()) {
             setProperty(hsqldb_cache_rows, 25000);
             setProperty(hsqldb_cache_size, 6000);
@@ -505,13 +457,10 @@ public class HsqlDatabaseProperties extends HsqlProperties {
             setProperty(jdbc_translate_tti_types, true);
         }
 
-        // OOo end
+        
     }
 
-    /**
-     * Creates file with defaults if it didn't exist.
-     * Returns false if file already existed.
-     */
+    
     public boolean load() {
 
         boolean exists;
@@ -538,12 +487,12 @@ public class HsqlDatabaseProperties extends HsqlProperties {
         String version = getStringProperty(hsqldb_version);
         int    check = version.substring(0, 5).compareTo(VERSION_STRING_1_8_0);
 
-        // do not open early version databases
+        
         if (check < 0) {
             throw Error.error(ErrorCode.WRONG_DATABASE_FILE_VERSION);
         }
 
-        // do not open databases of 1.8 versions if script format is not compatible
+        
         if (check == 0) {
             if (getIntegerProperty(hsqldb_script_format) != 0) {
                 throw Error.error(ErrorCode.WRONG_DATABASE_FILE_VERSION);
@@ -552,7 +501,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
 
         check = version.substring(0, 2).compareTo(THIS_VERSION);
 
-        // do not open if the database belongs to a later (future) version (3.x)
+        
         if (check > 0) {
             throw Error.error(ErrorCode.WRONG_DATABASE_FILE_VERSION);
         }
@@ -610,10 +559,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
         }
     }
 
-    /**
-     *  overload file database properties with any passed on URL line
-     *  do not store password etc
-     */
+    
     public void setURLProperties(HsqlProperties p) {
 
         boolean strict = false;
@@ -742,17 +688,17 @@ public class HsqlDatabaseProperties extends HsqlProperties {
 
     public int getDefaultWriteDelay() {
 
-        // OOo related code
+        
         if (database.logger.isStoredFileAccess()) {
             return 2000;
         }
 
-        // OOo end
+        
         return 500;
     }
 
-//---------------------
-// new properties to review / persist
+
+
     public static final int NO_MESSAGE = 1;
 
     public int getErrorLevel() {
@@ -763,7 +709,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
         return false;
     }
 
-//------------------------
+
     public void setDBModified(int mode) {
 
         String value;
@@ -806,7 +752,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
         return FILES_NOT_MODIFIED;
     }
 
-//-----------------------
+
     public String getProperty(String key) {
 
         Object[] metaData = (Object[]) dbMeta.get(key);
@@ -818,7 +764,7 @@ public class HsqlDatabaseProperties extends HsqlProperties {
         return stringProps.getProperty(key);
     }
 
-    /** for all types of property apart from system props */
+    
     public String getPropertyString(String key) {
 
         Object[] metaData = (Object[]) dbMeta.get(key);

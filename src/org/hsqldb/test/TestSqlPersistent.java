@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -45,14 +17,11 @@ import java.sql.Types;
 import junit.framework.TestCase;
 import junit.framework.TestResult;
 
-/**
- * Test sql statements via jdbc against a database with cached tables
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- */
+
 public class TestSqlPersistent extends TestCase {
 
-    // change the url to reflect your preferred db location and name
-//    String url = "jdbc:hsqldb:hsql://localhost/mytest";
+    
+
     String     url = "jdbc:hsqldb:/hsql/test/testpersistent";
     String     user;
     String     password;
@@ -86,13 +55,7 @@ public class TestSqlPersistent extends TestCase {
         }
     }
 
-    /**
-     *  demonstration of bug fix #482109 - inserting Integers
-     *  and Strings with PreparedStatement.setObject() did not work;
-     *  String, Integer and Array types are inserted and retrieved<b>
-     *
-     *  demonstration of retrieving values using different getXXX methods
-     */
+    
     public void testInsertObject() {
 
         Object  stringValue        = null;
@@ -122,7 +85,7 @@ public class TestSqlPersistent extends TestCase {
 
             PreparedStatement ps = connection.prepareStatement(sqlString);
 
-            // initialise
+            
             stringValue  = "String Value for Preference 1";
             integerValue = new Integer(1000);
             arrayValue   = new Double[] {
@@ -134,59 +97,53 @@ public class TestSqlPersistent extends TestCase {
                 1, 2, 3, 4, 5, 6,
             };
 
-            // String as Object
+            
             ps.setInt(1, 1);
             ps.setString(2, "String Type Object 1");
 
-// fredt - in order to store Strings in OBJECT columns setObject should
-// explicitly be called with a Types.OTHER type
-//            ps.setObject(3, stringValue); will throw an exception
+
+
+
             ps.setObject(3, stringValue, Types.OTHER);
             ps.execute();
 
-            // Integer as Object
+            
             ps.setInt(1, 2);
             ps.setString(2, "Integer Type Object 2");
 
-//            ps.setObject(3, integerValue, Types.OTHER); should work too
+
             ps.setObject(3, integerValue);
             ps.execute();
 
-            // Array as object
+            
             ps.setInt(1, 3);
             ps.setString(2, "Array Type Object 3");
-            /*
-            ps.setCharacterStream(
-                2, new java.io.StringReader("Array Type Object 3"), 19);
-            */
+            
 
-            // ps.setObject(3, arrayValue, Types.OTHER); should work too
+            
             ps.setObject(3, arrayValue);
             ps.execute();
 
-            // byte arrray as object
+            
             ps.setInt(1, 3);
             ps.setString(2, "byte Array Type Object 3");
-            /*
-            ps.setCharacterStream(
-                2, new java.io.StringReader("byte Array Type Object 3"), 19);
-            */
+            
 
-            // ps.setObject(3, bytearrayValue); will fail
-            // must use this to indicate we are inserting into an OTHER column
+            
+            
             ps.setObject(3, bytearrayValue, Types.OTHER);
             ps.execute();
 
             ResultSet rs     = stmnt.executeQuery("SELECT * FROM PREFERENCE");
             boolean   result = rs.next();
 
-            // a string can be retrieved as a String or a stream
-            // as Unicode string
+            
+            
             String str = rs.getString(2);
 
             System.out.println(str);
 
-            // as Unicode stream
+            
             InputStream is = rs.getUnicodeStream(2);
             int         c;
 
@@ -198,7 +155,7 @@ public class TestSqlPersistent extends TestCase {
 
             System.out.println();
 
-            // as ASCII stream, ignoring the high order bytes
+            
             is = rs.getAsciiStream(2);
 
             while ((c = is.read()) > -1) {
@@ -207,17 +164,11 @@ public class TestSqlPersistent extends TestCase {
 
             System.out.println();
 
-            // JAVA 2 specific
-            // as character stream via a Reader
-            /*
-            Reader re = rs.getCharacterStream(2);
+            
+            
+            
 
-            while ((c = re.read()) > -1) {
-                System.out.print((char) c);
-            }
-            */
-
-            // retrieving objects inserted into the third column
+            
             stringValueResult = rs.getObject(3);
 
             rs.next();
@@ -228,10 +179,10 @@ public class TestSqlPersistent extends TestCase {
 
             arrayValueResult = rs.getObject(3);
 
-            // how to check if the last retrieved value was null
+            
             wasNull = rs.wasNull();
 
-            // cast objects to original types - will throw if type is wrong
+            
             String   castStringValue      = (String) stringValueResult;
             Integer  castIntegerValue     = (Integer) integerValueResult;
             Double[] castDoubleArrayValue = (Double[]) arrayValueResult;
@@ -245,8 +196,8 @@ public class TestSqlPersistent extends TestCase {
 
                 int ret = st.executeUpdate();
 
-                // here, ret is equal to 1, that is expected
-                //conn.commit(); // not needed, as far as AUTO_COMMIT is set to TRUE
+                
+                
                 st.close();
 
                 st = connection.prepareStatement(
@@ -264,12 +215,7 @@ public class TestSqlPersistent extends TestCase {
             System.out.println(e.getMessage());
         } catch (IOException e1) {}
 
-        /*
-        boolean success = stringValue.equals(stringValueResult)
-                          && integerValue.equals(integerValueResult)
-                          && java.util.Arrays.equals((Double[]) arrayValue,
-                              (Double[]) arrayValueResult);
-        */
+        
         boolean success = true;
 
         assertEquals(true, success);
@@ -300,7 +246,7 @@ public class TestSqlPersistent extends TestCase {
 
             PreparedStatement ps = connection.prepareStatement(sqlString);
 
-            // initialise
+            
             stringValue  = "Test String Value";
             integerValue = new Integer(1000);
             arrayValue   = new Double[] {
@@ -312,34 +258,30 @@ public class TestSqlPersistent extends TestCase {
                 1, 2, 3
             };
 
-            // String as Object
-// fredt - in order to store Strings in OBJECT columns setObject should
-// explicitly be called with a Types.OTHER type
+            
+
+
             ps.setObject(1, stringValue, Types.OTHER);
             ps.setBytes(2, byteArrayValue);
             ps.execute();
 
-            // Integer as Object
+            
             ps.setObject(1, integerValue, Types.OTHER);
             ps.setBinaryStream(2, new ByteArrayInputStream(byteArrayValue),
                                byteArrayValue.length);
             ps.execute();
 
-            // Array as object
+            
             ps.setObject(1, arrayValue, Types.OTHER);
 
-            // file as binary - works fine but file path and name has to be modified for test environment
-            /*
-            int length = (int) new File("c://ft/db.jar").length();
-            FileInputStream fis = new FileInputStream("c://ft/db.jar");
-            ps.setBinaryStream(2,fis,length);
-            */
+            
+            
             ps.execute();
 
             ResultSet rs     = stmnt.executeQuery("SELECT * FROM TESTOBJECT");
             boolean   result = rs.next();
 
-            // retrieving objects inserted into the third column
+            
             stringValueResult = (String) rs.getObject(2);
 
             rs.next();
@@ -350,7 +292,7 @@ public class TestSqlPersistent extends TestCase {
 
             arrayValueResult = (Double[]) rs.getObject(2);
 
-            // cast objects to original types - will throw if type is wrong
+            
             String   castStringValue      = (String) stringValueResult;
             Integer  castIntegerValue     = (Integer) integerValueResult;
             Double[] castDoubleArrayValue = (Double[]) arrayValueResult;
@@ -465,25 +407,25 @@ public class TestSqlPersistent extends TestCase {
             ps.setInt(5, Short.MIN_VALUE);
             ps.setInt(6, 0);
 
-            // allowed conversions
+            
             ps.setTimestamp(
                 7, new java.sql.Timestamp(System.currentTimeMillis() + 1));
             ps.setTime(8, new java.sql.Time(System.currentTimeMillis() + 1));
             ps.setDate(9, new java.sql.Date(System.currentTimeMillis() + 1));
             ps.execute();
 
-            //
+            
             ps.setInt(1, 0);
             ps.setDouble(2, java.lang.Double.POSITIVE_INFINITY);
             ps.setInt(4, Integer.MIN_VALUE);
 
-            // test conversion
-            // ps.setObject(5, Boolean.TRUE); // no longer converts boolean to int
-            // ps.setBoolean(5, true);
+            
+            
+            
             ps.setObject(5, new Short((short) 2), Types.SMALLINT);
             ps.setObject(6, new Integer(2), Types.TINYINT);
 
-            // allowed conversions
+            
             ps.setObject(7, new java.sql.Date(System.currentTimeMillis() + 2));
             ps.setObject(8, new java.sql.Time(System.currentTimeMillis() + 2));
             ps.setObject(9, new java.sql.Timestamp(System.currentTimeMillis()
@@ -500,7 +442,7 @@ public class TestSqlPersistent extends TestCase {
 
             value = rs.getDouble(2);
 
-//            int smallintValue = rs.getShort(3);
+
             int integerValue = rs.getInt(4);
 
             if (rs.next()) {
@@ -508,8 +450,8 @@ public class TestSqlPersistent extends TestCase {
                 wasEqual     = Double.isNaN(value);
                 integerValue = rs.getInt(4);
 
-                // tests for conversion
-                // getInt on DECIMAL
+                
+                
                 integerValue = rs.getInt(1);
             }
 
@@ -533,7 +475,7 @@ public class TestSqlPersistent extends TestCase {
 
             try {
 
-                // cause errors
+                
                 ps.setString(5, "three");
                 assertTrue(false);
             } catch (SQLException e) {
@@ -543,7 +485,7 @@ public class TestSqlPersistent extends TestCase {
             {
                 stmnt.execute("drop table CDTYPE if exists");
 
-                // test for the value MAX(column) in an empty table
+                
                 stmnt.execute(
                     "CREATE TABLE cdType (ID INTEGER NOT NULL, name VARCHAR(50), PRIMARY KEY(ID))");
 
@@ -574,7 +516,7 @@ public class TestSqlPersistent extends TestCase {
 
         System.out.println("testDoubleNaN complete");
 
-        // assert new behaviour
+        
         assertEquals(true, wasEqual);
     }
 

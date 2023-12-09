@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -58,35 +30,14 @@ import org.hsqldb.types.BlobDataID;
 import org.hsqldb.types.ClobDataID;
 import org.hsqldb.types.TimestampData;
 
-/**
- * Base remote session proxy implementation. Uses instances of Result to
- * transmit and recieve data. This implementation utilises the updated HSQL
- * protocol.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since 1.7.2
- */
+
 public class ClientConnection implements SessionInterface {
 
-    /**
-     * Specifies the Compatibility version required for both Servers and
-     * network JDBC Clients built with this baseline.  Must remain public
-     * for Server to have visibility to it.
-     *
-     * Update this value only when the current version of HSQLDB does not
-     * have inter-compatibility with Server and network JDBC Driver of
-     * the previous HSQLDB version.
-     *
-     * Must specify all 4 version segments (any segment may be the value 0,
-     * however). The string elements at (position p from right counted from 0)
-     * are multiplied by 100 to power p and added up, then negated, to form the
-     * integer representation of version string.
-     */
+    
     public static final String NETWORK_COMPATIBILITY_VERSION     = "2.1.0.0";
     public static final int    NETWORK_COMPATIBILITY_VERSION_INT = -2010000;
 
-    //
+    
     static final int             BUFFER_SIZE = 0x1000;
     final byte[]                 mainBuffer  = new byte[BUFFER_SIZE];
     private boolean              isClosed;
@@ -99,7 +50,7 @@ public class ClientConnection implements SessionInterface {
     private long                 sessionID;
     private long                 lobIDSequence = -1;
 
-    //
+    
     private boolean  isReadOnlyDefault = false;
     private boolean  isAutoCommit      = true;
     private int      zoneSeconds;
@@ -107,7 +58,7 @@ public class ClientConnection implements SessionInterface {
     private String   zoneString;
     private Calendar calendar;
 
-    //
+    
     JDBCConnection connection;
     String         host;
     int            port;
@@ -119,9 +70,7 @@ public class ClientConnection implements SessionInterface {
     HsqlProperties clientProperties;
     String         databaseUniqueName;
 
-    /**
-     * Establishes a connection to the server.
-     */
+    
     public ClientConnection(String host, int port, String path,
                             String database, boolean isTLS, String user,
                             String password, int timeZoneSeconds) {
@@ -153,10 +102,7 @@ public class ClientConnection implements SessionInterface {
         clientPropertiesString = resultIn.getMainString();
     }
 
-    /**
-     * resultOut is reused to trasmit all remote calls for session management.
-     * Here the structure is preset for sending attributes.
-     */
+    
     private void initStructures() {
 
         RowOutputBinary rowOutTemp = new RowOutputBinary(mainBuffer);
@@ -185,8 +131,8 @@ public class ClientConnection implements SessionInterface {
             handshake();
         } catch (Exception e) {
 
-            // The details from "e" should not be thrown away here.  This is
-            // very useful info for end users to diagnose the runtime problem.
+            
+            
             throw new HsqlException(e, Error.getStateString(ErrorCode.X_08001),
                                     -ErrorCode.X_08001);
         }
@@ -458,15 +404,7 @@ public class ClientConnection implements SessionInterface {
         return sessionID;
     }
 
-    /**
-     * Used by pooled connections to reset the server-side session to a new
-     * one. In case of failure, the connection is closed.
-     *
-     * When the Connection.close() method is called, a pooled connection calls
-     * this method instead of HSQLClientConnection.close(). It can then
-     * reuse the HSQLClientConnection object with no further initialisation.
-     *
-     */
+    
     public synchronized void resetSession() {
 
         Result login    = Result.newResetSessionRequest();
@@ -499,9 +437,7 @@ public class ClientConnection implements SessionInterface {
         return result;
     }
 
-    /**
-     * Never called on this class
-     */
+    
     public synchronized String getInternalConnectionURL() {
         return null;
     }
@@ -524,9 +460,7 @@ public class ClientConnection implements SessionInterface {
         return clob;
     }
 
-    /**
-     * Does nothing here
-     */
+    
     public void allocateResultLob(ResultLob resultLob,
                                   InputStream dataInput) {}
 
@@ -592,11 +526,7 @@ public class ClientConnection implements SessionInterface {
         return databaseUniqueName;
     }
 
-    /**
-     * Converts specified encoded integer to a Network Compatibility Version
-     * String. The tranmitted integer is negative to distinguish it from
-     * 7 bit ASCII characters.
-     */
+    
     public static String toNetCompVersionString(int i) {
 
         StringBuffer sb = new StringBuffer();

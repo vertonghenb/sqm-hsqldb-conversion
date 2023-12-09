@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -59,17 +31,10 @@ import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Implementation of an SQL query specification, including SELECT.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- *
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class QuerySpecification extends QueryExpression {
 
-    //
+    
     public int            resultRangePosition;
     public boolean        isValueList;
     public boolean        isDistinctSelect;
@@ -87,8 +52,8 @@ public class QuerySpecification extends QueryExpression {
     HsqlArrayList         exprColumnList;
     public int            indexLimitVisible;
     private int           indexLimitRowId;
-    private int           groupByColumnCount;    // columns in 'group by'
-    private int           havingColumnCount;     // columns in 'having' (0 or 1)
+    private int           groupByColumnCount;    
+    private int           havingColumnCount;     
     private int           indexStartHaving;
     public int            indexStartOrderBy;
     public int            indexStartAggregates;
@@ -98,32 +63,32 @@ public class QuerySpecification extends QueryExpression {
     private boolean       isSimpleCount;
     private boolean       hasMemoryRow;
 
-    //
+    
     public boolean isUniqueResultRows;
 
-    //
+    
     Type[]                    columnTypes;
     private ArrayListIdentity aggregateSet;
 
-    //
+    
     private ArrayListIdentity resolvedSubqueryExpressions = null;
 
-    //
-    //
+    
+    
     private boolean[] aggregateCheck;
 
-    //
+    
     private OrderedHashSet tempSet = new OrderedHashSet();
 
-    //
+    
     int[]                  columnMap;
     private Table          baseTable;
-    private OrderedHashSet conditionTables;      // for view super-view references
+    private OrderedHashSet conditionTables;      
 
-    //
+    
     public Index groupIndex;
 
-    //
+    
     QuerySpecification(Session session, Table table,
                        CompileContext compileContext, boolean isValueList) {
 
@@ -163,7 +128,7 @@ public class QuerySpecification extends QueryExpression {
         rangeVariableList.add(rangeVar);
     }
 
-    // range variable sub queries are resolves fully
+    
     private void resolveRangeVariables(Session session,
                                        RangeVariable[] outerRanges) {
 
@@ -365,11 +330,7 @@ public class QuerySpecification extends QueryExpression {
         isResolved = true;
     }
 
-    /**
-     * Resolves all column expressions in the GROUP BY clause and beyond.
-     * Replaces any alias column expression in the ORDER BY cluase
-     * with the actual select column expression.
-     */
+    
     private void resolveColumnReferences(Session session,
                                          RangeVariable[] outerRanges) {
 
@@ -392,7 +353,7 @@ public class QuerySpecification extends QueryExpression {
 
         if (resolvedSubqueryExpressions != null) {
 
-            // subqueries in conditions not to be converted to SIMPLE_COLUMN
+            
             resolvedSubqueryExpressions.setSize(0);
         }
 
@@ -419,8 +380,8 @@ public class QuerySpecification extends QueryExpression {
                                           RangeVariable[] outerRanges,
                                           SortAndSlice sortAndSlice) {
 
-        // replace the aliases with expressions
-        // replace column names with expressions and resolve the table columns
+        
+        
         int orderCount = sortAndSlice.getOrderLength();
 
         for (int i = 0; i < orderCount; i++) {
@@ -594,7 +555,7 @@ public class QuerySpecification extends QueryExpression {
 
         if (list != null) {
 
-            // if not resolved, resolve as simple alias
+            
             if (expression.getType() == OpTypes.COLUMN) {
                 Expression resolved =
                     expression.replaceAliasInOrderBy(exprColumns,
@@ -605,7 +566,7 @@ public class QuerySpecification extends QueryExpression {
                 }
             }
 
-            // resolve and allocate to throw exception
+            
             resolveColumnReferencesAndAllocate(session, expression,
                                                rangeVariables.length, false);
         }
@@ -776,9 +737,7 @@ public class QuerySpecification extends QueryExpression {
         }
     }
 
-    /**
-     * Sets the types of all the expressions used in this SELECT list.
-     */
+    
     public void resolveExpressionTypes(Session session, Expression parent) {
 
         for (int i = 0; i < indexStartAggregates; i++) {
@@ -848,7 +807,7 @@ public class QuerySpecification extends QueryExpression {
                 Expression e = (Expression) tempSet.get(j);
 
                 exprColumns[i]          = e.duplicate();
-                exprColumns[i].nodes    = e.nodes;    // keep original nodes
+                exprColumns[i].nodes    = e.nodes;    
                 exprColumns[i].dataType = e.dataType;
             }
 
@@ -987,7 +946,7 @@ public class QuerySpecification extends QueryExpression {
 
     private void setGroupedAggregateConditions(Session session) {
 
-        //
+        
     }
 
     void checkLobUsage() {
@@ -1005,35 +964,35 @@ public class QuerySpecification extends QueryExpression {
 
     private void resolveGroups() {
 
-        // - 1.9.0 is standard compliant but has more extended support for
-        //   referencing columns
-        // - check there is no direct aggregate expression in group by
-        // - check each expression in select list can be
-        //   decomposed into the expressions in group by or any aggregates
-        //   this allows direct function of group by expressions, but
-        //   doesn't allow indirect functions. e.g.
-        //     select 2*abs(cola) , sum(colb) from t group by abs(cola) // ok
-        //     select 2*(cola + 10) , sum(colb) from t group by cola + 10 // ok
-        //     select abs(cola) , sum(colb) from t group by cola // ok
-        //     select 2*cola + 20 , sum(colb) from t group by cola + 10 // not allowed although correct
-        //     select cola , sum(colb) from t group by abs(cola) // not allowed because incorrect
-        // - group by can introduce invisible, derived columns into the query table
-        // - check the having expression can be decomposed into
-        //   select list expresions plus group by expressions
-        // - having cannot introduce additional, derived columns
-        // - having cannot reference columns not in the select or group by list
-        // - if there is any aggregate in select list but no group by, no
-        //   non-aggregates is allowed
-        // - check order by columns
-        // - if distinct select, order by must be composed of the select list columns
-        // - if grouped by, then order by should be decomposed into the
-        //   select list plus group by list
-        // - references to column aliases are allowed only in order by (Standard
-        //   compliance) and take precendence over references to non-alias
-        //   column names.
-        // - references to table / correlation and column list in correlation
-        //   names are handled according to the Standard
-        //  fredt@users
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         tempSet.clear();
 
         if (isGrouped) {
@@ -1161,7 +1120,7 @@ public class QuerySpecification extends QueryExpression {
             }
         }
 
-        // order by with aggregate
+        
         int orderCount = sortAndSlice.getOrderLength();
 
         for (int i = 0; i < orderCount; i++) {
@@ -1240,13 +1199,7 @@ public class QuerySpecification extends QueryExpression {
         return set == null;
     }
 
-    /**
-     * Returns the result of executing this Select.
-     *
-     * @param maxrows may be 0 to indicate no limit on the number of rows.
-     * Positive values limit the size of the result set.
-     * @return the result of executing this Select
-     */
+    
     Result getResult(Session session, int maxrows) {
 
         Result r = getSingleResult(session, maxrows);
@@ -1323,8 +1276,8 @@ public class QuerySpecification extends QueryExpression {
         for (int currentIndex = 0; ; ) {
             if (currentIndex < fullJoinIndex) {
 
-                // finished current span
-                // or finished outer rows on right navigator
+                
+                
                 boolean end = true;
 
                 for (int i = fullJoinIndex + 1; i < rangeVariables.length;
@@ -2316,7 +2269,7 @@ public class QuerySpecification extends QueryExpression {
 
         for (int i = 0, len = rangeVariables.length; i < len; i++) {
 
-            //
+            
         }
     }
 
@@ -2340,9 +2293,7 @@ public class QuerySpecification extends QueryExpression {
         }
     }
 
-    /**
-     * Not for views. Only used on root node.
-     */
+    
     public void setReturningResult() {
 
         setReturningResultSet();
@@ -2413,9 +2364,7 @@ public class QuerySpecification extends QueryExpression {
         }
     }
 
-    /**
-     * returns true if almost equivalent
-     */
+    
     boolean isEquivalent(QueryExpression other) {
 
         if (!(other instanceof QuerySpecification)) {

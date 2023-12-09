@@ -1,45 +1,11 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.lib;
 
 import java.lang.reflect.Array;
 
-/**
- * Collection of static methods for operations on arrays
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since 1.7.2
- */
+
 public class ArrayUtil {
 
     public static final int        CLASS_CODE_BYTE    = 'B';
@@ -65,9 +31,7 @@ public class ArrayUtil {
         classCodeMap.put(Object.class, ArrayUtil.CLASS_CODE_OBJECT);
     }
 
-    /**
-     * Returns a distinct int code for each primitive type and for all Object types.
-     */
+    
     static int getClassCode(Class cla) {
 
         if (!cla.isPrimitive()) {
@@ -77,9 +41,7 @@ public class ArrayUtil {
         return classCodeMap.get(cla, -1);
     }
 
-    /**
-     * Clears an area of the given array of the given type.
-     */
+    
     public static void clearArray(int type, Object data, int from, int to) {
 
         switch (type) {
@@ -168,16 +130,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Moves the contents of an array to allow both addition and removal of
-     * elements. Used arguments must be in range.
-     *
-     * @param type class type of the array
-     * @param array the array
-     * @param usedElements count of elements of array in use
-     * @param index point at which to add or remove elements
-     * @param count number of elements to add or remove
-     */
+    
     public static void adjustArray(int type, Object array, int usedElements,
                                    int index, int count) {
 
@@ -209,9 +162,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Basic sort for small arrays of int.
-     */
+    
     public static void sortArray(int[] array) {
 
         boolean swapped;
@@ -231,15 +182,13 @@ public class ArrayUtil {
         } while (swapped);
     }
 
-    /**
-     *  Basic find for small arrays of Object.
-     */
+    
     public static int find(Object[] array, Object object) {
 
         for (int i = 0; i < array.length; i++) {
             if (array[i] == object) {
 
-                // hadles both nulls
+                
                 return i;
             }
 
@@ -251,9 +200,7 @@ public class ArrayUtil {
         return -1;
     }
 
-    /**
-     *  Basic find for small arrays of int.
-     */
+    
     public static int find(int[] array, int value) {
 
         for (int i = 0; i < array.length; i++) {
@@ -287,9 +234,7 @@ public class ArrayUtil {
         return -1;
     }
 
-    /**
-     *  Finds the first element of the array that is not equal to the given value.
-     */
+    
     public static int findNot(int[] array, int value) {
 
         for (int i = 0; i < array.length; i++) {
@@ -301,26 +246,13 @@ public class ArrayUtil {
         return -1;
     }
 
-    /**
-     * Returns true if arra and arrb contain the same set of integers, not
-     * necessarily in the same order. This implies the arrays are of the same
-     * length.
-     */
+    
     public static boolean areEqualSets(int[] arra, int[] arrb) {
         return arra.length == arrb.length
                && ArrayUtil.haveEqualSets(arra, arrb, arra.length);
     }
 
-    /**
-     * For full == true returns true if arra and arrb are identical (have the
-     * same length and contain the same integers in the same sequence).
-     *
-     * For full == false returns the result
-     * of haveEqualArrays(arra,arrb,count)
-     *
-     * For full == true, the array lengths must be the same as count
-     *
-     */
+    
     public static boolean areEqual(int[] arra, int[] arrb, int count,
                                    boolean full) {
 
@@ -335,11 +267,7 @@ public class ArrayUtil {
         return false;
     }
 
-    /**
-     * Returns true if the first count elements of arra and arrb are identical
-     * sets of integers (not necessarily in the same order).
-     *
-     */
+    
     public static boolean haveEqualSets(int[] arra, int[] arrb, int count) {
 
         if (ArrayUtil.haveEqualArrays(arra, arrb, count)) {
@@ -369,11 +297,7 @@ public class ArrayUtil {
         return true;
     }
 
-    /**
-     * Returns true if the first count elements of arra and arrb are identical
-     * subarrays of integers
-     *
-     */
+    
     public static boolean haveEqualArrays(int[] arra, int[] arrb, int count) {
 
         if (count > arra.length || count > arrb.length) {
@@ -389,11 +313,7 @@ public class ArrayUtil {
         return true;
     }
 
-    /**
-     * Returns true if the first count elements of arra and arrb are identical
-     * subarrays of Objects
-     *
-     */
+    
     public static boolean haveEqualArrays(Object[] arra, Object[] arrb,
                                           int count) {
 
@@ -412,11 +332,7 @@ public class ArrayUtil {
         return true;
     }
 
-    /**
-     * Returns true if arra and arrb share any element. <p>
-     *
-     * Used for checks for any overlap between two arrays of column indexes.
-     */
+    
     public static boolean haveCommonElement(int[] arra, int[] arrb) {
 
         for (int i = 0; i < arra.length; i++) {
@@ -432,30 +348,7 @@ public class ArrayUtil {
         return false;
     }
 
-    /**
-     * Returns an int[] containing elements shared between the two arrays
-     * arra and arrb. The arrays contain sets (no value is repeated).
-     *
-     * Used to find the overlap between two arrays of column indexes.
-     * Ordering of the result arrays will be the same as in array
-     * a. The method assumes that each index is only listed
-     * once in the two input arrays.
-     * <p>
-     * e.g.
-     * </p>
-     * <code>
-     * <table width="90%" bgcolor="lightblue">
-     * <tr><td colspane="3">The arrays</td></tr>
-     * <tr><td>int []arra</td><td>=</td><td>{2,11,5,8}</td></tr>
-     * <tr><td>int []arrb</td><td>=</td><td>{20,8,10,11,28,12}</td></tr>
-     * <tr><td colspane="3">will result in:</td></tr>
-     * <tr><td>int []arrc</td><td>=</td><td>{11,8}</td></tr>
-     * </table>
-     *
-     * @param arra int[]; first column indexes
-     * @param arrb int[]; second column indexes
-     * @return int[] common indexes or <code>null</code> if there is no overlap.
-     */
+    
     public static int[] commonElements(int[] arra, int[] arrb) {
 
         int[] c = null;
@@ -478,22 +371,7 @@ public class ArrayUtil {
         return c;
     }
 
-    /**
-     * Returns the number of elements shared between the two arrays containing
-     * sets.<p>
-     *
-     * Return the number of elements shared by two column index arrays.
-     * This method assumes that each of these arrays contains a set (each
-     * element index is listed only once in each index array). Otherwise the
-     * returned number will NOT represent the number of unique column indexes
-     * shared by both index array.
-     *
-     * @param arra int[]; first array of column indexes.
-     *
-     * @param arrb int[]; second array of column indexes
-     *
-     * @return int; number of elements shared by <code>a</code> and <code>b</code>
-     */
+    
     public static int countCommonElements(int[] arra, int[] arrb) {
 
         int k = 0;
@@ -529,10 +407,7 @@ public class ArrayUtil {
         return k;
     }
 
-    /**
-     * Returns the count of elements in arra from position start that are
-     * sequentially equal to the elements of arrb.
-     */
+    
     public static int countSameElements(byte[] arra, int start, byte[] arrb) {
 
         int k     = 0;
@@ -553,10 +428,7 @@ public class ArrayUtil {
         return k;
     }
 
-    /**
-     * Returns the count of elements in arra from position start that are
-     * sequentially equal to the elements of arrb.
-     */
+    
     public static int countSameElements(char[] arra, int start, char[] arrb) {
 
         int k     = 0;
@@ -577,9 +449,7 @@ public class ArrayUtil {
         return k;
     }
 
-    /**
-     * Returns an array that contains all the elements of the two arrays.
-     */
+    
     public static int[] union(int[] arra, int[] arrb) {
 
         int newSize = arra.length + arrb.length
@@ -607,9 +477,7 @@ public class ArrayUtil {
                                          : arrb;
     }
 
-    /**
-     * Returns the index of the first occurence of arrb in arra. Or -1 if not found.
-     */
+    
     public static int find(byte[] arra, int start, int limit, byte[] arrb) {
 
         int k = start;
@@ -633,10 +501,7 @@ public class ArrayUtil {
         return -1;
     }
 
-    /**
-     * Returns an index into arra (or -1) where the character is not in the
-     * charset byte array.
-     */
+    
     public static int findNotIn(byte[] arra, int start, int limit,
                                 byte[] charset) {
 
@@ -655,10 +520,7 @@ public class ArrayUtil {
         return -1;
     }
 
-    /**
-     * Returns an index into arra (or -1) where the character is in the
-     * byteSet byte array.
-     */
+    
     public static int findIn(byte[] arra, int start, int limit,
                              byte[] byteSet) {
 
@@ -675,9 +537,7 @@ public class ArrayUtil {
         return -1;
     }
 
-    /**
-     * Returns the index of b or c in arra. Or -1 if not found.
-     */
+    
     public static int find(byte[] arra, int start, int limit, int b, int c) {
 
         int k = 0;
@@ -691,9 +551,7 @@ public class ArrayUtil {
         return -1;
     }
 
-    /**
-     * Set elements of arrb true if their indexes appear in arrb.
-     */
+    
     public static int[] booleanArrayToIntIndexes(boolean[] arrb) {
 
         int count = 0;
@@ -717,9 +575,7 @@ public class ArrayUtil {
         return intarr;
     }
 
-    /**
-     * Set elements of arrb true if their indexes appear in arrb.
-     */
+    
     public static void intIndexesToBooleanArray(int[] arra, boolean[] arrb) {
 
         for (int i = 0; i < arra.length; i++) {
@@ -729,9 +585,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Return array of indexes of boolean elements that are true.
-     */
+    
     public static int countStartIntIndexesInBooleanArray(int[] arra,
             boolean[] arrb) {
 
@@ -781,10 +635,7 @@ public class ArrayUtil {
         return false;
     }
 
-    /**
-     * Return true if for each true element in arrb, the corresponding
-     * element in arra is true
-     */
+    
     public static boolean containsAllTrueElements(boolean[] arra,
             boolean[] arrb) {
 
@@ -797,9 +648,7 @@ public class ArrayUtil {
         return true;
     }
 
-    /**
-     * Return count of true elements in array
-     */
+    
     public static int countTrueElements(boolean[] arra) {
 
         int count = 0;
@@ -813,10 +662,7 @@ public class ArrayUtil {
         return count;
     }
 
-    /**
-     * Determines if the array has a null column for any of the positions given
-     * in the rowColMap array.
-     */
+    
     public static boolean hasNull(Object[] array, int[] columnMap) {
 
         int count = columnMap.length;
@@ -843,18 +689,12 @@ public class ArrayUtil {
         return true;
     }
 
-    /**
-     * Returns true if arra from position start contains all elements of arrb
-     * in sequential order.
-     */
+    
     public static boolean containsAt(byte[] arra, int start, byte[] arrb) {
         return countSameElements(arra, start, arrb) == arrb.length;
     }
 
-    /**
-     * Returns the count of elements in arra from position start that are
-     * among the elements of arrb. Stops at any element not in arrb.
-     */
+    
     public static int countStartElementsAt(byte[] arra, int start,
                                            byte[] arrb) {
 
@@ -876,19 +716,12 @@ public class ArrayUtil {
         return k;
     }
 
-    /**
-     * Returns true if arra from position start contains all elements of arrb
-     * in sequential order.
-     */
+    
     public static boolean containsAt(char[] arra, int start, char[] arrb) {
         return countSameElements(arra, start, arrb) == arrb.length;
     }
 
-    /**
-     * Returns the count of elements in arra from position start that are not
-     * among the elements of arrb.
-     *
-     */
+    
     public static int countNonStartElementsAt(byte[] arra, int start,
             byte[] arrb) {
 
@@ -908,12 +741,7 @@ public class ArrayUtil {
         return k;
     }
 
-    /**
-     * Byte arrays source and dest each begin at an offset in the common space.
-     * If there is an overlap between dest and the first length elements of
-     * the source, the overlapping elements are copied to dest. Returns count
-     * of copied bytes.
-     */
+    
     public static int copyBytes(long sourceOffset, byte[] source,
                                  int sourceOff, int length, long destOffset,
                                  byte[] dest) {
@@ -948,16 +776,12 @@ public class ArrayUtil {
         return length;
     }
 
-    /**
-     * Convenience wrapper for System.arraycopy().
-     */
+    
     public static void copyArray(Object source, Object dest, int count) {
         System.arraycopy(source, 0, dest, 0, count);
     }
 
-    /**
-     * Returns a range of elements of source from start to end of the array.
-     */
+    
     public static int[] arraySlice(int[] source, int start, int count) {
 
         int[] slice = new int[count];
@@ -967,9 +791,7 @@ public class ArrayUtil {
         return slice;
     }
 
-    /**
-     * Fills part of the array with a value.
-     */
+    
     public static void fillArray(char[] array, int offset, char value) {
 
         int to = array.length;
@@ -979,9 +801,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Fills part of the array with a value.
-     */
+    
     public static void fillArray(byte[] array, int offset, byte value) {
 
         int to = array.length;
@@ -991,9 +811,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Fills the array with a value.
-     */
+    
     public static void fillArray(Object[] array, Object value) {
 
         int to = array.length;
@@ -1003,9 +821,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Fills the int array with a value
-     */
+    
     public static void fillArray(int[] array, int value) {
 
         int to = array.length;
@@ -1015,9 +831,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Fills the int array with a value
-     */
+    
     public static void fillArray(boolean[] array, boolean value) {
 
         int to = array.length;
@@ -1027,9 +841,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Returns a duplicates of an array.
-     */
+    
     public static Object duplicateArray(Object source) {
 
         int size = Array.getLength(source);
@@ -1041,11 +853,7 @@ public class ArrayUtil {
         return newarray;
     }
 
-    /**
-     * Returns the given array if newsize is the same as existing.
-     * Returns a new array of given size, containing as many elements of
-     * the original array as it can hold.
-     */
+    
     public static Object resizeArrayIfDifferent(Object source, int newsize) {
 
         int oldsize = Array.getLength(source);
@@ -1066,11 +874,7 @@ public class ArrayUtil {
         return newarray;
     }
 
-    /**
-     * Returns a new array of given size, containing as many elements of
-     * the original array as it can hold. N.B. Always returns a new array
-     * even if newsize parameter is the same as the old size.
-     */
+    
     public static Object resizeArray(Object source, int newsize) {
 
         Object newarray =
@@ -1086,13 +890,7 @@ public class ArrayUtil {
         return newarray;
     }
 
-    /**
-     * Returns an array containing the elements of parameter source, with one
-     * element removed or added. Parameter adjust {-1, +1} indicates the
-     * operation. Parameter colindex indicates the position at which an element
-     * is removed or added. Parameter addition is an Object to add when
-     * adjust is +1.
-     */
+    
     public static Object toAdjustedArray(Object source, Object addition,
                                          int colindex, int adjust) {
 
@@ -1105,16 +903,7 @@ public class ArrayUtil {
         return newarray;
     }
 
-    /**
-     *  Copies elements of source to dest. If adjust is -1 the element at
-     *  colindex is not copied. If adjust is +1 that element is filled with
-     *  the Object addition. All the rest of the elements in source are
-     *  shifted left or right accordingly when they are copied. If adjust is 0
-     *  the addition is copied over the element at colindex.
-     *
-     *  No checks are perfomed on array sizes and an exception is thrown
-     *  if they are not consistent with the other arguments.
-     */
+    
     public static void copyAdjustArray(Object source, Object dest,
                                        Object addition, int colindex,
                                        int adjust) {
@@ -1157,26 +946,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     * Returns a new array with the elements in collar adjusted to reflect
-     * changes at colindex. <p>
-     *
-     * Each element in collarr represents an index into another array
-     * otherarr. <p>
-     *
-     * colindex is the index at which an element is added or removed.
-     * Each element in the result array represents the new,
-     * adjusted index. <p>
-     *
-     * For each element of collarr that represents an index equal to
-     * colindex and adjust is -1, the result will not contain that element
-     * and will be shorter than collar by one element.
-     *
-     * @param  colarr the source array
-     * @param  colindex index at which to perform adjustement
-     * @param  adjust +1, 0 or -1
-     * @return new, adjusted array
-     */
+    
     public static int[] toAdjustedColumnArray(int[] colarr, int colindex,
             int adjust) {
 
@@ -1199,7 +969,7 @@ public class ArrayUtil {
             } else if (colarr[i] == colindex) {
                 if (adjust < 0) {
 
-                    // skip an element from colarr
+                    
                 } else {
                     intarr[j] = colarr[i] + adjust;
 
@@ -1223,17 +993,7 @@ public class ArrayUtil {
         return intarr;
     }
 
-    /**
-     *  Copies some elements of row into newRow by using columnMap as
-     *  the list of indexes into row. <p>
-     *
-     *  columnMap and newRow are of equal length and are normally
-     *  shorter than row. <p>
-     *
-     *  @param row the source array
-     *  @param columnMap the list of indexes into row
-     *  @param newRow the destination array
-     */
+    
     public static void projectRow(Object[] row, int[] columnMap,
                                   Object[] newRow) {
 
@@ -1249,13 +1009,7 @@ public class ArrayUtil {
         }
     }
 
-    /**
-     *  As above but copies in reverse direction. <p>
-     *
-     *  @param row the target array
-     *  @param columnMap the list of indexes into row
-     *  @param newRow the source array
-     */
+    
     public static void projectRowReverse(Object[] row, int[] columnMap,
                                          Object[] newRow) {
 
@@ -1264,31 +1018,7 @@ public class ArrayUtil {
         }
     }
 
-/*
-    public static void copyColumnValues(int[] row, int[] colindex,
-                                        int[] colobject) {
 
-        for (int i = 0; i < colindex.length; i++) {
-            colobject[i] = row[colindex[i]];
-        }
-    }
-
-    public static void copyColumnValues(boolean[] row, int[] colindex,
-                                        boolean[] colobject) {
-
-        for (int i = 0; i < colindex.length; i++) {
-            colobject[i] = row[colindex[i]];
-        }
-    }
-
-    public static void copyColumnValues(byte[] row, int[] colindex,
-                                        byte[] colobject) {
-
-        for (int i = 0; i < colindex.length; i++) {
-            colobject[i] = row[colindex[i]];
-        }
-    }
-*/
     public static void projectMap(int[] mainMap, int[] subMap,
                                   int[] newSubMap) {
 
@@ -1355,9 +1085,7 @@ public class ArrayUtil {
         return bytes;
     }
 
-    /**
-     * Returns true if char agrument is in array.
-     */
+    
     public static boolean isInSortedArray(char ch, char[] array) {
 
         if (array.length == 0 || ch < array[0]
@@ -1384,13 +1112,7 @@ public class ArrayUtil {
         return false;
     }
 
-    /**
-     * returns true if arra contains all elements of arrb
-     *
-     * @param arra Object[]
-     * @param arrb Object[]
-     * @return boolean
-     */
+    
     public static boolean containsAll(Object[] arra, Object[] arrb) {
 
         mainLoop:
@@ -1407,13 +1129,7 @@ public class ArrayUtil {
         return true;
     }
 
-    /**
-     * returns true if arra contains any element of arrb
-     *
-     * @param arra Object[]
-     * @param arrb Object[]
-     * @return boolean
-     */
+    
     public static boolean containsAny(Object[] arra, Object[] arrb) {
 
         mainLoop:
@@ -1428,13 +1144,7 @@ public class ArrayUtil {
         return false;
     }
 
-    /**
-     * returns true if arra contains all elements of arrb
-     *
-     * @param arra int[]
-     * @param arrb int[]
-     * @return boolean
-     */
+    
     public static boolean containsAll(int[] arra, int[] arrb) {
 
         mainLoop:
@@ -1451,13 +1161,7 @@ public class ArrayUtil {
         return true;
     }
 
-    /**
-     * returns true if arra contains all elements of arrb at its start
-     *
-     * @param arra int[]
-     * @param arrb int[]
-     * @return boolean
-     */
+    
     public static boolean containsAllAtStart(int[] arra, int[] arrb) {
 
         if (arrb.length > arra.length) {
@@ -1482,13 +1186,7 @@ public class ArrayUtil {
         return true;
     }
 
-    /**
-     * converts two longs to a byte[]
-     *
-     * @param hi long
-     * @param lo long
-     * @return byte[]
-     */
+    
     public static byte[] toByteArray(long hi, long lo) {
 
         byte[] bytes = new byte[16];
@@ -1515,10 +1213,7 @@ public class ArrayUtil {
         return bytes;
     }
 
-    /**
-     * Compares two arrays. Returns -1, 0, +1. If one array is shorther and
-     * all the elements are equal to the other's elements, -1 is returned.
-     */
+    
     public static int compare(byte[] a, byte[] b) {
 
         int length = a.length;
@@ -1544,9 +1239,7 @@ public class ArrayUtil {
                                    : 1;
     }
 
-    /**
-     * uses 2**scale form and returns a multipe of this that is larger or equal to value
-     */
+    
     public static long getBinaryNormalisedCeiling(long value, int scale) {
 
         long mask    = 0xffffffffffffffffl << scale;
@@ -1559,9 +1252,7 @@ public class ArrayUtil {
         return newSize;
     }
 
-    /**
-     * returns true if log2 n is in the range (0, max)
-     */
+    
     public static boolean isTwoPower(int n, int max) {
 
         for (int i = 0; i <= max; i++) {
@@ -1575,9 +1266,7 @@ public class ArrayUtil {
         return false;
     }
 
-    /**
-     * returns the largest value that is 0 or a power of 2 and is smaller or equal to n
-     */
+    
     public static int getTwoPowerFloor(int n) {
 
         int shift = 0;

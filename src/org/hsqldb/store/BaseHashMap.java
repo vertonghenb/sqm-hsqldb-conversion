@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.store;
@@ -36,50 +8,12 @@ import java.util.NoSuchElementException;
 import org.hsqldb.lib.ArrayCounter;
 import org.hsqldb.lib.Iterator;
 
-/**
- * Base class for hash tables or sets. The exact type of the structure is
- * defined by the constructor. Each instance has at least a keyTable array
- * and a HashIndex instance for looking up the keys into this table. Instances
- * that are maps also have a valueTable the same size as the keyTable.
- *
- * Special getOrAddXXX() methods are used for object maps in some subclasses.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 1.9.0
- * @since 1.7.2
- */
+
 public class BaseHashMap {
 
-/*
 
-    data store:
-    keys: {array of primitive | array of object}
-    values: {none | array of primitive | array of object} same size as keys
-    objects support : hashCode(), equals()
 
-    implemented types of keyTable:
-    {objectKeyTable: variable size Object[] array for keys |
-    intKeyTable: variable size int[] for keys |
-    longKeyTable: variable size long[] for keys }
-
-    implemented types of valueTable:
-    {objectValueTable: variable size Object[] array for values |
-    intValueTable: variable size int[] for values |
-    longValueTable: variable size long[] for values}
-
-    valueTable does not exist for sets or for object pools
-
-    hash index:
-    hashTable: fixed size int[] array for hash lookup into keyTable
-    linkTable: pointer to the next key ; size equal or larger than hashTable
-    but equal to the valueTable
-
-    access count table:
-    {none |
-    variable size int[] array for access count} same size as xxxKeyTable
-*/
-
-    //
+    
     boolean           isIntKey;
     boolean           isLongKey;
     boolean           isObjectKey;
@@ -90,30 +24,30 @@ public class BaseHashMap {
     protected boolean isTwoObjectValue;
     protected boolean isList;
 
-    //
+    
     private ValuesIterator valuesIterator;
 
-    //
+    
     protected HashIndex hashIndex;
 
-    //
+    
     protected int[]    intKeyTable;
     protected Object[] objectKeyTable;
     protected long[]   longKeyTable;
 
-    //
+    
     protected int[]    intValueTable;
     protected Object[] objectValueTable;
     protected long[]   longValueTable;
 
-    //
+    
     protected int       accessMin;
     protected int       accessCount;
     protected int[]     accessTable;
     protected boolean[] multiValueTable;
     protected Object[]  objectValueTable2;
 
-    //
+    
     final float       loadFactor;
     final int         initialCapacity;
     int               threshold;
@@ -121,23 +55,23 @@ public class BaseHashMap {
     protected int     purgePolicy = NO_PURGE;
     protected boolean minimizeOnEmpty;
 
-    //
+    
     boolean hasZeroKey;
     int     zeroKeyIndex = -1;
 
-    // keyOrValueTypes
+    
     protected static final int noKeyOrValue     = 0;
     protected static final int intKeyOrValue    = 1;
     protected static final int longKeyOrValue   = 2;
     protected static final int objectKeyOrValue = 3;
 
-    // purgePolicy
+    
     protected static final int NO_PURGE      = 0;
     protected static final int PURGE_ALL     = 1;
     protected static final int PURGE_HALF    = 2;
     protected static final int PURGE_QUARTER = 3;
 
-    //
+    
     public static final int ACCESS_MAX = Integer.MAX_VALUE - (1 << 20);
 
     protected BaseHashMap(int initialCapacity, int keyType, int valueType,
@@ -152,7 +86,7 @@ public class BaseHashMap {
             initialCapacity = 3;
         }
 
-        this.loadFactor      = 1;    // can use any value if necessary
+        this.loadFactor      = 1;    
         this.initialCapacity = initialCapacity;
         threshold            = initialCapacity;
 
@@ -256,9 +190,7 @@ public class BaseHashMap {
         return valuesIterator;
     }
 
-    /**
-     * generic method for adding or removing keys
-     */
+    
     protected Object addOrRemove(long longKey, long longValue,
                                  Object objectKey, Object objectValue,
                                  boolean remove) {
@@ -351,14 +283,14 @@ public class BaseHashMap {
             return returnValue;
         }
 
-        // not found
+        
         if (remove) {
             return null;
         }
 
         if (hashIndex.elementCount >= threshold) {
 
-            // should throw maybe, if reset returns false?
+            
             if (reset()) {
                 return addOrRemove(longKey, longValue, objectKey, objectValue,
                                    remove);
@@ -369,7 +301,7 @@ public class BaseHashMap {
 
         lookup = hashIndex.linkNode(index, lastLookup);
 
-        // type dependent block
+        
         if (isObjectKey) {
             objectKeyTable[lookup] = objectKey;
         } else if (isIntKey) {
@@ -396,7 +328,7 @@ public class BaseHashMap {
             longValueTable[lookup] = longValue;
         }
 
-        //
+        
         if (accessTable != null) {
             accessTable[lookup] = ++accessCount;
         }
@@ -404,10 +336,7 @@ public class BaseHashMap {
         return returnValue;
     }
 
-    /**
-     * generic method for adding or removing key / values in multi-value
-     * maps
-     */
+    
     protected Object addOrRemoveMultiVal(long longKey, long longValue,
                                          Object objectKey, Object objectValue,
                                          boolean removeKey,
@@ -541,7 +470,7 @@ public class BaseHashMap {
 
         if (hashIndex.elementCount >= threshold) {
 
-            // should throw maybe, if reset returns false?
+            
             if (reset()) {
                 return addOrRemoveMultiVal(longKey, longValue, objectKey,
                                            objectValue, removeKey,
@@ -553,7 +482,7 @@ public class BaseHashMap {
 
         lookup = hashIndex.linkNode(index, lastLookup);
 
-        // type dependent block
+        
         if (isObjectKey) {
             objectKeyTable[lookup] = objectKey;
         } else if (isIntKey) {
@@ -584,7 +513,7 @@ public class BaseHashMap {
             multiValueTable[lookup] = true;
         }
 
-        //
+        
         if (accessTable != null) {
             accessTable[lookup] = ++accessCount;
         }
@@ -592,9 +521,7 @@ public class BaseHashMap {
         return returnValue;
     }
 
-    /**
-     * type-specific method for adding or removing keys in long or int->Object maps
-     */
+    
     protected Object addOrRemove(long longKey, Object objectValue,
                                  Object objectValueTwo, boolean remove) {
 
@@ -663,7 +590,7 @@ public class BaseHashMap {
             return returnValue;
         }
 
-        // not found
+        
         if (remove) {
             return returnValue;
         }
@@ -703,9 +630,7 @@ public class BaseHashMap {
         return returnValue;
     }
 
-    /**
-     * type specific method for Object sets or Object->Object maps
-     */
+    
     protected Object removeObject(Object objectKey, boolean removeRow) {
 
         if (objectKey == null) {
@@ -739,7 +664,7 @@ public class BaseHashMap {
             }
         }
 
-        // not found
+        
         return returnValue;
     }
 
@@ -768,13 +693,7 @@ public class BaseHashMap {
         return false;
     }
 
-    /**
-     * rehash uses existing key and element arrays. key / value pairs are
-     * put back into the arrays from the top, removing any gaps. any redundant
-     * key / value pairs duplicated at the end of the array are then cleared.
-     *
-     * newCapacity must be larger or equal to existing number of elements.
-     */
+    
     protected void rehash(int newCapacity) {
 
         int     limitLookup     = hashIndex.newNodePointer;
@@ -838,9 +757,7 @@ public class BaseHashMap {
         resizeElementArrays(hashIndex.newNodePointer, newCapacity);
     }
 
-    /**
-     * resize the arrays contianing the key / value data
-     */
+    
     private void resizeElementArrays(int dataLength, int newLength) {
 
         Object temp;
@@ -911,9 +828,7 @@ public class BaseHashMap {
         }
     }
 
-    /**
-     * clear all the key / value data in a range.
-     */
+    
     private void clearElementArrays(final int from, final int to) {
 
         if (isIntKey) {
@@ -973,9 +888,7 @@ public class BaseHashMap {
         }
     }
 
-    /**
-     * move the elements after a removed key / value pair to fill the gap
-     */
+    
     void removeFromElementArrays(int lookup) {
 
         int arrayLength = hashIndex.linkTable.length;
@@ -1035,10 +948,7 @@ public class BaseHashMap {
         }
     }
 
-    /**
-     * find the next lookup in the key/value tables with an entry
-     * allows the use of old limit and zero int key attributes
-     */
+    
     int nextLookup(int lookup, int limitLookup, boolean hasZeroKey,
                    int zeroKeyIndex) {
 
@@ -1065,10 +975,7 @@ public class BaseHashMap {
         return lookup;
     }
 
-    /**
-     * find the next lookup in the key/value tables with an entry
-     * uses current limits and zero integer key state
-     */
+    
     protected int nextLookup(int lookup) {
 
         for (++lookup; lookup < hashIndex.newNodePointer; lookup++) {
@@ -1094,17 +1001,13 @@ public class BaseHashMap {
         return -1;
     }
 
-    /**
-     * row must already been freed of key / element
-     */
+    
     protected void removeRow(int lookup) {
         hashIndex.removeEmptyNode(lookup);
         removeFromElementArrays(lookup);
     }
 
-    /**
-     * Clear the map completely.
-     */
+    
     public void clear() {
 
         if (hashIndex.modified) {
@@ -1122,19 +1025,13 @@ public class BaseHashMap {
         }
     }
 
-    /**
-     * Return the max accessCount value for count elements with the lowest
-     * access count. Always return at least accessMin + 1
-     */
+    
     public int getAccessCountCeiling(int count, int margin) {
         return ArrayCounter.rank(accessTable, hashIndex.newNodePointer, count,
                                  accessMin + 1, accessCount, margin);
     }
 
-    /**
-     * This is called after all elements below count accessCount have been
-     * removed
-     */
+    
     public void setAccessCountFloor(int count) {
         accessMin = count;
     }
@@ -1143,12 +1040,7 @@ public class BaseHashMap {
         return ++accessCount;
     }
 
-    /**
-     * Clear approximately count elements from the map, starting with
-     * those with low accessTable ranking.
-     *
-     * Only for maps with Object key table
-     */
+    
     protected void clear(int count, int margin) {
 
         if (margin < 64) {
@@ -1286,9 +1178,7 @@ public class BaseHashMap {
         return false;
     }
 
-    /**
-     * Currently only for object maps
-     */
+    
     protected class ValuesIterator implements org.hsqldb.lib.Iterator {
 
         int    lookup = -1;
@@ -1393,10 +1283,7 @@ public class BaseHashMap {
         }
     }
 
-    /**
-     * Iterator returns Object, int or long and is used both for keys and
-     * values
-     */
+    
     protected class BaseHashIterator implements Iterator {
 
         boolean keys;
@@ -1404,9 +1291,7 @@ public class BaseHashMap {
         int     counter;
         boolean removed;
 
-        /**
-         * default is iterator for values
-         */
+        
         public BaseHashIterator() {}
 
         public BaseHashIterator(boolean keys) {

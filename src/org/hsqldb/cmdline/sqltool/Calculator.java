@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.cmdline.sqltool;
@@ -78,15 +50,9 @@ public class Calculator {
     }
 
     private class Atom {
-        /* Atoms do not hold variables.
-         * Makes for nice simplification by dereferencing variable names in
-         * the constructor and just dealing with integer values thereafter. */
+        
         private Atom(String token) {
-            /*
-            if (token == null || token.length() < 1)
-                throw new IllegalArgumentException(
-                        "Tokens must have length > 1, but was '" + token + "'");
-            */
+            
             if (token == null)
                 throw new IllegalArgumentException("Tokens may not be null");
             if (token.length() < 1)
@@ -99,7 +65,7 @@ public class Calculator {
                 op = MathOp.valueOf(token.charAt(0));
                 if (op != null) return;
             }
-            // System.err.println("Trying '" + token + "'");
+            
             val = deref(token);
         }
         private Atom(MathOp op) { this.op = op; }
@@ -116,8 +82,7 @@ public class Calculator {
     }
 
     public Calculator(String[] sa, Map<String, String> vars) {
-        /* Populates the atom list.
-         * Also collapses 2-part negative numbers into single Atoms. */
+        
         if (vars.size() < 1)
             throw new IllegalArgumentException("No expression supplied");
         this.vars = vars;
@@ -146,30 +111,18 @@ public class Calculator {
         }
     }
 
-    /**
-     * Every integer, var name, and single-math-op-character get their own
-     * tokens here.
-     * Special processesing is needed afterwards because negative signs get
-     * separated into separate tokens.
-     */
+    
     public Calculator(String s, Map<String, String> vars) {
         this(s.replaceAll("([-()*/+^])", " $1 ")
                 .trim().split("\\s+"), vars);
     }
-    /**
-     * If atoms[startAtomIndex] == '(', then last visited atoms will be the
-     * next top-level (un-paired) ')'.
-     * Otherwise, all remainign atoms will be visited.
-     * Every visited atom will be removed from 'atoms'.
-     *
-     * @returns Value that all visited atoms reduce to.
-     */
+    
     public long reduce(int startAtomIndex, boolean stopAtParenClose) {
-        // Every occurence of atoms.remove() below is an instance of reduction.
+        
         int i;
         Long prevValue = null;
         Atom atom;
-        // Reduce parens via recursion
+        
         i = startAtomIndex - 1;
         PAREN_SEEKER:
         while (atoms.size() >= ++i) {
@@ -187,22 +140,22 @@ public class Calculator {
                             "Unbalanced '" + MathOp.RPAREN + "'");
                 atoms.remove(i);
                 break PAREN_SEEKER;
-              case LPAREN: // Recurse.  Reduction inside of reduce().
+              case LPAREN: 
                 atoms.remove(i);
                 atoms.add(i, new Atom(reduce(i, true)));
                 break;
               default:
-                // Intentionally empty
+                
             }
         }
         int remaining = i - startAtomIndex;
         if (remaining < 1)
             throw new IllegalStateException("Empty expression");
-        // System.out.println("Need to consume " + remaining + " after parens removed");
+        
         Atom nextAtom;
         MathOp op;
 
-        // Reduce powers
+        
         i = startAtomIndex;
         atom = atoms.get(i);
         if (atom.op != null)
@@ -223,12 +176,12 @@ public class Calculator {
                 throw new IllegalStateException(
                         "Value expected but got operator " + nextAtom.op);
             if (op != MathOp.POWER) {
-                // Skip 'atom' (current) and the operand that we'll handle later
+                
                 i += 2;
                 atom = nextAtom;
                 continue;
             }
-            // Reduce the operator and right operand Atoms
+            
             remaining -= 2;
             atoms.remove(i + 1);
             atoms.remove(i + 1);
@@ -237,7 +190,7 @@ public class Calculator {
             for (int j = 0; j < nextAtom.val; j++) atom.val *= origVal;
         }
 
-        // Reduce multiplication and division
+        
         i = startAtomIndex;
         atom = atoms.get(i);
         if (atom.op != null)
@@ -258,12 +211,12 @@ public class Calculator {
                 throw new IllegalStateException(
                         "Value expected but got operator " + nextAtom.op);
             if (op != MathOp.MULTIPLY && op != MathOp.DIVIDE && op != MathOp.REM) {
-                // Skip 'atom' (current) and the operand that we'll handle later
+                
                 i += 2;
                 atom = nextAtom;
                 continue;
             }
-            // Reduce the operator and right operand Atoms
+            
             remaining -= 2;
             atoms.remove(i + 1);
             atoms.remove(i + 1);
@@ -272,8 +225,8 @@ public class Calculator {
             else atom.val %= nextAtom.val;
         }
 
-        // Reduce addition and subtraction
-        // Reduce the leading value
+        
+        
         atom = atoms.remove(startAtomIndex);
         remaining--;
         if (atom.op != null)
@@ -281,17 +234,17 @@ public class Calculator {
                     "Value expected but got operation " + atom.op);
         long total = atom.val;
         while (remaining > 0) {
-            // Reduce the operator Atom
+            
             --remaining;
             atom = atoms.remove(startAtomIndex);
             op = atom.op;
-            // System.err.println("Trying +/- for " + op);
+            
             if (op == null)
                 throw new IllegalStateException(
                         "Operator expected but got value " + atom.val);
             if (remaining <= 0)
                 throw new IllegalStateException("No operand for operator " + op);
-            // Reduce the right operand
+            
             --remaining;
             atom = atoms.remove(startAtomIndex);
             if (atom.op != null)
@@ -312,7 +265,7 @@ public class Calculator {
         return total;
     }
 
-    /* TODO:  Replace this method with a proper unit test class */
+    
     public static void main(String[] sa) {
         if (sa.length != 1)
             throw new IllegalArgumentException(
@@ -330,25 +283,10 @@ public class Calculator {
         Calculator calc = new Calculator(sa[0], uV);
         System.out.println(calc);
         System.out.println(calc.reduce(0, false));
-        /*
-        if (sa[0].length() != sa[0].length()) {
-            System.out.println((sa[0].length() >= sa[0].length()) ? ">" : "<");
-            return;
-        }
-        int val = sa[0].compareTo(sa[1]);
-        if (val == 0)
-            System.out.println("==");
-        else if (val > 0)
-            System.out.println(">");
-        else
-            System.out.println("<");
-        */
+        
     }
 
-    /**
-     * Does not actually do the assigment, but validates the input variable
-     * and returns the value ready to be assigned to it.
-     */
+    
     public static long reassignValue(String assignee,
             Map<String, String> valMap, String opStr, String expr) {
         long outVal = 0;

@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -44,14 +16,7 @@ import org.hsqldb.rights.Grantee;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * The methods in this class perform alterations to the structure of an
- * existing table which may result in a new Table object
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.7.0
- */
+
 public class TableWorks {
 
     OrderedHashSet   emptySet = new OrderedHashSet();
@@ -97,7 +62,7 @@ public class TableWorks {
             }
         }
 
-        // column defaults
+        
         check =
             c.core.updateAction == SchemaObject.ReferentialAction.SET_DEFAULT
             || c.core.deleteAction
@@ -134,12 +99,12 @@ public class TableWorks {
 
         database.schemaManager.checkSchemaObjectNotExists(c.getName());
 
-        // duplicate name check for a new table
+        
         if (table.getConstraint(c.getName().name) != null) {
             throw Error.error(ErrorCode.X_42504, c.getName().statementName);
         }
 
-        // existing FK check
+        
         if (table.getFKConstraintForColumns(
                 c.core.mainTable, c.core.mainCols, c.core.refCols) != null) {
             throw Error.error(ErrorCode.X_42528, c.getName().statementName);
@@ -157,7 +122,7 @@ public class TableWorks {
                               c.getMain().getName().statementName);
         }
 
-        // check after UNIQUE check
+        
         c.core.mainTable.checkColumnsMatch(c.core.mainCols, table,
                                            c.core.refCols);
         ArrayUtil.reorderMaps(unique.getMainColumns(), c.getMainColumns(),
@@ -170,19 +135,7 @@ public class TableWorks {
         grantee.checkReferences(c.core.mainTable, checkList);
     }
 
-    /**
-     * Creates a foreign key on an existing table. Foreign keys are enforced by
-     * indexes on both the referencing (child) and referenced (main) tables.
-     *
-     * <p> Since version 1.7.2, a unique constraint on the referenced columns
-     * must exist. The non-unique index on the referencing table is now always
-     * created whether or not a PK or unique constraint index on the columns
-     * exist. Foriegn keys on temp tables can reference other temp tables with
-     * the same rules above. Foreign keys on permanent tables cannot reference
-     * temp tables. Duplicate foreign keys are now disallowed.
-     *
-     * @param c the constraint object
-     */
+    
     void addForeignKey(Constraint c) {
 
         checkModifyTable();
@@ -243,12 +196,7 @@ public class TableWorks {
         table = tn;
     }
 
-    /**
-     * Checks if the attributes of the Column argument, c, are compatible with
-     * the operation of adding such a Column to the Table argument, table.
-     *
-     * @param col the Column to add to the Table, t
-     */
+    
     void checkAddColumn(ColumnSchema col) {
 
         checkModifyTable();
@@ -338,7 +286,7 @@ public class TableWorks {
                                                          table.getName(),
                                                          SchemaObject.INDEX);
 
-                    // create an autonamed index
+                    
                     index = tn.createAndAddIndexStructure(indexName,
                                                           c.getMainColumns(),
                                                           null, null, true,
@@ -516,9 +464,7 @@ public class TableWorks {
         return newSet;
     }
 
-    /**
-     * Drops constriants and their indexes in table. Uses set of names.
-     */
+    
     void makeNewTable(OrderedHashSet dropConstraintSet,
                       OrderedHashSet dropIndexSet) {
 
@@ -556,21 +502,7 @@ public class TableWorks {
         store.reindex(session, newIndex);
     }
 
-    /**
-     * Because of the way indexes and column data are held in memory and on
-     * disk, it is necessary to recreate the table when an index is added to a
-     * non-empty cached table.
-     *
-     * <p> With empty tables, Index objects are simply added
-     *
-     * <p> With MEOMRY and TEXT tables, a new index is built up and nodes for
-     * earch row are interlinked (fredt@users)
-     *
-     * @param col int[]
-     * @param name HsqlName
-     * @param unique boolean
-     * @return new index
-     */
+    
     Index addIndex(int[] col, HsqlName name, boolean unique) {
 
         Index newindex;
@@ -627,17 +559,7 @@ public class TableWorks {
         database.schemaManager.recompileDependentObjects(table);
     }
 
-    /**
-     * A unique constraint relies on a unique indexe on the table. It can cover
-     * a single column or multiple columns.
-     *
-     * <p> All unique constraint names are generated by Database.java as unique
-     * within the database. Duplicate constraints (more than one unique
-     * constriant on the same set of columns) are not allowed. (fredt@users)
-     *
-     * @param cols int[]
-     * @param name HsqlName
-     */
+    
     void addUniqueConstraint(int[] cols, HsqlName name) {
 
         checkModifyTable();
@@ -647,7 +569,7 @@ public class TableWorks {
             throw Error.error(ErrorCode.X_42522);
         }
 
-        // create an autonamed index
+        
         HsqlName indexname = database.nameManager.newAutoName("IDX",
             name.name, table.getSchemaName(), table.getName(),
             SchemaObject.INDEX);
@@ -712,17 +634,7 @@ public class TableWorks {
         database.schemaManager.addSchemaObject(c);
     }
 
-    /**
-     * Because of the way indexes and column data are held in memory and on
-     * disk, it is necessary to recreate the table when an index is added to or
-     * removed from a non-empty table.
-     *
-     * <p> Originally, this method would break existing foreign keys as the
-     * table order in the DB was changed. The new table is now linked in place
-     * of the old table (fredt@users)
-     *
-     * @param indexName String
-     */
+    
     void dropIndex(String indexName) {
 
         Index index;
@@ -885,7 +797,7 @@ public class TableWorks {
                 OrderedHashSet dependentConstraints =
                     table.getDependentConstraints(constraint);
 
-                // throw if unique constraint is referenced by foreign key
+                
                 if (!cascade && !dependentConstraints.isEmpty()) {
                     Constraint c = (Constraint) dependentConstraints.get(0);
 
@@ -940,13 +852,13 @@ public class TableWorks {
 
                     for (int i = 0; i < cols.length; i++) {
 
-                        // todo - check if table arrays relect the not-null correctly
+                        
                         tn.getColumn(cols[i]).setPrimaryKey(false);
                         tn.setColumnTypeVars(cols[i]);
                     }
                 }
 
-                //
+                
                 database.schemaManager.removeSchemaObjects(constraintNameSet);
                 setNewTableInSchema(tn);
                 setNewTablesInSchema(tableSet);
@@ -957,7 +869,7 @@ public class TableWorks {
 
                 table = tn;
 
-                // handle cascadingConstraints and cascadingTables
+                
                 break;
             }
             case SchemaObject.ConstraintTypes.FOREIGN_KEY : {
@@ -980,12 +892,12 @@ public class TableWorks {
 
                 moveData(table, tn, -1, 0);
 
-                //
+                
                 database.schemaManager.removeSchemaObject(
                     constraint.getName());
                 setNewTableInSchema(tn);
 
-                // if constraint references same table, nothing changes
+                
                 mainTable.removeConstraint(mainName.name);
                 updateConstraints(tn, emptySet);
                 database.schemaManager.recompileDependentObjects(table);
@@ -1009,12 +921,7 @@ public class TableWorks {
         }
     }
 
-    /**
-     * Allows changing the type only.
-     *
-     * @param oldCol Column
-     * @param newCol Column
-     */
+    
     void retypeColumn(ColumnSchema oldCol, ColumnSchema newCol) {
 
         Type oldType = oldCol.getDataType();
@@ -1047,7 +954,7 @@ public class TableWorks {
 
         int colIndex = table.getColumnIndex(oldCol.getName().name);
 
-        // 0 if only metadata change is required ; 1 if only check is required ; -1 if data conversion is required
+        
         int checkData = newType.canMoveFrom(oldType);
 
         if (checkData == 0) {
@@ -1067,9 +974,9 @@ public class TableWorks {
 
         if (checkData == 0) {
 
-            // size of some types may be increased
-            // default expressions can change
-            // identity can be added or removed
+            
+            
+            
             oldCol.setType(newCol);
             oldCol.setDefaultExpression(newCol.getDefaultExpression());
             oldCol.setIdentity(newCol.getIdentitySequence());
@@ -1087,11 +994,7 @@ public class TableWorks {
         retypeColumn(newCol, colIndex);
     }
 
-    /**
-     *
-     * @param oldCol Column
-     * @param newCol Column
-     */
+    
     void checkConvertColDataType(ColumnSchema oldCol, ColumnSchema newCol) {
 
         int         colIndex = table.getColumnIndex(oldCol.getName().name);
@@ -1110,11 +1013,7 @@ public class TableWorks {
         }
     }
 
-    /**
-     *
-     * @param column Column
-     * @param colIndex int
-     */
+    
     private void retypeColumn(ColumnSchema column, int colIndex) {
 
         Table tn = table.moveDefinition(session, table.tableType, column,
@@ -1129,12 +1028,7 @@ public class TableWorks {
         table = tn;
     }
 
-    /**
-     * performs the work for changing the nullability of a column
-     *
-     * @param column Column
-     * @param nullable boolean
-     */
+    
     void setColNullability(ColumnSchema column, boolean nullable) {
 
         Constraint c        = null;
@@ -1169,12 +1063,7 @@ public class TableWorks {
         }
     }
 
-    /**
-     * performs the work for changing the default value of a column
-     *
-     * @param colIndex int
-     * @param def Expression
-     */
+    
     void setColDefaultExpression(int colIndex, Expression def) {
 
         if (def == null) {
@@ -1188,13 +1077,7 @@ public class TableWorks {
         table.setColumnTypeVars(colIndex);
     }
 
-    /**
-     * Changes the type of a table
-     *
-     * @param session Session
-     * @param newType int
-     * @return boolean
-     */
+    
     public boolean setTableType(Session session, int newType) {
 
         int currentType = table.getTableType();

@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -51,20 +23,9 @@ import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Implementation of an SQL query expression
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
 
-/**
- * @todo 1.9.0 - review these
- * - work out usage of getMainSelect etc and add relevant methods
- * - Result metadata for the final result of QueryExpression
- *
- */
+
+
 public class QueryExpression {
 
     public static final int NOUNION       = 0,
@@ -76,7 +37,7 @@ public class QueryExpression {
                             EXCEPT        = 6,
                             UNION_TERM    = 7;
 
-    //
+    
     int                     columnCount;
     private QueryExpression leftQueryExpression;
     private QueryExpression rightQueryExpression;
@@ -88,20 +49,20 @@ public class QueryExpression {
     Type[]                  unionColumnTypes;
     boolean                 isFullOrder;
 
-    //
+    
     HsqlList unresolvedExpressions;
 
-    //
+    
     boolean isResolved;
 
-    //
+    
     int persistenceScope = TableBase.SCOPE_STATEMENT;
 
-    //
+    
     ResultMetaData resultMetaData;
     boolean[]      accessibleColumns;
 
-    //
+    
     View    view;
     boolean isMergeable;
     boolean isUpdatable;
@@ -110,14 +71,14 @@ public class QueryExpression {
     boolean isTopLevel;
     boolean acceptsSequences;
 
-    //
+    
     public TableBase resultTable;
     public Index     mainIndex;
     public Index     fullIndex;
     public Index     orderIndex;
     public Index     idIndex;
 
-    //
+    
     CompileContext compileContext;
 
     QueryExpression(CompileContext compileContext) {
@@ -315,9 +276,7 @@ public class QueryExpression {
         ArrayUtil.fillArray(accessibleColumns, true);
     }
 
-    /**
-     * Only simple column reference or column position allowed
-     */
+    
     void resolveColumnRefernecesInUnionOrderBy() {
 
         int orderCount = sortAndSlice.getOrderLength();
@@ -413,7 +372,7 @@ public class QueryExpression {
                                     unionColumnTypes);
         rightQueryExpression.resolveTypesPartTwo(session);
 
-        //
+        
         ResultMetaData leftMeta  = leftQueryExpression.getMetaData();
         ResultMetaData rightMeta = rightQueryExpression.getMetaData();
 
@@ -475,18 +434,7 @@ public class QueryExpression {
                 queryExpression = queryExpression.leftQueryExpression;
             }
         }
-/*
-        // disallow lobs
-        ResultMetaData meta = getMetaData();
 
-        for (int i = 0, count = meta.getColumnCount(); i < count; i++) {
-            Type dataType = meta.columnTypes[i];
-
-            if (dataType.isLobType()) {
-                throw Error.error(ErrorCode.X_42534);
-            }
-        }
-*/
     }
 
     public Object[] getValues(Session session) {
@@ -694,7 +642,7 @@ public class QueryExpression {
         return leftQueryExpression.getMainSelect();
     }
 
-    /** @todo 1.9.0 review */
+    
     public String describe(Session session, int blanks) {
 
         StringBuffer sb;
@@ -817,9 +765,7 @@ public class QueryExpression {
         return ((TableDerived) getResultTable()).columnList;
     }
 
-    /**
-     * Used prior to type resolution
-     */
+    
     public void setView(View view) {
 
         this.isUpdatable      = true;
@@ -828,9 +774,7 @@ public class QueryExpression {
         this.isTopLevel       = true;
     }
 
-    /**
-     * Used in views after full type resolution
-     */
+    
     public void setTableColumnNames(HashMappedList list) {
 
         if (resultTable != null) {
@@ -887,9 +831,7 @@ public class QueryExpression {
         }
     }
 
-    /**
-     * Not for views. Only used on root node.
-     */
+    
     public void setReturningResult() {
 
         if (compileContext.getSequences().length > 0) {
@@ -901,10 +843,7 @@ public class QueryExpression {
         setReturningResultSet();
     }
 
-    /**
-     * Sets the scope to SESSION for the QueryExpression object that creates
-     * the table
-     */
+    
     void setReturningResultSet() {
 
         if (unionCorresponding) {
@@ -964,7 +903,7 @@ public class QueryExpression {
         return null;
     }
 
-    //
+    
     public Table getBaseTable() {
         return null;
     }

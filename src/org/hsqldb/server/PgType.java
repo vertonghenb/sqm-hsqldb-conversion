@@ -1,37 +1,7 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 
 
-/*
- * $Id: PgType.java 4141 2011-03-14 01:35:49Z fredt $
- */
+
+
 
 package org.hsqldb.server;
 
@@ -43,16 +13,11 @@ import org.hsqldb.jdbc.Util;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Postgres types.
- *
- * @author Blaine Simpson (blaine dot simpson at admc dot com)
- * @since 1.9.0
- */
+
 public class PgType {
     private int oid;
     private int typeWidth = -1;
-    private int lpConstraint = -1; // Length or Precision
+    private int lpConstraint = -1; 
     private Type hType;
 
     public int getOid() {
@@ -65,36 +30,17 @@ public class PgType {
         return lpConstraint;
     }
 
-    /**
-     * Convenience wrapper for PgType constructor, when there is no
-     * type width, length, or precision setting for the type.
-     *
-     * @see #PgType(Type, int, Integer, Integer)
-     */
+    
     protected PgType(Type hType, int oid) {
         this(hType, oid, null, null);
     }
 
-    /**
-     * Convenience wrapper for PgType constructor, when there is no
-     * length or precision setting for the type.
-     *
-     * @see #PgType(Type, int, Integer, Integer)
-     */
+    
     protected PgType(Type hType, int oid, int typeWidth) {
         this(hType, oid, new Integer(typeWidth), null);
     }
 
-    /**
-     * Convenience wrapper for PgType constructor, when there is no fixed
-     * width for the type.
-     *
-     * @param dummy Normally pass null.  This is a dummy parameter just to make
-     *              a unique method signature.  If non-null, will be treated
-     *              exactly the same as the typeWidthObject from the 3-param
-     *              constructor.
-     * @see #PgType(Type, int, Integer, Integer)
-     */
+    
     protected PgType(Type hType, int oid, Integer dummy, long lpConstraint)
     throws RecoverableOdbcFailure {
         this(hType, oid, dummy, new Integer((int) lpConstraint));
@@ -109,16 +55,7 @@ public class PgType {
         }
     }
 
-    /**
-     * @param hType HyperSQL data type
-     * @param oid Numeric Object ID for the driver-side type.
-     * @param typeWidthObject Fixed width for the type
-     * @param lpConstraintObject Either length or Precision setting for this
-     *                     instance of the type.
-     *                     <b>IMPORTANT!</b> for all types with positive
-     *                     lpConstraint other than Timestamps and Times,
-     *                     add an extra 4 to satisy crazy driver protocol.
-     */
+    
     protected PgType(Type hType,
         int oid, Integer typeWidthObject, Integer lpConstraintObject) {
         this.hType = hType;
@@ -147,9 +84,9 @@ public class PgType {
                         (hType.precision << 16) + hType.scale + 4);
 
             case Types.SQL_FLOAT:
-                // TODO:
-                // Improve the driver to make use of the Float precision
-                // return new PgType(hType, TYPE_FLOAT8, null, hType.precision);
+                
+                
+                
             case Types.SQL_DOUBLE:
             case Types.SQL_REAL:
                 return doubleSingleton;
@@ -157,15 +94,15 @@ public class PgType {
             case Types.BOOLEAN:
                 return boolSingleton;
 
-            case Types.SQL_CHAR: // = CHARACTER
+            case Types.SQL_CHAR: 
                 if (directColumn) {
                     return new PgType(hType,
                         TYPE_BPCHAR, null, hType.precision + 4);
                 }
-                return unknownSingleton;  // constant value
+                return unknownSingleton;  
 
-            case Types.SQL_VARCHAR: // = CHARACTER VARYING = LONGVARCHAR
-            case Types.VARCHAR_IGNORECASE: // Don't know if possible here
+            case Types.SQL_VARCHAR: 
+            case Types.VARCHAR_IGNORECASE: 
                 if (hType.precision < 0) {
                     throw new RecoverableOdbcFailure (
                         "Length/Precision value is below minimum value of 0");
@@ -178,23 +115,23 @@ public class PgType {
                 return (hType.precision != 0 && directColumn)
                     ? new PgType(hType, TYPE_VARCHAR, null, hType.precision + 4)
                     : textSingleton;
-                // Return TEXT type for both unlimited VARCHARs, and for
-                // Non-direct-table-col results.
-            case Types.SQL_CLOB: // = CHARACTER LARGE OBJECT
+                
+                
+            case Types.SQL_CLOB: 
                 throw new RecoverableOdbcFailure (
                     "Driver doesn't support type 'CLOB' yet");
 
-            case Types.SQL_BLOB: // = BINARY LARGE OBJECT
+            case Types.SQL_BLOB: 
                 return new PgType(hType, TYPE_BLOB, null, hType.precision);
             case Types.SQL_BINARY:
-            case Types.SQL_VARBINARY: // = BINARY VARYING
+            case Types.SQL_VARBINARY: 
                 return new PgType(hType, TYPE_BYTEA, null, hType.precision);
-                // Note that we are returning SQL_BINARY data as if they were
-                // variable.  I don't think the unnecessary variability will
-                // have any side-effects.
-                // No reason to differentiate here, since the client's
-                // atttypm parameter is where we would communicate the length
-                // in both cases.
+                
+                
+                
+                
+                
+                
 
             case Types.OTHER:
                 throw new RecoverableOdbcFailure (
@@ -204,13 +141,13 @@ public class PgType {
                 return bitSingleton;
             case Types.SQL_BIT_VARYING:
                 return bitVaryingSingleton;
-                // I have no idea why length contstaint spec is not needed for
-                // BIT_VARYING.
+                
+                
 
             case Types.SQL_DATE:
                 return dateSingleton;
 
-            // 4 bytes
+            
             case Types.SQL_TIME :
                 return new PgType(hType, TYPE_TIME, new Integer(8),
                                   hType.precision);
@@ -227,23 +164,14 @@ public class PgType {
                 return new PgType(hType, TYPE_TIMESTAMP, new Integer(8),
                                   hType.precision);
 
-            // Postgresql is returning type DATETIME for this case.
-            // It should return TYPE_TIMESTAMP, no?
-            /* *********************************************************
-             * For INTERVALs, we get the more specific type here, not just
-             * SQL_INTERVAL.
-            case Types.SQL_INTERVAL:
-             *
-             * The reason no precisions are passed to the ODBC client is that I
-             * have so far been unsuccessful at figuring out exactly how the
-             * driver wants the atttypmod formatted.  See doc/odbc.txt for
-             * notes about this.
-             */
+            
+            
+            
             case Types.SQL_INTERVAL_YEAR:
             case Types.SQL_INTERVAL_YEAR_TO_MONTH:
             case Types.SQL_INTERVAL_MONTH:
-                // Need to test these, since the driver Interval type is
-                // intended for second-resolution only, not month resolution.
+                
+                
                 throw new RecoverableOdbcFailure (
                     "Driver doesn't support month-resolution 'INTERVAL's yet");
             case Types.SQL_INTERVAL_DAY:
@@ -252,11 +180,11 @@ public class PgType {
             case Types.SQL_INTERVAL_HOUR:
             case Types.SQL_INTERVAL_HOUR_TO_MINUTE:
             case Types.SQL_INTERVAL_MINUTE:
-                // Our server uses the type to distinguish the resolution here.
-                // The driver expects these types to be distinguished in the
-                // value itself, like "99 days".
-                // Therefore, these types are incompatible until driver is
-                // enhanced.
+                
+                
+                
+                
+                
                 throw new RecoverableOdbcFailure (
                     "Driver doesn't support non-second-resolution 'INTERVAL's "
                     + "yet");
@@ -279,18 +207,7 @@ public class PgType {
         }
     }
 
-    /**
-     * This method copied from JDBCPreparedStatement.java.
-     *
-     * The internal parameter value setter always converts the parameter to
-     * the Java type required for data transmission.
-     * <P>
-     * This method will not be called for binary types.  Binary values are
-     * just loaded directly into the Object parameter array.
-     * </P>
-     *
-     * @throws SQLException if either argument is not acceptable.
-     */
+    
     public Object getParameter(String inString, Session session)
     throws SQLException, RecoverableOdbcFailure {
         if (inString == null) {
@@ -323,29 +240,7 @@ public class PgType {
             case Types.SQL_CLOB :
                 throw new RecoverableOdbcFailure(
                         "Type not supported yet: " + hType.getNameString());
-                /*
-            case Types.OTHER :
-                try {
-                    if (o instanceof Serializable) {
-                        o = new JavaObjectData((Serializable) o);
-
-                        break;
-                    }
-                } catch (HsqlException e) {
-                    PgType.throwError(e);
-                }
-                PgType.throwError(Error.error(ErrorCode.X_42565));
-
-                break;
-            case Types.SQL_BLOB :
-                //setBlobParameter(i, o);
-
-                //break;
-            case Types.SQL_CLOB :
-                //setClobParameter(i, o);
-
-                //break;
-            */
+                
             case Types.SQL_DATE :
             case Types.SQL_TIME_WITH_TIME_ZONE :
             case Types.SQL_TIMESTAMP_WITH_TIME_ZONE :
@@ -375,14 +270,10 @@ public class PgType {
                 }
                 break;
             default :
-                /*
-                throw new RecoverableOdbcFailure(
-                    "Parameter value is of unexpected type: "
-                    + hType.getNameString());
-                */
+                
                 try {
                     o = hType.convertToDefaultType(session, o);
-                    // Supposed to handle String -> SQL_BIT.  Not working.
+                    
                 } catch (HsqlException e) {
                     PgType.throwError(e);
                 }
@@ -397,10 +288,10 @@ public class PgType {
             case Types.SQL_BOOLEAN :
                 return String.valueOf(((Boolean) datum).booleanValue()
                     ? 't' : 'f');
-                // Default would probably work fine, since the Driver looks at
-                // only the first byte, but this why send an extra 3 or 4 bytes
-                // with every data, plus there could be some dependency upon
-                // single-character in the driver code somewhere.
+                
+                
+                
+                
             case Types.SQL_VARBINARY :
             case Types.SQL_BINARY :
                 dataString = OdbcUtil.hexCharsToOctalOctets(dataString);
@@ -409,9 +300,7 @@ public class PgType {
         return dataString;
     }
 
-    /*
-     * The followign settings are a Java port of pgtypes.h
-     */
+    
     public static final int TYPE_BOOL         =  16;
     public static final int TYPE_BYTEA        =  17;
     public static final int TYPE_CHAR         =  18;
@@ -459,41 +348,37 @@ public class PgType {
     public static final int TYPE_VARCHAR      = 1043;
     public static final int TYPE_DATE         = 1082;
     public static final int TYPE_TIME         = 1083;
-    public static final int TYPE_TIMESTAMP_NO_TMZONE = 1114; /* since 7.2 */
+    public static final int TYPE_TIMESTAMP_NO_TMZONE = 1114; 
     public static final int TYPE_DATETIME     = 1184;
-    public static final int TYPE_TIME_WITH_TMZONE   = 1266;   /* since 7.1 */
-    public static final int TYPE_TIMESTAMP    = 1296; /* deprecated since 7.0 */
+    public static final int TYPE_TIME_WITH_TMZONE   = 1266;   
+    public static final int TYPE_TIMESTAMP    = 1296; 
     public static final int TYPE_NUMERIC      = 1700;
     public static final int TYPE_RECORD       = 2249;
     public static final int TYPE_VOID         = 2278;
     public static final int TYPE_UUID         = 2950;
 
-    // Numbering new HyperSQL-only client-side types beginning with 9999 and
-    // getting lower, to reduce chance of conflict with future PostreSQL types.
+    
+    
     public static final int TYPE_BLOB         = 9998;
     public static final int TYPE_TINYINT      = 9999;
 
-    // Apparenly new additions, from Postgresql server file pg_type.h:
+    
     public static final int TYPE_BIT          = 1560;
-    // Also defined is _bit.  No idea what that is about
+    
     public static final int TYPE_VARBIT       = 1562;
-    // Also defined is _varbit.  No idea what that is about
+    
 
-    /* Following stuff is to support code copied from
-     * JDBCPreparedStatement.java. */
+    
     static final void throwError(HsqlException e) throws SQLException {
 
-//#ifdef JAVA6
+
         throw Util.sqlException(e.getMessage(), e.getSQLState(),
             e.getErrorCode(), e);
 
-//#else
-/*
-        throw new SQLException(e.getMessage(), e.getSQLState(),
-                               e.getErrorCode());
-*/
 
-//#endif JAVA6
+
+
+
     }
 
     static protected final PgType tinyIntSingleton =
@@ -531,11 +416,7 @@ public class PgType {
         if (hsqldbType.precision == 0 && hsqldbType.scale == 0) {
             return;
         }
-        // TODO:  Use logging system!
-        /*
-        System.err.println(
-                "WARNING:  Not passing INTERVAL precision setting "
-                + "or second precision setting to ODBC client");
-        */
+        
+        
     }
 }

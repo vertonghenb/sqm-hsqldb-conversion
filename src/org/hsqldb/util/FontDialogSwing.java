@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.util;
@@ -50,10 +22,10 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 
-//  weconsultants@users 20041109 - original swing port
-//  weconsultants@users 20050215 - version 1.8.0 -  Update: Compatbilty fix for JDK 1.3
-//      - Replaced: Objects JSpinner spinnerFontSizes and SpinnerNumberModel spinnerModelSizes
-//        for JComboBox fontSizesComboBox and String fontSizes[];
+
+
+
+
 public class FontDialogSwing extends JDialog {
 
     private static boolean      isRunning   = false;
@@ -66,24 +38,21 @@ public class FontDialogSwing extends JDialog {
     private static JButton      fgColorButton;
     private static JComboBox    fontsComboBox;
 
-    //  weconsultants@users 20050215 - Added for Compatbilty fix for JDK 1.3
+    
     private static JComboBox      fontSizesComboBox;
     private static final String[] fontSizes = {
         "8", "9", "10", "11", "12", "13", "14", "16", "18", "24", "36"
     };
 
-    // weconsultants@users 20050215 - Commented out for Compatbilty fix for JDK 1.3
-    //  private static JSpinner           spinnerFontSizes;
-    //  private static SpinnerNumberModel spinnerModelSizes;
+    
+    
+    
     private static DatabaseManagerSwing fOwner;
     private static JFrame frame =
         new JFrame("DataBaseManagerSwing Font Selection Dialog");
     private static JCheckBox ckbitalic;
 
-    /**
-     * Create and display FontDialogSwing Dialog.
-     *
-     */
+    
     public static void creatFontDialog(DatabaseManagerSwing owner) {
 
         if (isRunning) {
@@ -178,7 +147,7 @@ public class FontDialogSwing extends JDialog {
                 }
             });
 
-            // weconsultants@users 20050215 - Added for Compatbilty fix for  JDK 1.3
+            
             fontSizesComboBox = new JComboBox(fontSizes);
 
             Dimension spinnerDimension = new Dimension(45, 25);
@@ -197,28 +166,28 @@ public class FontDialogSwing extends JDialog {
                 }
             });
 
-            // weconsultants@users 20050215 - Commented out for Compatbilty fix for  JDK 1.3
-            //            Dimension spinnerDimension = new Dimension(50, 25);
-            //            spinnerFontSizes = new JSpinner();
-            //            spinnerFontSizes.putClientProperty("is3DEnabled", Boolean.TRUE);
-            //            spinnerFontSizes.setMinimumSize(spinnerDimension);
-            //            spinnerFontSizes.setPreferredSize(spinnerDimension);
-            //            spinnerFontSizes.setMaximumSize(spinnerDimension);
-            //            spinnerModelSizes = new SpinnerNumberModel(12, 8, 72, 1);
-            //            spinnerFontSizes.setModel(spinnerModelSizes);
-            //            spinnerFontSizes.addChangeListener(new ChangeListener() {
-            //                public void stateChanged(ChangeEvent e) {
-            //                    setFontSize();
-            //                }
-            //            });
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             Container contentPane = frame.getContentPane();
 
             contentPane.setLayout(new FlowLayout());
             contentPane.add(fontsComboBox);
 
-            // weconsultants@users 20050215 - Commented out for Compatbilty fix for 1.3
-            // contentPane.add(spinnerFontSizes);
-            // weconsultants@users 20050215 - Added for Compatbilty fix for 1.3
+            
+            
+            
             contentPane.add(fontSizesComboBox);
             contentPane.add(ckbbold);
             contentPane.add(ckbitalic);
@@ -254,13 +223,11 @@ public class FontDialogSwing extends JDialog {
                 txtTreeFont.getStyle(), txtTreeFont.getSize()));
     }
 
-    /**
-     * Displays a color chooser and Sets the selected color.
-     */
+    
     public static void setFontSize(String inFontSize) {
 
-        // weconsultants@users 20050215 - Changed for Compatbilty fix for JDK 1.3
-        // Convert Strng to float for deriveFont() call
+        
+        
         Float stageFloat = new Float(inFontSize);
         float fontSize   = stageFloat.floatValue();
         Font  fonttTree  = fOwner.tTree.getFont().deriveFont(fontSize);
@@ -277,10 +244,7 @@ public class FontDialogSwing extends JDialog {
         fOwner.txtResult.setFont(fontTxtResult);
     }
 
-    /**
-     * Changes the style (Bold, Italic ) of the selected text by checking the
-     * style buttons
-     */
+    
     public static void setStyle() {
 
         int style = Font.PLAIN;

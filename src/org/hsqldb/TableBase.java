@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -40,16 +12,10 @@ import org.hsqldb.navigator.RowIterator;
 import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.types.Type;
 
-/**
- * The  base of all HSQLDB table implementations.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.7.2
- */
+
 public class TableBase {
 
-    // types of table
+    
     public static final int INFO_SCHEMA_TABLE = 1;
     public static final int SYSTEM_SUBQUERY   = 2;
     public static final int TEMP_TABLE        = 3;
@@ -64,36 +30,36 @@ public class TableBase {
     public static final int SYSTEM_TABLE      = 12;
     public static final int CHANGE_SET_TABLE  = 13;
 
-    //
+    
     public static final int SCOPE_STATEMENT   = 21;
     public static final int SCOPE_TRANSACTION = 22;
     public static final int SCOPE_SESSION     = 23;
     public static final int SCOPE_FULL        = 24;
 
-    //
+    
     public PersistentStore store;
     public int             persistenceScope;
     public long            persistenceId;
 
-    // columns in table
-    int[]  primaryKeyCols;                      // column numbers for primary key
+    
+    int[]  primaryKeyCols;                      
     Type[] primaryKeyTypes;
-    int[]  primaryKeyColsSequence;              // {0,1,2,...}
+    int[]  primaryKeyColsSequence;              
 
-    //
-    //
-    Index[]         indexList;                  // first index is the primary key index
+    
+    
+    Index[]         indexList;                  
     public Database database;
-    int[]           bestRowIdentifierCols;      // column set for best index
-    boolean         bestRowIdentifierStrict;    // true if it has no nullable column
-    int[]           bestIndexForColumn;         // index of the 'best' index for each column
-    Index           bestIndex;                  // the best index overall - null if there is no user-defined index
-    Index         fullIndex;                    // index on all columns
-    boolean[]     colNotNull;                   // nullability
-    Type[]        colTypes;                     // types of columns
+    int[]           bestRowIdentifierCols;      
+    boolean         bestRowIdentifierStrict;    
+    int[]           bestIndexForColumn;         
+    Index           bestIndex;                  
+    Index         fullIndex;                    
+    boolean[]     colNotNull;                   
+    Type[]        colTypes;                     
     protected int columnCount;
 
-    //
+    
     int               tableType;
     protected boolean isReadOnly;
     protected boolean isTemp;
@@ -107,10 +73,10 @@ public class TableBase {
     private boolean   isTransactional = true;
     boolean           hasLobColumn;
 
-    //
+    
     TableBase() {}
 
-    //
+    
     public TableBase(Session session, Database database, int scope, int type,
                      Type[] colTypes) {
 
@@ -194,51 +160,37 @@ public class TableBase {
         return primaryKeyCols;
     }
 
-    /**
-     *  Returns an array of Type indicating the SQL type of the columns
-     */
+    
     public final Type[] getColumnTypes() {
         return colTypes;
     }
 
-    /**
-     * Returns an index on all the columns
-     */
+    
     public Index getFullIndex() {
         return fullIndex;
     }
 
-    /**
-     *  Returns the Index object at the given index
-     */
+    
     public final Index getIndex(int i) {
         return indexList[i];
     }
 
-    /**
-     *  Returns the indexes
-     */
+    
     public final Index[] getIndexList() {
         return indexList;
     }
 
-    /**
-     * Returns empty boolean array.
-     */
+    
     public final boolean[] getNewColumnCheckList() {
         return new boolean[getColumnCount()];
     }
 
-    /**
-     *  Returns the count of all visible columns.
-     */
+    
     public int getColumnCount() {
         return columnCount;
     }
 
-    /**
-     *  Returns the count of all columns.
-     */
+    
     public final int getDataColumnCount() {
         return colTypes.length;
     }
@@ -251,24 +203,7 @@ public class TableBase {
         isTransactional = value;
     }
 
-    /**
-     * This method is called whenever there is a change to table structure and
-     * serves two porposes: (a) to reset the best set of columns that identify
-     * the rows of the table (b) to reset the best index that can be used
-     * to find rows of the table given a column value.
-     *
-     * (a) gives most weight to a primary key index, followed by a unique
-     * address with the lowest count of nullable columns. Otherwise there is
-     * no best row identifier.
-     *
-     * (b) finds for each column an index with a corresponding first column.
-     * It uses any type of visible index and accepts the one with the largest
-     * column count.
-     *
-     * bestIndex is the user defined, primary key, the first unique index, or
-     * the first non-unique index. NULL if there is no user-defined index.
-     *
-     */
+    
     public final void setBestRowIdentifiers() {
 
         int[]   briCols      = null;
@@ -276,7 +211,7 @@ public class TableBase {
         boolean isStrict     = false;
         int     nNullCount   = 0;
 
-        // ignore if called prior to completion of primary key construction
+        
         if (colNotNull == null) {
             return;
         }
@@ -333,9 +268,9 @@ public class TableBase {
                 if (briCols == null || briColsCount != nNullCount
                         || colsCount < briColsCount) {
 
-                    //  nothing found before ||
-                    //  found but has null columns ||
-                    //  found but has more columns than this index
+                    
+                    
+                    
                     briCols      = cols;
                     briColsCount = colsCount;
                     nNullCount   = colsCount;
@@ -348,9 +283,9 @@ public class TableBase {
             } else if (briCols == null || colsCount < briColsCount
                        || nnullc > nNullCount) {
 
-                //  nothing found before ||
-                //  found but has more columns than this index||
-                //  found but has fewer not null columns than this index
+                
+                
+                
                 briCols      = cols;
                 briColsCount = colsCount;
                 nNullCount   = nnullc;
@@ -423,11 +358,7 @@ public class TableBase {
         return newIndex;
     }
 
-    /**
-     *  Performs Table structure modification and changes to the index nodes
-     *  to remove a given index from a MEMORY or TEXT table. Not for PK index.
-     *
-     */
+    
     public void dropIndex(int todrop) {
 
         indexList = (Index[]) ArrayUtil.toAdjustedArray(indexList, null,
@@ -495,9 +426,7 @@ public class TableBase {
         return new Object[getDataColumnCount()];
     }
 
-    /**
-     *  Create new memory-resident index. For MEMORY and TEXT tables.
-     */
+    
     public final Index createIndex(Session session, HsqlName name,
                                    int[] columns, boolean[] descending,
                                    boolean[] nullsLast, boolean unique,
@@ -520,11 +449,7 @@ public class TableBase {
         store.removeAll();
     }
 
-    /**
-     * @todo - this is wrong, as it returns true when table has no rows,
-     * but not where it has rows that are not visible by session
-     *  Returns true if the table has any rows at all.
-     */
+    
     public final boolean isEmpty(Session session) {
 
         if (getIndexCount() == 0) {

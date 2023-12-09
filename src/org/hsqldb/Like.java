@@ -1,71 +1,4 @@
-/*
- * For work developed by the HSQL Development Group:
- *
- * Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- *
- * For work originally developed by the Hypersonic SQL Group:
- *
- * Copyright (c) 1995-2000, The Hypersonic SQL Group.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the Hypersonic SQL Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * on behalf of the Hypersonic SQL Group.
- */
+
 
 
 package org.hsqldb;
@@ -81,20 +14,12 @@ import org.hsqldb.types.ClobData;
 import org.hsqldb.types.LobData;
 import org.hsqldb.types.Type;
 
-/**
- * Reusable object for processing LIKE queries.
- *
- * Enhanced in successive versions of HSQLDB.
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
- * @version 2.0.1
- * @since Hypersonic SQL
- */
 
-// boucherb@users 20030930 - patch 1.7.2 - optimize into joins if possible
-// fredt@users 20031006 - patch 1.7.2 - reuse Like objects for all rows
-// fredt@users 1.9.0 - LIKE for binary strings
-// fredt@users 1.9.0 - CompareAt() changes for performance suggested by Gary Frost
+
+
+
+
+
 class Like {
 
     private static final BinaryData maxByteValue =
@@ -219,19 +144,19 @@ class Like {
         for (; i < iLen; i++) {
             switch (wildCardType[i]) {
 
-                case 0 :                  // general character
+                case 0 :                  
                     if ((j >= jLen) || (cLike[i] != getChar(o, j++))) {
                         return false;
                     }
                     break;
 
-                case UNDERSCORE_CHAR :    // underscore: do not test this character
+                case UNDERSCORE_CHAR :    
                     if (j++ >= jLen) {
                         return false;
                     }
                     break;
 
-                case PERCENT_CHAR :       // percent: none or any character(s)
+                case PERCENT_CHAR :       
                     if (++i >= iLen) {
                         return true;
                     }
@@ -410,7 +335,7 @@ class Like {
         sb.append("escapeChar=").append(escapeChar).append('\n');
         sb.append("isNull=").append(isNull).append('\n');
 
-//        sb.append("optimised=").append(optimised).append('\n');
+
         sb.append("isIgnoreCase=").append(isIgnoreCase).append('\n');
         sb.append("iLen=").append(iLen).append('\n');
         sb.append("iFirstWildCard=").append(iFirstWildCard).append('\n');

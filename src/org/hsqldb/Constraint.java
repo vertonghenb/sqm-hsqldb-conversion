@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -44,14 +16,7 @@ import org.hsqldb.result.Result;
 import org.hsqldb.rights.Grantee;
 import org.hsqldb.types.Type;
 
-/**
- * Implementation of a table constraint with references to the indexes used
- * by the constraint.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.6.0
- */
+
 public final class Constraint implements SchemaObject {
 
     ConstraintCore   core;
@@ -59,24 +24,22 @@ public final class Constraint implements SchemaObject {
     int              constType;
     boolean          isForward;
 
-    //
+    
     Expression      check;
     private boolean isNotNull;
     int             notNullColumnIndex;
     RangeVariable   rangeVariable;
 
-    // for temp constraints only
+    
     OrderedHashSet mainColSet;
     OrderedHashSet refColSet;
 
-    //
+    
     public static final Constraint[] emptyArray = new Constraint[]{};
 
     private Constraint() {}
 
-    /**
-     *  Constructor declaration for PK and UNIQUE
-     */
+    
     public Constraint(HsqlName name, Table t, Index index, int type) {
 
         this.name      = name;
@@ -104,9 +67,7 @@ public final class Constraint implements SchemaObject {
         core.mainCols  = cols;
     }
 
-    /**
-     *  Constructor for main constraints (foreign key references in PK table)
-     */
+    
     public Constraint(HsqlName name, Constraint fkconstraint) {
 
         this.name = name;
@@ -114,18 +75,7 @@ public final class Constraint implements SchemaObject {
         core      = fkconstraint.core;
     }
 
-    /**
-     * General constructor for foreign key constraints.
-     *
-     * @param name name of constraint
-     * @param refCols list of referencing columns
-     * @param mainTableName referenced table
-     * @param mainCols list of referenced columns
-     * @param type constraint type
-     * @param deleteAction triggered action on delete
-     * @param updateAction triggered action on update
-     *
-     */
+    
     public Constraint(HsqlName name, HsqlName refTableName,
                       OrderedHashSet refCols, HsqlName mainTableName,
                       OrderedHashSet mainCols, int type, int deleteAction,
@@ -198,7 +148,7 @@ public final class Constraint implements SchemaObject {
         copy.constType = constType;
         copy.isForward = isForward;
 
-        //
+        
         copy.check              = check;
         copy.isNotNull          = isNotNull;
         copy.notNullColumnIndex = notNullColumnIndex;
@@ -249,9 +199,7 @@ public final class Constraint implements SchemaObject {
         return SchemaObject.CONSTRAINT;
     }
 
-    /**
-     * Returns the HsqlName.
-     */
+    
     public HsqlName getName() {
         return name;
     }
@@ -369,7 +317,7 @@ public final class Constraint implements SchemaObject {
                 sb.append(check.getSQL());
                 sb.append(')');
 
-                // should not throw as it is already tested OK
+                
                 break;
         }
 
@@ -380,9 +328,7 @@ public final class Constraint implements SchemaObject {
         return 0;
     }
 
-    /**
-     * Generates the foreign key declaration for a given Constraint object.
-     */
+    
     private void getFKStatement(StringBuffer sb) {
 
         if (!getName().isReservedName()) {
@@ -432,44 +378,32 @@ public final class Constraint implements SchemaObject {
         return core.uniqueName;
     }
 
-    /**
-     *  Returns the type of constraint
-     */
+    
     public int getConstraintType() {
         return constType;
     }
 
-    /**
-     *  Returns the main table
-     */
+    
     public Table getMain() {
         return core.mainTable;
     }
 
-    /**
-     *  Returns the main index
-     */
+    
     Index getMainIndex() {
         return core.mainIndex;
     }
 
-    /**
-     *  Returns the reference table
-     */
+    
     public Table getRef() {
         return core.refTable;
     }
 
-    /**
-     *  Returns the reference index
-     */
+    
     Index getRefIndex() {
         return core.refIndex;
     }
 
-    /**
-     * Returns the foreign key action rule.
-     */
+    
     private static String getActionString(int action) {
 
         switch (action) {
@@ -491,9 +425,7 @@ public final class Constraint implements SchemaObject {
         }
     }
 
-    /**
-     *  The ON DELETE triggered action of (foreign key) constraint
-     */
+    
     public int getDeleteAction() {
         return core.deleteAction;
     }
@@ -502,9 +434,7 @@ public final class Constraint implements SchemaObject {
         return getActionString(core.deleteAction);
     }
 
-    /**
-     *  The ON UPDATE triggered action of (foreign key) constraint
-     */
+    
     public int getUpdateAction() {
         return core.updateAction;
     }
@@ -540,30 +470,22 @@ public final class Constraint implements SchemaObject {
         return SchemaObject.Deferable.NOT_DEFERRABLE;
     }
 
-    /**
-     *  Returns the main table column index array
-     */
+    
     public int[] getMainColumns() {
         return core.mainCols;
     }
 
-    /**
-     *  Returns the reference table column index array
-     */
+    
     public int[] getRefColumns() {
         return core.refCols;
     }
 
-    /**
-     * Returns the SQL for the expression in CHECK clause
-     */
+    
     public String getCheckSQL() {
         return check.getSQL();
     }
 
-    /**
-     * Returns true if the expression in CHECK is a simple IS NOT NULL
-     */
+    
     public boolean isNotNull() {
         return isNotNull;
     }
@@ -643,10 +565,7 @@ public final class Constraint implements SchemaObject {
         }
     }
 
-    /**
-     * Compares this with another constraint column set. This is used only for
-     * UNIQUE constraints.
-     */
+    
     boolean isUniqueWithColumns(int[] cols) {
 
         switch (constType) {
@@ -662,10 +581,7 @@ public final class Constraint implements SchemaObject {
         return false;
     }
 
-    /**
-     * Compares this with another constraint column set. This implementation
-     * only checks FOREIGN KEY constraints.
-     */
+    
     boolean isEquivalent(Table mainTable, int[] mainCols, Table refTable,
                          int[] refCols) {
 
@@ -687,17 +603,7 @@ public final class Constraint implements SchemaObject {
         return false;
     }
 
-    /**
-     * Used to update constrains to reflect structural changes in a table. Prior
-     * checks must ensure that this method does not throw.
-     *
-     * @param session Session
-     * @param oldTable reference to the old version of the table
-     * @param newTable referenct to the new version of the table
-     * @param colIndex index at which table column is added or removed
-     * @param adjust -1, 0, +1 to indicate if column is added or removed
-     * @
-     */
+    
     void updateTable(Session session, Table oldTable, Table newTable,
                      int colIndex, int adjust) {
 
@@ -727,16 +633,13 @@ public final class Constraint implements SchemaObject {
             }
         }
 
-        // CHECK
+        
         if (constType == SchemaObject.ConstraintTypes.CHECK) {
             recompile(session, newTable);
         }
     }
 
-    /**
-     * Checks for foreign key or check constraint violation when
-     * inserting a row into the child table.
-     */
+    
     void checkInsert(Session session, Table table, Object[] data,
                      boolean isNew) {
 
@@ -765,7 +668,7 @@ public final class Constraint implements SchemaObject {
                         return;
                     }
 
-                    // core.matchType == OpTypes.MATCH_FULL
+                    
                 } else if (core.mainIndex.existsParent(session, store, data,
                                                        core.refCols)) {
                     return;
@@ -775,17 +678,10 @@ public final class Constraint implements SchemaObject {
         }
     }
 
-    /*
-     * Tests a row against this CHECK constraint.
-     */
+    
     void checkCheckConstraint(Session session, Table table, Object[] data) {
 
-/*
-        if (session.compiledStatementExecutor.rangeIterators[1] == null) {
-            session.compiledStatementExecutor.rangeIterators[1] =
-                rangeVariable.getIterator(session);
-        }
-*/
+
         RangeIteratorBase it =
             session.sessionContext.getCheckIterator(rangeVariable);
 
@@ -880,22 +776,9 @@ public final class Constraint implements SchemaObject {
         }
     }
 
-// fredt@users 20020225 - patch 1.7.0 - cascading deletes
 
-    /**
-     * New method to find any referencing row for a foreign key (finds row in
-     * child table). If ON DELETE CASCADE is specified for this constraint, then
-     * the method finds the first row among the rows of the table ordered by the
-     * index and doesn't throw. Without ON DELETE CASCADE, the method attempts
-     * to finds any row that exists. If no
-     * row is found, null is returned. (fredt@users)
-     *
-     * @param session Session
-     * @param row array of objects for a database row
-     * @param delete should we allow 'ON DELETE CASCADE' or 'ON UPDATE CASCADE'
-     * @return iterator
-     * @
-     */
+
+    
     RowIterator findFkRef(Session session, Object[] row) {
 
         if (row == null || ArrayUtil.hasNull(row, core.mainCols)) {
@@ -907,11 +790,7 @@ public final class Constraint implements SchemaObject {
         return core.refIndex.findFirstRow(session, store, row, core.mainCols);
     }
 
-    /**
-     * Check used before creating a new foreign key cosntraint, this method
-     * checks all rows of a table to ensure they all have a corresponding
-     * row in the main table.
-     */
+    
     void checkReferencedRows(Session session, Table table) {
 
         RowIterator it = table.rowIterator(session);
@@ -958,7 +837,7 @@ public final class Constraint implements SchemaObject {
 
         check = condition;
 
-        // this workaround is here to stop LIKE optimisation (for proper scripting)
+        
         QuerySpecification s = Expression.getCheckSelect(session, newTable,
             check);
 
@@ -970,7 +849,7 @@ public final class Constraint implements SchemaObject {
     void prepareCheckConstraint(Session session, Table table,
                                 boolean checkValues) {
 
-        // to ensure no subselects etc. are in condition
+        
         check.checkValidCheckConstraint();
 
         if (table == null) {
@@ -991,7 +870,7 @@ public final class Constraint implements SchemaObject {
 
             rangeVariable = s.rangeVariables[0];
 
-            // removes reference to the Index object in range variable
+            
             rangeVariable.setForCheckConstraint();
         }
 

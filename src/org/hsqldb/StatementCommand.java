@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -47,13 +19,7 @@ import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.rights.User;
 import org.hsqldb.scriptio.ScriptWriterText;
 
-/**
- * Implementation of Statement for SQL commands.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.8
- * @since 1.9.0
- */
+
 public class StatementCommand extends Statement {
 
     Object[] parameters;
@@ -123,7 +89,7 @@ public class StatementCommand extends Statement {
                 group                  = StatementTypes.X_HSQLDB_SETTING;
                 break;
 
-//
+
             case StatementTypes.SET_DATABASE_DEFAULT_INITIAL_SCHEMA :
             case StatementTypes.SET_DATABASE_DEFAULT_TABLE_TYPE :
             case StatementTypes.SET_DATABASE_FILES_CACHE_ROWS :
@@ -146,7 +112,7 @@ public class StatementCommand extends Statement {
             case StatementTypes.SET_DATABASE_TRANSACTION_CONFLICT :
             case StatementTypes.SET_DATABASE_GC :
 
-//
+
             case StatementTypes.SET_DATABASE_SQL_COLLATION :
             case StatementTypes.SET_DATABASE_FILES_BACKUP_INCREMENT :
             case StatementTypes.SET_DATABASE_TEXT_SOURCE :
@@ -160,7 +126,7 @@ public class StatementCommand extends Statement {
             case StatementTypes.SET_TABLE_SOURCE_HEADER :
                 isLogged = false;
 
-            // fall through
+            
             case StatementTypes.SET_TABLE_SOURCE :
                 group = StatementTypes.X_HSQLDB_SCHEMA_MANIPULATION;
                 break;
@@ -261,20 +227,20 @@ public class StatementCommand extends Statement {
                     if (!session.database.getType().equals(
                             DatabaseURL.S_FILE)) {
 
-                        // Do not enforce this constraint for SCRIPT type
-                        // backup.
+                        
+                        
                         return Result.newErrorResult(
                             Error.error(ErrorCode.DATABASE_IS_NON_FILE));
 
-                        // If we were to back up res: type DB's, could use
-                        // DatabasURL.isFileBasedDataType(), but I see no
-                        // point to back up one of these.
+                        
+                        
+                        
                     }
 
                     if (session.database.isReadOnly()) {
 
-                        // Do not enforce this constraint for SCRIPT type
-                        // backup.
+                        
+                        
                         return Result.newErrorResult(
                             Error.error(ErrorCode.DATABASE_IS_MEMORY_ONLY),
                             null);
@@ -492,7 +458,7 @@ public class StatementCommand extends Statement {
                     session.checkAdmin();
                     session.checkDDLWrite();
 
-                    // no action
+                    
                     return Result.updateZeroResult;
                 } catch (HsqlException e) {
                     return Result.newErrorResult(e, sql);
@@ -556,7 +522,7 @@ public class StatementCommand extends Statement {
                 try {
                     String name = (String) parameters[0];
 
-                    /** @todo 1.9.0 - ensure no data in character columns */
+                    
                     session.checkAdmin();
                     session.checkDDLWrite();
                     session.database.collation.setCollation(name);
@@ -644,12 +610,12 @@ public class StatementCommand extends Statement {
                 session.checkAdmin();
                 session.checkDDLWrite();
 
-                //
+                
                 session.database.schemaManager.setDefaultSchemaHsqlName(
                     schema);
                 session.database.schemaManager.setSchemaChangeTimestamp();
 
-                //
+                
                 return Result.updateZeroResult;
             }
             case StatementTypes.SET_DATABASE_DEFAULT_TABLE_TYPE : {
@@ -658,11 +624,11 @@ public class StatementCommand extends Statement {
                 session.checkAdmin();
                 session.checkDDLWrite();
 
-                //
+                
                 session.database.schemaManager.setDefaultTableType(
                     type.intValue());
 
-                //
+                
                 return Result.updateZeroResult;
             }
             case StatementTypes.SET_DATABASE_TRANSACTION_CONTROL : {
@@ -722,17 +688,11 @@ public class StatementCommand extends Statement {
                     String property = (String) parameters[0];
                     Object value    = parameters[1];
 
-                    // command is a no-op from 1.9
+                    
                     session.checkAdmin();
                     session.checkDDLWrite();
 
-                    /*
-                    HsqlDatabaseProperties p =
-                        session.database.getProperties();
-
-                    p.setDatabaseProperty(property,
-                                          value.toString().toLowerCase());
-                    */
+                    
                     return Result.updateZeroResult;
                 } catch (HsqlException e) {
                     return Result.newErrorResult(e, sql);
@@ -953,7 +913,7 @@ public class StatementCommand extends Statement {
                     HsqlName name = (HsqlName) parameters[0];
                     int      type = ((Integer) parameters[1]).intValue();
 
-                    //
+                    
                     Table table =
                         session.database.schemaManager.getUserTable(session,
                             name.name, name.schema.name);
@@ -1015,11 +975,11 @@ public class StatementCommand extends Statement {
                                 schema.name);
                     }
 
-                    //
+                    
                     user.setInitialSchema(schema);
                     session.database.schemaManager.setSchemaChangeTimestamp();
 
-                    //
+                    
                     return Result.updateZeroResult;
                 } catch (HsqlException e) {
                     return Result.newErrorResult(e, sql);
@@ -1126,7 +1086,7 @@ public class StatementCommand extends Statement {
                 }
             } else {
 
-                // ensure schema existence
+                
                 session.database.schemaManager.getSchemaHsqlName(name.name);
 
                 HashMappedList list =

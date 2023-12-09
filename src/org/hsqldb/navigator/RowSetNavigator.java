@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.navigator;
@@ -41,15 +13,7 @@ import org.hsqldb.result.ResultMetaData;
 import org.hsqldb.rowio.RowInputInterface;
 import org.hsqldb.rowio.RowOutputInterface;
 
-/**
- * Encapsulates navigation functionality for lists of objects. The base class
- * provides positional navigation and checking, while the subclasses provide
- * object retreival.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public abstract class RowSetNavigator implements RangeIterator {
 
     public RowSetNavigator() {}
@@ -62,23 +26,17 @@ public abstract class RowSetNavigator implements RangeIterator {
     int              currentPos = -1;
     int              rangePosition;
 
-    /**
-     * Sets the id;
-     */
+    
     public void setId(long id) {
         this.id = id;
     }
 
-    /**
-     * Returns the id
-     */
+    
     public long getId() {
         return id;
     }
 
-    /**
-     * Returns the current row object. Type of object is implementation defined.
-     */
+    
     public abstract Object[] getCurrent();
 
     public Object getCurrent(int i) {
@@ -104,36 +62,24 @@ public abstract class RowSetNavigator implements RangeIterator {
 
     public abstract Row getCurrentRow();
 
-    /**
-     * Add data to the end
-     */
+    
     public abstract void add(Object[] data);
 
-    /**
-     * Add row to the end
-     */
+    
     public abstract boolean addRow(Row row);
 
-    /**
-     * Remove current row
-     */
+    
     public abstract void remove();
 
-    /**
-     * Reset to initial state
-     */
+    
     public void reset() {
         currentPos = -1;
     }
 
-    /**
-     * Clear the contents
-     */
+    
     public abstract void clear();
 
-    /**
-     * Remove any resourses and invalidate
-     */
+    
     public abstract void release();
 
     public void setSession(SessionInterface session) {
@@ -236,11 +182,7 @@ public abstract class RowSetNavigator implements RangeIterator {
         return currentPos;
     }
 
-    /**
-     * Uses similar semantics to java.sql.ResultSet except this is 0 based.
-     * When position is 0 or positive, it is from the start; when negative,
-     * it is from end
-     */
+    
     public boolean absolute(int position) {
 
         if (position < 0) {
@@ -267,7 +209,7 @@ public abstract class RowSetNavigator implements RangeIterator {
             beforeFirst();
         }
 
-        // go to the tagget row;
+        
         while (position > currentPos) {
             next();
         }

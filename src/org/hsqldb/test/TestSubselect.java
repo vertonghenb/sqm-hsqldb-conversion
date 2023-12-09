@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -40,43 +12,37 @@ import java.sql.Statement;
 
 import junit.framework.TestCase;
 
-/**
- * Test cases for HSQL subselects.
- *
- * @author David Moles Apr 30, 2002
- */
 
-// fredt@users - modified to remove dependecy on DBUnit
+
+
 public class TestSubselect extends TestCase {
 
-    //------------------------------------------------------------
-    // Class variables
-    //------------------------------------------------------------
+    
+    
+    
     private static final String databaseDriver = "org.hsqldb.jdbc.JDBCDriver";
     private static final String databaseURL =
         "jdbc:hsqldb:/hsql/test/subselect";
     private static final String databaseUser     = "sa";
     private static final String databasePassword = "";
 
-    //------------------------------------------------------------
-    // Instance variables
-    //------------------------------------------------------------
+    
+    
+    
     private Connection jdbcConnection;
 
-    //------------------------------------------------------------
-    // Constructors
-    //------------------------------------------------------------
+    
+    
+    
 
-    /**
-     * Constructs a new SubselectTest.
-     */
+    
     public TestSubselect(String s) {
         super(s);
     }
 
-    //------------------------------------------------------------
-    // Class methods
-    //------------------------------------------------------------
+    
+    
+    
     protected static Connection getJDBCConnection() throws SQLException {
         return DriverManager.getConnection(databaseURL, databaseUser,
                                            databasePassword);
@@ -138,9 +104,9 @@ public class TestSubselect extends TestCase {
         statement.close();
     }
 
-    //------------------------------------------------------------
-    // Helper methods
-    //------------------------------------------------------------
+    
+    
+    
     private static void compareResults(String sql, String[] expected,
                                        Connection jdbcConnection)
                                        throws SQLException {
@@ -162,13 +128,11 @@ public class TestSubselect extends TestCase {
                      expected.length, rowCount);
     }
 
-    //------------------------------------------------------------
-    // Test methods
-    //------------------------------------------------------------
+    
+    
+    
 
-    /**
-     * This test is basically a sanity check of the data set.
-     */
+    
     public void testSimpleJoin() throws SQLException {
 
         String sql =
@@ -223,9 +187,7 @@ public class TestSubselect extends TestCase {
                      expectedRows, rowCount);
     }
 
-    /**
-     * Inner select with where clause in outer select having column with same name as where clause in inner select
-     */
+    
     public void testWhereClausesColliding() throws SQLException {
 
         String sql =
@@ -237,9 +199,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * As above, with table aliases.
-     */
+    
     public void testWhereClausesCollidingWithAliases() throws SQLException {
 
         String sql =
@@ -251,11 +211,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * Inner select with two tables having columns with the same name, one of which is referred to in the
-     * subselect, the other of which is not used in the query (both FRUITS and TREES have NAME column,
-     * but we're only selecting FRUITS.NAME and we're not referring to TREES.NAME at all).
-     */
+    
     public void testHiddenCollision() throws SQLException {
 
         String sql =
@@ -267,9 +223,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * As above, with table aliases.
-     */
+    
     public void testHiddenCollisionWithAliases() throws SQLException {
 
         String sql =
@@ -281,12 +235,10 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * Inner select with where clause in outer select having column with same name as select clause in inner select
-     */
+    
     public void testWhereSelectColliding() throws SQLException {
 
-        // Yes, this is a nonsensical query
+        
         String sql =
             "select val from colors where id in (select id from trees where fruit_id = 3) order by val";
         String[] expected = new String[] {
@@ -296,12 +248,10 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * As above, with aliases.
-     */
+    
     public void testWhereSelectCollidingWithAliases() throws SQLException {
 
-        // Yes, this is a nonsensical query
+        
         String sql =
             "select a.val from colors a where a.id in (select b.id from trees b where b.fruit_id = 3) order by a.val";
         String[] expected = new String[] {
@@ -311,9 +261,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * Inner select involving same table
-     */
+    
     public void testSameTable() throws SQLException {
 
         String sql =
@@ -325,9 +273,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * As above with aliases.
-     */
+    
     public void testSameTableWithAliases() throws SQLException {
 
         String sql =
@@ -339,9 +285,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     *     Inner select involving same table as one of two joined tables in outer select
-     */
+    
     public void testSameTableWithJoin() throws SQLException {
 
         String sql =
@@ -353,9 +297,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * Tests two subselects, anded.
-     */
+    
     public void testAndedSubselects() throws SQLException {
 
         String sql =
@@ -367,9 +309,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * Test nested subselects.
-     */
+    
     public void testNestedSubselects() throws SQLException {
 
         String sql =
@@ -382,9 +322,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * Inner select with "not in" in outer select where clause.
-     */
+    
     public void testNotIn() throws SQLException {
 
         String sql =
@@ -394,9 +332,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * Inner select with "not in" in outer select where clause and same table in inner select where clause.
-     */
+    
     public void testNotInSameTableAndColumn() throws SQLException {
 
         String sql =
@@ -408,9 +344,7 @@ public class TestSubselect extends TestCase {
         compareResults(sql, expected, jdbcConnection);
     }
 
-    /**
-     * Inner select reusing alias names from outer select, but using them for different tables
-     */
+    
     public void testAliasScope() throws SQLException {
 
         String sql =

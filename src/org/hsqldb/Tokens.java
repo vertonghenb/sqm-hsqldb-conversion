@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -45,8 +17,8 @@ import org.hsqldb.lib.OrderedIntHashSet;
  */
 public class Tokens {
 
-    //
-    // SQL 200n reserved words full set
+    
+    
     static final String        T_ABS              = "ABS";
     public static final String T_ALL              = "ALL";
     static final String        T_ALLOCATE         = "ALLOCATE";
@@ -192,7 +164,7 @@ public class Tokens {
     static final String        T_INTO              = "INTO";
     static final String        T_ITERATE           = "ITERATE";
     public static final String T_IS                = "IS";
-    static final String        T_JAR               = "JAR";              // SQL/JRT
+    static final String        T_JAR               = "JAR";              
     static final String        T_JOIN              = "JOIN";
     static final String        T_LAG               = "LAG";
     public static final String T_LANGUAGE          = "LANGUAGE";
@@ -372,7 +344,7 @@ public class Tokens {
     static final String        T_WITHOUT           = "WITHOUT";
     public static final String T_YEAR              = "YEAR";
 
-    // ops
+    
     static final String        T_ASTERISK       = "*";
     public static final String T_COMMA          = ",";
     static final String        T_CIRCUMFLEX     = "^";
@@ -397,7 +369,7 @@ public class Tokens {
     static final String        T_SEMICOLON      = ";";
     static final String        T_DOUBLE_COLON   = "::";
 
-    // SQL:200n non-reserved word list
+    
     static final String        T_A                    = "A";
     static final String        T_ABSOLUTE             = "ABSOLUTE";
     static final String        T_ACTION               = "ACTION";
@@ -436,7 +408,7 @@ public class Tokens {
     static final String        T_COMMAND_FUNCTION     = "COMMAND_FUNCTION";
     static final String T_COMMAND_FUNCTION_CODE = "COMMAND_FUNCTION_CODE";
     public static final String T_COMMITTED            = "COMMITTED";
-    static final String        T_COMPARABLE           = "COMPARABLE";    // SQL/JRT
+    static final String        T_COMPARABLE           = "COMPARABLE";    
     static final String        T_CONDITION_IDENTIFIER = "CONDIITON_IDENTIFIER";
     static final String        T_CONDITION_NUMBER     = "CONDITION_NUMBER";
     static final String        T_CONNECTION_NAME      = "CONNECTION_NAME";
@@ -492,10 +464,10 @@ public class Tokens {
     static final String        T_INSTANCE             = "INSTANCE";
     static final String        T_INSTANTIABLE         = "INSTANTIABLE";
     static final String        T_INSTEAD              = "INSTEAD";
-    static final String        T_INTERFACE            = "INTERFACE";     // SQL/JRT
+    static final String        T_INTERFACE            = "INTERFACE";     
     static final String        T_INVOKER              = "INVOKER";
     public static final String T_ISOLATION            = "ISOLATION";
-    public static final String T_JAVA                 = "JAVA";          // SQL/JRT
+    public static final String T_JAVA                 = "JAVA";          
     public static final String T_K_FACTOR             = "K";
     static final String        T_KEY                  = "KEY";
     static final String        T_KEY_MEMBER           = "KEY_MEMBER";
@@ -587,7 +559,7 @@ public class Tokens {
     static final String        T_SOURCE               = "SOURCE";
     static final String        T_SPACE                = "SPACE";
     static final String        T_SPECIFIC_NAME        = "SPECIFIC_NAME";
-    static final String        T_SQLDATA              = "SQLDATA";       // SQL/JRT
+    static final String        T_SQLDATA              = "SQLDATA";       
     static final String        T_STACKED              = "STACKED";
     static final String        T_STATE                = "STATE";
     static final String        T_STATEMENT            = "STATEMENT";
@@ -627,7 +599,7 @@ public class Tokens {
     public static final String T_WRITE   = "WRITE";
     public static final String T_ZONE    = "ZONE";
 
-    // other tokens
+    
     static final String        T_ALIAS                = "ALIAS";
     static final String        T_AGGREGATE            = "AGGREGATE";
     public static final String T_AUTHENTICATION       = "AUTHENTICATION";
@@ -781,7 +753,7 @@ public class Tokens {
     static final String        T_WRITE_DELAY          = "WRITE_DELAY";
     public static final String T_YES                  = "YES";
 
-    //
+    
     public static final String T_DAY_NAME     = "DAY_NAME";
     public static final String T_MONTH_NAME   = "MONTH_NAME";
     public static final String T_QUARTER      = "QUARTER";
@@ -797,7 +769,7 @@ public class Tokens {
     static final String        T_WEEK         = "WEEK";
     static final String        T_DAYS         = "DAYS";
 
-    //
+    
     static final String        T_ACOS             = "ACOS";
     static final String        T_ACTION_ID        = "ACTION_ID";
     static final String        T_ARRAY_SORT       = "ARRAY_SORT";
@@ -869,7 +841,7 @@ public class Tokens {
     static final String        T_UUID             = "UUID";
     static final String        T_UNIX_TIMESTAMP   = "UNIX_TIMESTAMP";
 
-    //
+    
     static final String T_ISOLATION_LEVEL         = "ISOLATION_LEVEL";
     static final String T_SESSION_ISOLATION_LEVEL = "SESSION_ISOLATION_LEVEL";
     static final String T_DATABASE_ISOLATION_LEVEL =
@@ -883,8 +855,8 @@ public class Tokens {
     static final String T_LOB_ID              = "LOB_ID";
     static final String T_SEQUENCE_ARRAY      = "SEQUENCE_ARRAY";
 
-    //
-    //SQL 200n Standard reserved keywords - full set
+    
+    
     public static final int ABS                              = 1;
     public static final int ALL                              = 2;
     public static final int ALLOCATE                         = 3;
@@ -1209,8 +1181,8 @@ public class Tokens {
     public static final int WHILE                            = 322;
     public static final int YEAR                             = 323;
 
-    //
-    //SQL 200n Standard non-reserved keywords - full set
+    
+    
     public static final int A                           = 330;
     public static final int ABSOLUTE                    = 331;
     public static final int ACTION                      = 332;
@@ -1432,7 +1404,7 @@ public class Tokens {
     public static final int WRAPPER                     = 548;
     public static final int ZONE                        = 549;
 
-    // other token values used as switch cases
+    
     static final int ALIAS          = 558;
     static final int AGGREGATE      = 559;
     static final int AUTOCOMMIT     = 560;
@@ -1510,7 +1482,7 @@ public class Tokens {
     static final int VARCHAR2       = 632;
     static final int WRITE_DELAY    = 633;
 
-    //
+    
     static final int        ACOS                       = 640;
     static final int        ACTION_ID                  = 641;
     static final int        ARRAY_SORT                 = 642;
@@ -1626,7 +1598,7 @@ public class Tokens {
     static final int        WEEK                       = 762;
     public static final int WEEK_OF_YEAR               = 763;
 
-    //
+    
     static final int        ASTERISK         = 771;
     static final int        CLOSEBRACKET     = 772;
     static final int        COLON            = 773;
@@ -1649,7 +1621,7 @@ public class Tokens {
     static final int        RIGHTBRACKET     = 790;
     static final int        SEMICOLON        = 791;
 
-    //
+    
     public static final int SQL_BIGINT        = 801;
     public static final int SQL_BINARY        = 802;
     public static final int SQL_BIT           = 803;
@@ -1680,7 +1652,7 @@ public class Tokens {
     public static final int SQL_VARBINARY     = 828;
     public static final int SQL_VARCHAR       = 829;
 
-    //
+    
     static final int SQL_TSI_FRAC_SECOND  = 831;
     static final int SQL_TSI_MILLI_SECOND = 832;
     static final int SQL_TSI_SECOND       = 833;
@@ -1692,13 +1664,13 @@ public class Tokens {
     static final int SQL_TSI_QUARTER      = 839;
     static final int SQL_TSI_YEAR         = 840;
 
-    //
+    
     static final int X_KEYSET      = 841;
     static final int X_OPTION      = 842;
     static final int X_REPEAT      = 843;
     static final int X_POS_INTEGER = 844;
 
-    //
+    
     public static final int X_VALUE                    = 845;
     public static final int X_IDENTIFIER               = 846;
     public static final int X_DELIMITED_IDENTIFIER     = 847;
@@ -1716,7 +1688,7 @@ public class Tokens {
     public static final int X_MALFORMED_IDENTIFIER     = 859;
     public static final int X_MALFORMED_UNICODE_ESCAPE = 860;
 
-    //
+    
     public static final int X_UNKNOWN_TOKEN = -1;
     private static final IntValueHashMap reservedKeys =
         new IntValueHashMap(351);
@@ -2281,7 +2253,7 @@ public class Tokens {
         commandSet.put(T_WRITE_DELAY, WRITE_DELAY);
         commandSet.put(T_ZONE, ZONE);
 
-        //
+        
         commandSet.put(T_ACOS, ACOS);
         commandSet.put(T_ACTION_ID, ACTION_ID);
         commandSet.put(T_ARRAY_SORT, ARRAY_SORT);
@@ -2373,7 +2345,7 @@ public class Tokens {
         commandSet.put(T_WEEK, WEEK);
         commandSet.put(T_WEEK_OF_YEAR, WEEK_OF_YEAR);
 
-        //
+        
         commandSet.put(T_ISOLATION_LEVEL, ISOLATION_LEVEL);
         commandSet.put(T_SESSION_ISOLATION_LEVEL, SESSION_ISOLATION_LEVEL);
         commandSet.put(T_DATABASE_ISOLATION_LEVEL, DATABASE_ISOLATION_LEVEL);
@@ -2385,7 +2357,7 @@ public class Tokens {
         commandSet.put(T_LOB_ID, LOB_ID);
         commandSet.put(T_SEQUENCE_ARRAY, SEQUENCE_ARRAY);
 
-        //
+        
         commandSet.put(T_ASTERISK, Tokens.ASTERISK);
         commandSet.put(T_CLOSEBRACKET, CLOSEBRACKET);
         commandSet.put(T_COLON, Tokens.COLON);
@@ -2452,8 +2424,8 @@ public class Tokens {
 
     static {
 
-        // minimal set of identifier not allowed as table / column / alias names
-        // these are in effect interpreted as reserved words used by HSQLDB
+        
+        
         coreReservedWords = new OrderedIntHashSet(128);
 
         short[] keyword = {

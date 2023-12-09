@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -40,48 +12,13 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.math.BigDecimal;
 
-/**
- * See AbstractTestOdbc for more general ODBC test information.
- *
- * @see AbstractTestOdbc
- */
+
 public class TestOdbcTypes extends AbstractTestOdbc {
-    /* HyperSQL types to be tested:
-     *
-     * Exact Numeric
-     *     TINYINT
-     *     SMALLINT
-     *     INTEGER
-     *     BIGINT
-     *     NUMERIC(p?,s?) = DECIMAL()   (default for decimal literals)
-     * Approximate Numeric
-     *     FLOAT(p?)
-     *     DOUBLE = REAL (default for literals with exponent)
-     * BOOLEAN
-     * Character Strings
-     *     CHARACTER(1l)* = CHAR()
-     *     CHARACTER VARYING(1l) = VARCHAR() = LONGVARCHAR()
-     *     CLOB(1l) = CHARACTER LARGE OBJECT(1)
-     * Binary Strings
-     *     BINARY(1l)*
-     *     BINARY VARYING(1l) = VARBINARY()
-     *     BLOB(1l) = BINARY LARGE OBJECT()
-     * Bits
-     *     BIT(1l)
-     *     BIT VARYING(1l)
-     * OTHER  (for holding serialized Java objects)
-     * Date/Times
-     *     DATE
-     *     TIME(p?,p?)
-     *     TIMESTAMP(p?,p?)
-     *     INTERVAL...(p2,p0)
-     */
+    
 
     public TestOdbcTypes() {}
 
-    /**
-     * Accommodate JUnit's test-runner conventions.
-     */
+    
     public TestOdbcTypes(String s) {
         super(s);
     }
@@ -112,14 +49,11 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             + "    dsival INTERVAL DAY(5) TO SECOND(6),\n"
             + "    sival INTERVAL SECOND(6,4)\n"
            + ')');
-        /** TODO:  This test class can't handle testing unlmited VARCHAR, since
-         * we set up with strict size setting, which prohibits unlimited
-         * VARCHARs.  Need to write a standalone test class to test that.
-         */
+        
 
-        // Would be more elegant and efficient to use a prepared statement
-        // here, but our we want this setup to be as simple as possible, and
-        // leave feature testing for the actual unit tests.
+        
+        
+        
         st.executeUpdate("INSERT INTO alltypes VALUES (\n"
             + "    1, 3, 4, 5, 6, 7.8, 8.9, 9.7, true, 'ab', 'cd',\n"
             + "    b'10', b'10', current_date, '13:14:00',\n"
@@ -177,7 +111,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             rs = st.executeQuery("SELECT * FROM alltypes WHERE id in (1, 2)");
             assertTrue("Got no rows with id in (1, 2)", rs.next());
             assertEquals(Integer.class, rs.getObject("ti").getClass());
-            // Nb. HyperSQL purposefully returns an Integer for this type
+            
             assertTrue("Got only one row with id in (1, 2)", rs.next());
             assertEquals((byte) 3, rs.getByte("ti"));
             assertFalse("Got too many rows with id in (1, 2)", rs.next());
@@ -207,7 +141,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             rs = st.executeQuery("SELECT * FROM alltypes WHERE id in (1, 2)");
             assertTrue("Got no rows with id in (1, 2)", rs.next());
             assertEquals(Integer.class, rs.getObject("si").getClass());
-            // Nb. HyperSQL purposefully returns an Integer for this type
+            
             assertTrue("Got only one row with id in (1, 2)", rs.next());
             assertEquals((short) 4, rs.getShort("si"));
             assertFalse("Got too many rows with id in (1, 2)", rs.next());
@@ -258,40 +192,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
         }
     }
 
-    /*
-    public void testNumericSimpleRead() {
-        // This is failing.
-        // Looks like we inherited a real bug with numerics from psqlodbc,
-        // because the problem exists with Postresql-supplied psqlodbc
-        // connecting to a Postgresql server.
-        ResultSet rs = null;
-        Statement st = null;
-        try {
-            st = netConn.createStatement();
-            rs = st.executeQuery("SELECT * FROM alltypes WHERE id in (1, 2)");
-            assertTrue("Got no rows with id in (1, 2)", rs.next());
-            assertEquals(BigDecimal.class, rs.getObject("n").getClass());
-            assertTrue("Got only one row with id in (1, 2)", rs.next());
-            assertEquals(new BigDecimal(7.8), rs.getBigDecimal("n"));
-            assertFalse("Got too many rows with id in (1, 2)", rs.next());
-        } catch (SQLException se) {
-            junit.framework.AssertionFailedError ase
-                = new junit.framework.AssertionFailedError(se.getMessage());
-            ase.initCause(se);
-            throw ase;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (st != null) {
-                    st.close();
-                }
-            } catch(Exception e) {
-            }
-        }
-    }
-    */
+    
 
     public void testFloatSimpleRead() {
         ResultSet rs = null;
@@ -558,38 +459,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
         }
     }
 
-    /*
-    public void testTimeWSimpleRead() {
-        // This test is failing because the JDBC Driver is returning a
-        // String instead of a Time oject for rs.getTime().
-        ResultSet rs = null;
-        Statement st = null;
-        try {
-            st = netConn.createStatement();
-            rs = st.executeQuery("SELECT * FROM alltypes WHERE id in (1, 2)");
-            assertTrue("Got no rows with id in (1, 2)", rs.next());
-            assertEquals(java.sql.Time.class, rs.getObject("tw").getClass());
-            assertTrue("Got only one row with id in (1, 2)", rs.next());
-            assertEquals(Time.valueOf("15:16:00"), rs.getTime("tw"));
-            assertFalse("Got too many rows with id in (1, 2)", rs.next());
-        } catch (SQLException se) {
-            junit.framework.AssertionFailedError ase
-                = new junit.framework.AssertionFailedError(se.getMessage());
-            ase.initCause(se);
-            throw ase;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (st != null) {
-                    st.close();
-                }
-            } catch(Exception e) {
-            }
-        }
-    }
-    */
+    
 
     public void testTimestampSimpleRead() {
         ResultSet rs = null;
@@ -651,7 +521,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
     }
 
     public void testBitSimpleRead() {
-        // This test is failing because of a BIT padding bug in the engine.
+        
         ResultSet rs = null;
         Statement st = null;
         try {
@@ -781,9 +651,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
     }
 
     public void testDaySecIntervalSimpleRead() {
-        /* Since our client does not support the INTERVAL precision
-         * constraints, the returned value will always be toString()'d to
-         * precision of microseconds. */
+        
         ResultSet rs = null;
         Statement st = null;
         try {
@@ -792,8 +660,8 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertTrue("Got no rows with id in (1, 2)", rs.next());
             assertEquals("145 23:12:19.345000", rs.getString("dsival"));
             assertTrue("Got only one row with id in (1, 2)", rs.next());
-            // Can't test the class, because jdbc:odbc or the driver returns
-            // a String for getObject() for interval values.
+            
+            
             assertFalse("Got too many rows with id in (1, 2)", rs.next());
         } catch (SQLException se) {
             junit.framework.AssertionFailedError ase
@@ -814,9 +682,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
     }
 
     public void testSecIntervalSimpleRead() {
-        /* Since our client does not support the INTERVAL precision
-         * constraints, the returned value will always be toString()'d to
-         * precision of microseconds. */
+        
         ResultSet rs = null;
         Statement st = null;
         try {
@@ -825,8 +691,8 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertTrue("Got no rows with id in (1, 2)", rs.next());
             assertEquals("1000.345000", rs.getString("sival"));
             assertTrue("Got only one row with id in (1, 2)", rs.next());
-            // Can't test the class, because jdbc:odbc or the driver returns
-            // a String for getObject() for interval values.
+            
+            
             assertFalse("Got too many rows with id in (1, 2)", rs.next());
         } catch (SQLException se) {
             junit.framework.AssertionFailedError ase
@@ -945,7 +811,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             rs = ps.executeQuery();
             assertTrue("Got no rows with si = 395", rs.next());
             assertEquals(Integer.class, rs.getObject("si").getClass());
-            // Nb. HyperSQL purposefully returns an Integer for this type
+            
             assertTrue("Got only one row with si = 395", rs.next());
             assertEquals((short) 395, rs.getShort("si"));
             assertFalse("Got too many rows with si = 395", rs.next());
@@ -1007,10 +873,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
         }
     }
 
-    /* TODO:  Implement this test after get testNumericSimpleRead() working.
-     *        See that method above.
-    public void testNumericComplex() {
-    */
+    
 
     public void testFloatComplex() {
         PreparedStatement ps = null;
@@ -1212,41 +1075,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
         }
     }
 
-    /**
-     * TODO:  Find out if there is a way to select based on an expression
-     * using a named derived pseudo-column.
-    public void testDerivedComplex() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = netConn.prepareStatement(
-                "SELECT id, cv || 'app' appendage FROM alltypes\n"
-                + "WHERE appendage = ?");
-            ps.setString(1, "cvapp");
-            rs = ps.executeQuery();
-            assertTrue("Got no rows appendage = 'cvapp'", rs.next());
-            assertEquals(String.class, rs.getObject("r").getClass());
-            assertTrue("Got only one row with appendage = 'cvapp'", rs.next());
-            assertEquals("cvapp", rs.getString("r"));
-            assertFalse("Got too many rows with appendage = 'cvapp'", rs.next());
-        } catch (SQLException se) {
-            junit.framework.AssertionFailedError ase
-                = new junit.framework.AssertionFailedError(se.getMessage());
-            ase.initCause(se);
-            throw ase;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch(Exception e) {
-            }
-        }
-    }
-    */
+    
 
     public void testDateComplex() {
         PreparedStatement ps = null;
@@ -1273,8 +1102,8 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertEquals(java.sql.Date.class, rs.getObject("d").getClass());
             assertTrue("Got only one row with d = tomorrow", rs.next());
             assertEquals(tomorrow.toString(), rs.getDate("d").toString());
-            // Compare the Strings since "tomorrow" has resolution to
-            // millisecond, but getDate() is probably to the day.
+            
+            
             assertFalse("Got too many rows with d = tomorrow", rs.next());
         } catch (SQLException se) {
             junit.framework.AssertionFailedError ase
@@ -1336,10 +1165,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
         }
     }
 
-    /* TODO:  Implement this test after get testTimeWSimpleRead() working.
-     *        See that method above.
-    public void testTimeWComplex() {
-    */
+    
 
     public void testTimestampComplex() {
         PreparedStatement ps = null;
@@ -1425,88 +1251,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
         }
     }
 
-    /*
-     * Driver needs to be modified to transfer bits in byte (binary) fashion,
-     * the same as is done for VARBINARY/bytea type.
-    public void testBitComplex() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = netConn.prepareStatement(
-                "INSERT INTO alltypes(id, bt) VALUES(?, ?)");
-            ps.setInt(1, 3);
-            ps.setString(2, "101");
-            assertEquals(1, ps.executeUpdate());
-            ps.setInt(1, 4);
-            assertEquals(1, ps.executeUpdate());
-            ps.close();
-            netConn.commit();
-            ps = netConn.prepareStatement(
-                "SELECT * FROM alltypes WHERE bt = ?");
-            ps.setString(1, "101");
-            rs = ps.executeQuery();
-            assertTrue("Got no rows with bt = 101", rs.next());
-            assertEquals(String.class, rs.getObject("bt").getClass());
-            assertTrue("Got only one row with bt = 101", rs.next());
-            assertEquals("101000000", rs.getString("bt"));
-            assertFalse("Got too many rows with bt = 101", rs.next());
-        } catch (SQLException se) {
-            junit.framework.AssertionFailedError ase
-                = new junit.framework.AssertionFailedError(se.getMessage());
-            ase.initCause(se);
-            throw ase;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch(Exception e) {
-            } }
-    }
-
-    public void testBitVaryingComplex() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            ps = netConn.prepareStatement(
-                "INSERT INTO alltypes(id, btv) VALUES(?, ?)");
-            ps.setInt(1, 3);
-            ps.setString(2, "10101");
-            assertEquals(1, ps.executeUpdate());
-            ps.setInt(1, 4);
-            assertEquals(1, ps.executeUpdate());
-            ps.close();
-            netConn.commit();
-            ps = netConn.prepareStatement(
-                "SELECT * FROM alltypes WHERE btv = ?");
-            ps.setString(1, "10101");
-            rs = ps.executeQuery();
-            assertTrue("Got no rows with btv = 10101", rs.next());
-            assertEquals(String.class, rs.getObject("btv").getClass());
-            assertTrue("Got only one row with btv = 10101", rs.next());
-            assertEquals("10101", rs.getString("btv"));
-            assertFalse("Got too many rows with btv = 10101", rs.next());
-        } catch (SQLException se) {
-            junit.framework.AssertionFailedError ase
-                = new junit.framework.AssertionFailedError(se.getMessage());
-            ase.initCause(se);
-            throw ase;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch(Exception e) {
-            }
-        }
-    }
-    */
+    
 
     public void testBinaryComplex() {
         PreparedStatement ps = null;
@@ -1614,108 +1359,11 @@ public class TestOdbcTypes extends AbstractTestOdbc {
         }
     }
 
-    /*
-     * TODO:  Learn how to set input params for INTERVAL types.
-     *        I don't see how I could set the variant
-     *        (HOUR, ...TO SECOND, etc.) with setString() or anything else.
-    public void testDaySecIntervalComplex() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            assertEquals("145 23:12:19.345000", rs.getString("dsival"));
-
-            ps = netConn.prepareStatement(
-                "INSERT INTO alltypes(id, dsival) VALUES(?, ?)");
-            ps.setInt(1, 3);
-            ps.setString(2, 876.54D);
-            assertEquals(1, ps.executeUpdate());
-            ps.setInt(1, 4);
-            assertEquals(1, ps.executeUpdate());
-            ps.close();
-            netConn.commit();
-            ps = netConn.prepareStatement(
-                "SELECT * FROM alltypes WHERE dsival = ?");
-            ps.setString(1, 876.54D);
-            rs = ps.executeQuery();
-            assertTrue("Got no rows with dsival = 876.54D", rs.next());
-            assertEquals(String.class, rs.getObject("dsival").getClass());
-            assertTrue("Got only one row with dsival = 876.54D", rs.next());
-            assertEquals(876.54D, rs.getString("dsival"));
-            assertFalse("Got too many rows with dsival = 876.54D", rs.next());
-        } catch (SQLException se) {
-            junit.framework.AssertionFailedError ase
-                = new junit.framework.AssertionFailedError(se.getMessage());
-            ase.initCause(se);
-            throw ase;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch(Exception e) {
-            }
-        }
-    }
-
-    public void testSecIntervalComplex() {
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        try {
-            assertEquals("1000.345000", rs.getString("sival"));
-
-            ps = netConn.prepareStatement(
-                "INSERT INTO alltypes(id, sival) VALUES(?, ?)");
-            ps.setInt(1, 3);
-            ps.setString(2, 876.54D);
-            assertEquals(1, ps.executeUpdate());
-            ps.setInt(1, 4);
-            assertEquals(1, ps.executeUpdate());
-            ps.close();
-            netConn.commit();
-            ps = netConn.prepareStatement(
-                "SELECT * FROM alltypes WHERE sival = ?");
-            ps.setString(1, 876.54D);
-            rs = ps.executeQuery();
-            assertTrue("Got no rows with sival = 876.54D", rs.next());
-            assertEquals(String.class, rs.getObject("sival").getClass());
-            assertTrue("Got only one row with sival = 876.54D", rs.next());
-            assertEquals(876.54D, rs.getString("sival"));
-            assertFalse("Got too many rows with sival = 876.54D", rs.next());
-        } catch (SQLException se) {
-            junit.framework.AssertionFailedError ase
-                = new junit.framework.AssertionFailedError(se.getMessage());
-            ase.initCause(se);
-            throw ase;
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (ps != null) {
-                    ps.close();
-                }
-            } catch(Exception e) {
-            }
-        }
-    }
-    */
+    
 
     public static void main(String[] sa) {
         staticRunner(TestOdbcTypes.class, sa);
     }
 
-    /*
-    static protected boolean closeEnough(Time t1, Time t2, int fudgeMin) {
-        long delta = t1.getTime() - t2.getTime();
-        if (delta < 0) {
-            delta *= -1;
-        }
-        //System.err.println("Delta  " + delta);
-        //System.err.println("exp  " + (fudgeMin * 1000 * 60));
-        return delta < fudgeMin * 1000 * 60;
-    }
-    */
+    
 }

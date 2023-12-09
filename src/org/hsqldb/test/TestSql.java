@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -44,10 +16,7 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import java.sql.Date;
 
-/**
- * Test sql statements via jdbc against in-memory database
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- */
+
 public class TestSql extends TestBase {
 
     Statement         stmnt;
@@ -319,7 +288,7 @@ public class TestSql extends TestBase {
                 rsmd.isWritable(1);
                 rs.close();
 
-                // test identity with PreparedStatement
+                
                 pstmnt = connection.prepareStatement(
                     "INSERT INTO T VALUES (?,?,?)");
 
@@ -345,20 +314,12 @@ public class TestSql extends TestBase {
 
         System.out.println("testMetaData complete");
 
-        // assert equality of exported and imported with xref
+        
         assertEquals(result1, result2);
         assertEquals(result3, result4);
     }
 
-    /**
-     * Demonstration of a reported bug.<p>
-     * Because all values were turned into strings with toString before
-     * PreparedStatement.executeQuery() was called, special values such as
-     * NaN were not accepted.
-     *
-     * This test can be extended to cover various conversions through JDBC
-     *
-     */
+    
     public void testDoubleNaN() {
 
         double  value    = 0;
@@ -393,25 +354,25 @@ public class TestSql extends TestBase {
             ps.setInt(5, Short.MIN_VALUE);
             ps.setInt(6, 0);
 
-            // allowed conversions
+            
             ps.setTimestamp(
                 7, new java.sql.Timestamp(System.currentTimeMillis() + 1));
             ps.setTime(8, new java.sql.Time(System.currentTimeMillis() + 1));
             ps.setDate(9, new java.sql.Date(System.currentTimeMillis() + 1));
             ps.execute();
 
-            //
+            
             ps.setInt(1, 0);
             ps.setDouble(2, java.lang.Double.POSITIVE_INFINITY);
             ps.setInt(4, Integer.MIN_VALUE);
 
-            // test conversion
-            // ps.setObject(5, Boolean.TRUE); // no longer converts boolean to int
-            // ps.setBoolean(5, true);
+            
+            
+            
             ps.setObject(5, new Short((short) 2), Types.SMALLINT);
             ps.setObject(6, new Integer(2), Types.TINYINT);
 
-            // allowed conversions
+            
             ps.setObject(7, new java.sql.Date(System.currentTimeMillis() + 2));
             ps.setObject(8, new java.sql.Time(System.currentTimeMillis() + 2));
             ps.setObject(9, new java.sql.Timestamp(System.currentTimeMillis()
@@ -428,7 +389,7 @@ public class TestSql extends TestBase {
 
             value = rs.getDouble(2);
 
-//            int smallintValue = rs.getShort(3);
+
             int integerValue = rs.getInt(4);
 
             if (rs.next()) {
@@ -436,8 +397,8 @@ public class TestSql extends TestBase {
                 wasEqual     = Double.isNaN(value);
                 integerValue = rs.getInt(4);
 
-                // tests for conversion
-                // getInt on DECIMAL
+                
+                
                 integerValue = rs.getInt(1);
             }
 
@@ -461,7 +422,7 @@ public class TestSql extends TestBase {
 
             try {
 
-                // cause errors
+                
                 ps.setString(5, "three");
                 assertTrue(false);
             } catch (SQLException e) {
@@ -471,7 +432,7 @@ public class TestSql extends TestBase {
             {
                 stmnt.execute("drop table CDTYPE if exists");
 
-                // test for the value MAX(column) in an empty table
+                
                 stmnt.execute(
                     "CREATE TABLE cdType (ID INTEGER NOT NULL, name VARCHAR(50), PRIMARY KEY(ID))");
 
@@ -503,7 +464,7 @@ public class TestSql extends TestBase {
 
         System.out.println("testDoubleNaN complete");
 
-        // assert new behaviour
+        
         assertEquals(true, wasEqual);
     }
 
@@ -536,9 +497,7 @@ public class TestSql extends TestBase {
         System.out.println("testAny complete");
     }
 
-    /**
-     * Fix for bug #1201135
-     */
+    
     public void testBinds() {
 
         try {
@@ -600,7 +559,7 @@ public class TestSql extends TestBase {
         }
     }
 
-    // miscellaneous tests
+    
     public void testX1() {
 
         String tableDDL =
@@ -648,12 +607,7 @@ public class TestSql extends TestBase {
         }
     }
 
-    /**
-     * In 1.8.0.2, this fails in client / server due to column type of the
-     * second select for b1 being boolean, while the first select is interpreted
-     * as varchar. The rowOutputBase class attempts to cast the Java Boolean
-     * into String.
-     */
+    
     public void testUnionColumnTypes() {
 
         try {
@@ -728,7 +682,7 @@ public class TestSql extends TestBase {
         assertEquals(1, rs.getInt("idvalue"));
         assertEquals(3, rs.getInt("value1"));
         assertEquals(null, rs.getObject("value2"));
-        assertEquals(3, rs.getInt("value3"));    //this fails!
+        assertEquals(3, rs.getInt("value3"));    
         assertFalse(rs.next());
     }
 
@@ -800,7 +754,7 @@ public class TestSql extends TestBase {
 
         try {
 
-            // prepared statements
+            
             String s = "create table bintest(id int primary key, bin varbinary(100))";
 
             sStatement.execute(s);
@@ -853,7 +807,7 @@ public class TestSql extends TestBase {
 
             b1n = r.getBytes(1);
 
-            //--
+            
             s = "select \"org.hsqldb.lib.StringConverter.byteArrayToHexString\"(bin) "
                 + "from bintest";
             r = sStatement.executeQuery(s);

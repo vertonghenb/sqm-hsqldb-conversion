@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.rights;
@@ -49,25 +21,10 @@ import org.hsqldb.lib.Iterator;
 import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.lib.Set;
 
-/**
- * Contains a set of Grantee objects, and supports operations for creating,
- * finding, modifying and deleting Grantee objects for a Database; plus
- * Administrative privileges.
- *
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @author Blaine Simpson (blaine dot simpson at admc dot com)
- *
- * @version 2.0.1
- * @since 1.8.0
- * @see Grantee
- */
+
 public class GranteeManager {
 
-    /**
-     * The grantee object for the _SYSTEM role.
-     */
+    
     static User systemAuthorisation;
 
     static {
@@ -87,56 +44,34 @@ public class GranteeManager {
         SqlInvariants.SQLJ_SCHEMA_HSQLNAME.owner        = systemAuthorisation;
     }
 
-    /**
-     * Map of grantee-String-to-Grantee-objects.<p>
-     * Keys include all USER and ROLE names
-     */
+    
     private HashMappedList map = new HashMappedList();
 
-    /**
-     * Map of role-Strings-to-Grantee-object.<p>
-     * Keys include all ROLES names
-     */
+    
     private HashMappedList roleMap = new HashMappedList();
 
-    /**
-     * Used only to pass the SchemaManager to Grantees for checking
-     * schema authorizations.
-     */
+    
     Database database;
 
-    /**
-     * The PUBLIC role.
-     */
+    
     Grantee publicRole;
 
-    /**
-     * The DBA role.
-     */
+    
     Grantee dbaRole;
 
-    /**
-     * The role for schema creation rights.
-     */
+    
     Grantee schemaRole;
 
-    /**
-     * The role for changing authorization rights.
-     */
+    
     Grantee changeAuthRole;
 
-    /**
-     * Construct the GranteeManager for a Database. Construct special Grantee
-     * objects for _SYSTEM, PUBLIC and DBA, and add them to the Grantee map.
-     *
-     * @param database Only needed to link to the RoleManager later on.
-     */
+    
     public GranteeManager(Database database) {
 
         this.database = database;
 
-//        map.add(systemAuthorisation.getNameString(), systemAuthorisation);
-//        roleMap.add(systemAuthorisation.getNameString(), systemAuthorisation);
+
+
         addRole(
             this.database.nameManager.newHsqlName(
                 SqlInvariants.PUBLIC_ROLE_NAME, false, SchemaObject.GRANTEE));
@@ -189,23 +124,7 @@ public class GranteeManager {
         return systemAuthorisation;
     }
 
-    /**
-     * Grants the rights represented by the rights argument on
-     * the database object identified by the dbobject argument
-     * to the Grantee object identified by name argument.<p>
-     *
-     *  Note: For the dbobject argument, Java Class objects are identified
-     *  using a String object whose value is the fully qualified name
-     *  of the Class, while Table and other objects are
-     *  identified by an HsqlName object.  A Table
-     *  object identifier must be precisely the one obtained by calling
-     *  table.getName(); if a different HsqlName
-     *  object with an identical name attribute is specified, then
-     *  rights checks and tests will fail, since the HsqlName
-     *  class implements its {@link HsqlName#hashCode hashCode} and
-     *  {@link HsqlName#equals equals} methods based on pure object
-     *  identity, rather than on attribute values. <p>
-     */
+    
     public void grant(OrderedHashSet granteeList, SchemaObject dbObject,
                       Right right, Grantee grantor, boolean withGrantOption) {
 
@@ -287,9 +206,7 @@ public class GranteeManager {
         }
     }
 
-    /**
-     * Grant a role to this Grantee.
-     */
+    
     public void grant(String granteeName, String roleName, Grantee grantor) {
 
         Grantee grantee = get(granteeName);
@@ -312,14 +229,14 @@ public class GranteeManager {
             throw Error.error(ErrorCode.X_0P501, granteeName);
         }
 
-        // boucherb@users 20050515
-        // SQL 2003 Foundation, 4.34.3
-        // No cycles of role grants are allowed.
+        
+        
+        
         if (role.hasRole(grantee)) {
 
-            // boucherb@users
+            
 
-            /** @todo: Correct reporting of actual grant path */
+            
             throw Error.error(ErrorCode.X_0P501, roleName);
         }
 
@@ -357,13 +274,13 @@ public class GranteeManager {
             if (grant) {
                 if (grantee.getDirectRoles().contains(role)) {
 
-                    /** @todo  shouldnt throw */
+                    
                     throw Error.error(ErrorCode.X_0P000, granteeName);
                 }
             } else {
                 if (!grantee.getDirectRoles().contains(role)) {
 
-                    /** @todo  shouldnt throw */
+                    
                     throw Error.error(ErrorCode.X_0P000, roleName);
                 }
             }
@@ -379,9 +296,7 @@ public class GranteeManager {
         publicRole.grant(object.getName(), right, systemAuthorisation, true);
     }
 
-    /**
-     * Revoke a role from a Grantee
-     */
+    
     public void revoke(String granteeName, String roleName, Grantee grantor) {
 
         if (!grantor.isAdmin()) {
@@ -404,13 +319,7 @@ public class GranteeManager {
         }
     }
 
-    /**
-     * Revokes the rights represented by the rights argument on
-     * the database object identified by the dbobject argument
-     * from the User object identified by the name
-     * argument.<p>
-     * @see #grant
-     */
+    
     public void revoke(OrderedHashSet granteeList, SchemaObject dbObject,
                        Right rights, Grantee grantor, boolean grantOption,
                        boolean cascade) {
@@ -475,9 +384,7 @@ public class GranteeManager {
         }
     }
 
-    /**
-     * Removes a role without any privileges from all grantees
-     */
+    
     void removeEmptyRole(Grantee role) {
 
         for (int i = 0; i < map.size(); i++) {
@@ -487,10 +394,7 @@ public class GranteeManager {
         }
     }
 
-    /**
-     * Removes all rights mappings for the database object identified by
-     * the dbobject argument from all Grantee objects in the set.
-     */
+    
     public void removeDbObject(HsqlName name) {
 
         for (int i = 0; i < map.size(); i++) {
@@ -515,10 +419,7 @@ public class GranteeManager {
         }
     }
 
-    /**
-     * First updates all ROLE Grantee objects. Then updates all USER Grantee
-     * Objects.
-     */
+    
     void updateAllRights(Grantee role) {
 
         for (int i = 0; i < map.size(); i++) {
@@ -538,13 +439,10 @@ public class GranteeManager {
         }
     }
 
-    /**
-     */
+    
     public boolean removeGrantee(String name) {
 
-        /*
-         * Explicitly can't remove PUBLIC_USER_NAME and system grantees.
-         */
+        
         if (isReserved(name)) {
             return false;
         }
@@ -566,21 +464,7 @@ public class GranteeManager {
         return true;
     }
 
-    /**
-     * Creates a new Role object under management of this object. <p>
-     *
-     *  A set of constraints regarding user creation is imposed: <p>
-     *
-     *  <OL>
-     *    <LI>Can't create a role with name same as any right.
-     *
-     *    <LI>If this object's collection already contains an element whose
-     *        name attribute equals the name argument, then
-     *        a GRANTEE_ALREADY_EXISTS or ROLE_ALREADY_EXISTS Trace
-     *        is thrown.
-     *        (This will catch attempts to create Reserved grantee names).
-     *  </OL>
-     */
+    
     public Grantee addRole(HsqlName name) {
 
         if (map.containsKey(name.name)) {
@@ -620,11 +504,7 @@ public class GranteeManager {
         return g;
     }
 
-    /**
-     * Returns true if named Grantee object exists.
-     * This will return true for reserved Grantees
-     * SYSTEM_AUTHORIZATION_NAME, ADMIN_ROLE_NAME, PUBLIC_USER_NAME.
-     */
+    
     boolean isGrantee(String name) {
         return map.containsKey(name);
     }
@@ -640,9 +520,7 @@ public class GranteeManager {
         throw Error.error(ErrorCode.X_42581, right);
     }
 
-    /**
-     * Translate a string representation or right(s) into its numeric form.
-     */
+    
     public static int getRight(String right) {
         return rightsStringLookup.get(right, 0);
     }
@@ -676,19 +554,7 @@ public class GranteeManager {
                || name.equals(SqlInvariants.PUBLIC_ROLE_NAME);
     }
 
-    /**
-     * Attempts to drop a Role with the specified name
-     *  from this object's set. <p>
-     *
-     *  A successful drop action consists of: <p>
-     *
-     *  <UL>
-     *
-     *    <LI>removing the Grantee object with the specified name
-     *        from the set.
-     *  </UL> <p>
-     *
-     */
+    
     public void dropRole(String name) {
 
         if (!isRole(name)) {
@@ -710,9 +576,7 @@ public class GranteeManager {
         return roleMap.values();
     }
 
-    /**
-     * Returns Grantee for the named Role
-     */
+    
     public Grantee getRole(String name) {
 
         Grantee g = (Grantee) roleMap.get(name);
@@ -732,20 +596,20 @@ public class GranteeManager {
 
         HsqlArrayList list = new HsqlArrayList();
 
-        // roles
+        
         Iterator it = getRoles().iterator();
 
         while (it.hasNext()) {
             Grantee grantee = (Grantee) it.next();
 
-            // ADMIN_ROLE_NAME is not persisted
+            
             if (!GranteeManager.isReserved(
                     grantee.getName().getNameString())) {
                 list.add(grantee.getSQL());
             }
         }
 
-        // users
+        
         it = getGrantees().iterator();
 
         for (; it.hasNext(); ) {
@@ -780,7 +644,7 @@ public class GranteeManager {
             Grantee grantee = (Grantee) grantees.next();
             String  name    = grantee.getName().getNameString();
 
-            // _SYSTEM user, DBA Role grants not persisted
+            
             if (GranteeManager.isImmutable(name)) {
                 continue;
             }

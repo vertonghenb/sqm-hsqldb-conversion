@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -46,17 +18,10 @@ import org.hsqldb.lib.HashMap;
 import org.hsqldb.lib.java.JavaSystem;
 import org.hsqldb.store.ValuePool;
 
-/**
- * Wrapper for java.util.Properties to limit values to Specific types and
- * allow saving and loading.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.1.1
- * @since 1.7.0
- */
+
 public class HsqlProperties {
 
-    //
+    
     public static final int ANY_ERROR        = 0;
     public static final int NO_VALUE_FOR_KEY = 1;
     protected String        fileName;
@@ -191,7 +156,7 @@ public class HsqlProperties {
         addProperties(props.stringProps);
     }
 
-// oj@openoffice.org
+
     public boolean propertiesFileExists() {
 
         if (fileName == null) {
@@ -217,7 +182,7 @@ public class HsqlProperties {
         InputStream fis           = null;
         String      propsFilename = fileName + fileExtension;
 
-// oj@openoffice.org
+
         try {
             fis = fa.openInputStreamElement(propsFilename);
 
@@ -231,9 +196,7 @@ public class HsqlProperties {
         return true;
     }
 
-    /**
-     *  Saves the properties.
-     */
+    
     public void save() throws Exception {
 
         if (fileName == null || fileName.length() == 0) {
@@ -246,12 +209,10 @@ public class HsqlProperties {
         save(filestring);
     }
 
-    /**
-     *  Saves the properties using JDK2 method if present, otherwise JDK1.
-     */
+    
     public void save(String fileString) throws Exception {
 
-// oj@openoffice.org
+
         fa.createParentDirs(fileString);
 
         OutputStream        fos = fa.openOutputStreamElement(fileString);
@@ -271,11 +232,7 @@ public class HsqlProperties {
         return;
     }
 
-    /**
-     * Adds the error code and the key to the list of errors. This list
-     * is populated during construction or addition of elements and is used
-     * outside this class to act upon the errors.
-     */
+    
     protected void addError(int code, String key) {
 
         errorCodes = (int[]) ArrayUtil.resizeArray(errorCodes,
@@ -286,14 +243,7 @@ public class HsqlProperties {
         errorKeys[errorKeys.length - 1]   = key;
     }
 
-    /**
-     * Creates and populates an HsqlProperties Object from the arguments
-     * array of a Main method. Properties are in the form of "-key value"
-     * pairs. Each key is prefixed with the type argument and a dot before
-     * being inserted into the properties Object. <p>
-     *
-     * "--help" is treated as a key with no value and not inserted.
-     */
+    
     public static HsqlProperties argArrayToProps(String[] arg, String type) {
 
         HsqlProperties props = new HsqlProperties();
@@ -323,26 +273,7 @@ public class HsqlProperties {
         return props;
     }
 
-    /**
-     * Creates and populates a new HsqlProperties Object using a string
-     * such as "key1=value1;key2=value2". <p>
-     *
-     * The string that represents the = sign above is specified as pairsep
-     * and the one that represents the semicolon is specified as delimiter,
-     * allowing any string to be used for either.<p>
-     *
-     * Leading / trailing spaces around the keys and values are discarded.<p>
-     *
-     * The string is parsed by (1) subdividing into segments by delimiter
-     * (2) subdividing each segment in two by finding the first instance of
-     * the pairsep (3) trimming each pair of segments from step 2 and
-     * inserting into the properties object.<p>
-     *
-     * Each key is prefixed with the type argument and a dot before being
-     * inserted.<p>
-     *
-     * Any key without a value is added to the list of errors.
-     */
+    
     public static HsqlProperties delimitedArgPairsToProps(String s,
             String pairsep, String dlimiter, String type) {
 
@@ -356,7 +287,7 @@ public class HsqlProperties {
                 nextpair = s.length();
             }
 
-            // find value within the segment
+            
             int valindex = s.substring(0, nextpair).indexOf(pairsep,
                                        currentpair);
 
@@ -399,7 +330,7 @@ public class HsqlProperties {
 
     public void validate() {}
 
-    // column number mappings
+    
     public static final int indexName         = 0;
     public static final int indexType         = 1;
     public static final int indexClass        = 2;
@@ -467,9 +398,7 @@ public class HsqlProperties {
         return row;
     }
 
-    /**
-     * Perfoms any range checking for property and return an error message
-     */
+    
     public static String validateProperty(String key, String value,
                                           Object[] meta) {
 

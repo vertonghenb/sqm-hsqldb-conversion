@@ -1,15 +1,8 @@
 package org.hsqldb.test;
 
-// nbazin@users - enhancements to the original code
-// fredt@users - 20050202 - corrected getRandomID(int) to return a randomly distributed value
-/*
- *  This is a sample implementation of the Transaction Processing Performance
- *  Council Benchmark B coded in Java and ANSI SQL2.
- *
- *  This version is using one connection per thread to parallellize
- *  server operations.
- * @author Mark Matthews (mark@mysql.com)
- */
+
+
+
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.sql.Connection;
@@ -23,12 +16,12 @@ import java.util.Vector;
 
 class JDBCBench {
 
-    /* tpc bm b scaling rules */
-    public static int tps       = 1;         /* the tps scaling factor: here it is 1 */
-    public static int nbranches = 1;         /* number of branches in 1 tps db       */
-    public static int ntellers  = 10;        /* number of tellers in  1 tps db       */
-    public static int naccounts = 100000;    /* number of accounts in 1 tps db       */
-    public static int nhistory = 864000;     /* number of history recs in 1 tps db   */
+    
+    public static int tps       = 1;         
+    public static int nbranches = 1;         
+    public static int ntellers  = 10;        
+    public static int naccounts = 100000;    
+    public static int nhistory = 864000;     
     public static final int TELLER              = 0;
     public static final int BRANCH              = 1;
     public static final int ACCOUNT             = 2;
@@ -46,11 +39,7 @@ class JDBCBench {
     static boolean          verbose             = false;
     MemoryWatcherThread     MemoryWatcher;
 
-    /* main program,    creates a 1-tps database:  i.e. 1 branch, 10 tellers,...
-     *                    runs one TPC BM B transaction
-     * example command line:
-     * -driver  org.hsqldb.jdbc.JDBCDriver -url jdbc:hsqldb:/hsql/jdbcbench/test -user SA -clients 20 -tpc 10000
-     */
+    
     public static void main(String[] Args) {
 
         String  DriverName         = "";
@@ -88,7 +77,7 @@ class JDBCBench {
                             || DriverName.equals("org.hsqldb.jdbcDriver")) {
                         tableExtension = "CREATE CACHED TABLE ";
 
-//                        ShutdownCommand = "SHUTDOWN";
+
                     }
                 }
             } else if (Args[i].equals("-url")) {
@@ -209,18 +198,7 @@ class JDBCBench {
             oneRound(url, user, password, transactions, true);
             oneRound(url, user, password, transactions, true);
             oneRound(url, user, password, transactions, true);
-/*
-            oneRound(url, user, password, transactions, true);
-            oneRound(url, user, password, transactions, true);
 
-            oneRound(url, user, password, transactions, true);
-            oneRound(url, user, password, transactions, true);
-            oneRound(url, user, password, transactions, true);
-            oneRound(url, user, password, transactions, true);
-            oneRound(url, user, password, transactions, true);
-            oneRound(url, user, password, transactions, true);
-            oneRound(url, user, password, transactions, true);
-*/
         } catch (Exception E) {
             System.out.println(E.toString());
             E.printStackTrace();
@@ -245,7 +223,7 @@ class JDBCBench {
                 }
             } catch (Exception E1) {}
 
-//            System.exit(0);
+
         }
     }
 
@@ -258,7 +236,7 @@ class JDBCBench {
         Enumeration e        = null;
         Connection  guardian = null;
 
-        //
+        
         this.transactions  = transactions;
         this.prepared_stmt = prepared;
         start_time         = System.currentTimeMillis();
@@ -271,9 +249,7 @@ class JDBCBench {
             vClient.addElement(Client);
         }
 
-        /*
-         ** Barrier to complete this test session
-         */
+        
         e = vClient.elements();
 
         while (e.hasMoreElements()) {
@@ -392,11 +368,11 @@ class JDBCBench {
             Statement Stmt       = Conn.createStatement();
             String    Query;
 
-//
+
             Stmt.execute("SET WRITE_DELAY 10000 MILLIS;");
             Stmt.execute("SET PROPERTY \"hsqldb.cache_scale\" 16;");
 
-//
+
             Query = "SELECT count(*) ";
             Query += "FROM   accounts";
 
@@ -469,7 +445,7 @@ class JDBCBench {
 
             Query += "Bid         INTEGER NOT NULL PRIMARY KEY, ";
             Query += "Bbalance    INTEGER,";
-            Query += "filler      CHAR(88))";    /* pad to 100 bytes */
+            Query += "filler      CHAR(88))";    
 
             if (createExtension.length() > 0) {
                 Query += createExtension;
@@ -487,7 +463,7 @@ class JDBCBench {
             Query += "Tid         INTEGER NOT NULL PRIMARY KEY,";
             Query += "Bid         INTEGER,";
             Query += "Tbalance    INTEGER,";
-            Query += "filler      CHAR(84))";    /* pad to 100 bytes */
+            Query += "filler      CHAR(84))";    
 
             if (createExtension.length() > 0) {
                 Query += createExtension;
@@ -505,7 +481,7 @@ class JDBCBench {
             Query += "Aid         INTEGER NOT NULL PRIMARY KEY, ";
             Query += "Bid         INTEGER, ";
             Query += "Abalance    INTEGER, ";
-            Query += "filler      CHAR(84))";    /* pad to 100 bytes */
+            Query += "filler      CHAR(84))";    
 
             if (createExtension.length() > 0) {
                 Query += createExtension;
@@ -525,7 +501,7 @@ class JDBCBench {
             Query += "Aid         INTEGER, ";
             Query += "delta       INTEGER, ";
             Query += "tstime        TIMESTAMP, ";
-            Query += "filler      CHAR(22))";    /* pad to 50 bytes  */
+            Query += "filler      CHAR(22))";    
 
             if (createExtension.length() > 0) {
                 Query += createExtension;
@@ -534,12 +510,7 @@ class JDBCBench {
             Stmt.execute(Query);
             Stmt.clearWarnings();
 
-/*
-            Stmt.execute("SET TABLE ACCOUNTS SOURCE \"ACCOUNTS.TXT\"");
-            Stmt.execute("SET TABLE BRANCHES SOURCE \"BBRANCHES.TXT\"");
-            Stmt.execute("SET TABLE TELLERS SOURCE \"TELLERS.TXT\"");
-            Stmt.execute("SET TABLE HISTORY SOURCE \"HISTORY.TXT\"");
-*/
+
             if (transactions) {
                 Conn.commit();
             }
@@ -581,11 +552,7 @@ class JDBCBench {
                 Conn.commit();
             }
 
-            /* prime database using TPC BM B scaling rules.
-             **  Note that for each branch and teller:
-             **      branch_id = teller_id  / ntellers
-             **      branch_id = account_id / naccounts
-             */
+            
             PreparedStatement pstmt = null;
 
             prepared_stmt = true;
@@ -703,7 +670,7 @@ class JDBCBench {
             System.out.println("\t" + (naccounts * tps)
                                + "\t records inserted");
 
-            // for tests
+            
             if (ShutdownCommand.length() > 0) {
                 Stmt.execute(ShutdownCommand);
             }
@@ -715,7 +682,7 @@ class JDBCBench {
         }
 
         connectClose(Conn);
-    }    /* end of CreateDatabase    */
+    }    
 
     public static int getRandomInt(int lo, int hi) {
 
@@ -947,9 +914,7 @@ class JDBCBench {
             Conn = null;
         }
 
-        /*
-         **  doOne() - Executes a single TPC BM B transaction.
-         */
+        
         int doOne(int bid, int tid, int aid, int delta) {
 
             int aBalance = 0;
@@ -1061,8 +1026,8 @@ class JDBCBench {
             }
 
             return 0;
-        }    /* end of DoOne         */
-    }    /* end of class ClientThread */
+        }    
+    }    
 
     class MemoryWatcherThread extends Thread {
 
@@ -1111,5 +1076,5 @@ class JDBCBench {
                 } catch (InterruptedException E) {}
             }
         }
-    }    /* end of class MemoryWatcherThread */
+    }    
 }

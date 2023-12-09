@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.rowio;
@@ -50,21 +22,12 @@ import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Provides methods for writing the data for a row to a
- * byte array. The new format of data consists of mainly binary values
- * and is not compatible with v.1.6.x databases.
- *
- * @author Bob Preston (sqlbob@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.6.7
- * @since 1.7.0
- */
+
 public class RowOutputBinary extends RowOutputBase {
 
     protected static final int INT_STORE_SIZE = 4;
     int                        storageSize;
-    final int                  scale;    // 2 to power n where n >= 0
+    final int                  scale;    
     final int                  mask;
 
     public RowOutputBinary(int initialSize, int scale) {
@@ -75,11 +38,7 @@ public class RowOutputBinary extends RowOutputBase {
         this.mask  = ~(scale - 1);
     }
 
-    /**
-     * Constructor used for network transmission of result sets
-     *
-     * @param buffer byte[]
-     */
+    
     public RowOutputBinary(byte[] buffer) {
 
         super(buffer);
@@ -88,7 +47,7 @@ public class RowOutputBinary extends RowOutputBase {
         this.mask = ~(scale - 1);
     }
 
-// fredt@users - comment - methods for writing column type, name and data size
+
     public void writeIntData(int i, int position) {
 
         int temp = count;
@@ -140,13 +99,7 @@ public class RowOutputBinary extends RowOutputBase {
         }
     }
 
-    /**
-     *  Calculate the size of byte array required to store a row.
-     *
-     * @param  row - a database row
-     * @return  size of byte array
-     * @exception  HsqlException When data is inconsistent
-     */
+    
     public int getSize(Row row) {
 
         Object[] data  = row.getData();
@@ -278,13 +231,13 @@ public class RowOutputBinary extends RowOutputBase {
         }
     }
 
-// fredt@users - comment - helper and conversion methods
+
     public void writeByteArray(byte[] b) {
         writeInt(b.length);
         write(b, 0, b.length);
     }
 
-    // fredt@users - comment - helper and conversion methods
+    
     public void writeCharArray(char[] c) {
         writeInt(c.length);
         write(c, 0, c.length);
@@ -293,14 +246,7 @@ public class RowOutputBinary extends RowOutputBase {
     public int getSize(int[] array) {
         return 4 + array.length * 5;
     }
-    /**
-     * Calculate the size of byte array required to store a row.
-     *
-     * @param data - the row data
-     * @param l - number of data[] elements to include in calculation
-     * @param types - array of java.sql.Types values
-     * @return size of byte array
-     */
+    
     public int getSize(Object[] data, int l, Type[] types) {
 
         int s = 0;
@@ -316,7 +262,7 @@ public class RowOutputBinary extends RowOutputBase {
 
     private int getSize(Object o, Type type) {
 
-        int s = 1;    // type or null
+        int s = 1;    
 
         if (o == null) {
             return s;
@@ -447,9 +393,7 @@ public class RowOutputBinary extends RowOutputBase {
         return s;
     }
 
-    /**
-     * @param  extra amount of extra space
-     */
+    
     public void ensureRoom(int extra) {
         super.ensureRoom(extra);
     }

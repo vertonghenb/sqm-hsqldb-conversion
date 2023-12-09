@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.server;
@@ -42,42 +14,15 @@ import org.hsqldb.lib.Iterator;
 import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.persist.HsqlProperties;
 
-/**
- * A subclass HsqlProperties with functionality needed for the HSQLDB Server
- * implementations.<p>
- *
- * A property object is checked once and all the errors are stored in
- * collections to be used
- *
- * Meta records specify accepted keys and policies for the expected values.<p>
- *
- * Policy for defaults: <ul>
- *  <li>If (non-null) default is specified for the Meta record, then
- *  behavior is obvious.
- *  <li>If pattern-type Meta record, then there is no default.
- *  A value is required for the property.
- *  <li>Otherwise null is specified for the Meta record and user must set
- *  a value.
- * </ul>
- *
- * If a range is specified in the Meta record, then the value is checked
- * against the range.<p>
- *
- * If a set of values specified in the Meta record, then the value is checked
- * against the set.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class ServerProperties extends HsqlProperties {
 
-    // types of properties
+    
     static final int SERVER_PROPERTY       = 0;
     static final int SERVER_MULTI_PROPERTY = 1;
     static final int SYSTEM_PROPERTY       = 2;
 
-    // keys to properties
+    
     static final String sc_key_prefix  = "server";
     static final String sc_key_address = "server.address";
     static final String sc_key_autorestart_server =
@@ -100,20 +45,20 @@ public class ServerProperties extends HsqlProperties {
     static final String sc_key_props            = "server.props";
     static final String sc_key_system           = "system";
 
-    // web server page defaults
+    
     static final String sc_default_web_mime = "text/html";
     static final String sc_default_web_page = "index.html";
     static final String sc_default_web_root = ".";
 
-    //
+    
     static final HashMap        meta     = new HashMap();
     static final OrderedHashSet prefixes = new OrderedHashSet();
 
-    //
+    
     final int         protocol;
     protected boolean initialised = false;
 
-    //
+    
     IntKeyHashMap idToAliasMap = new IntKeyHashMap();
     IntKeyHashMap idToPathMap  = new IntKeyHashMap();
 
@@ -145,10 +90,7 @@ public class ServerProperties extends HsqlProperties {
         this.protocol = protocol;
     }
 
-    /**
-     * Validates according to Meta map, and sets System Properties for those
-     * properties with names matching the requisite pattern.
-     */
+    
     public void validate() {
 
         Enumeration en = stringProps.propertyNames();
@@ -234,10 +176,7 @@ public class ServerProperties extends HsqlProperties {
         return null;
     }
 
-    /**
-     * Checks an alias or database path. Duplicates are checked as duplicate
-     * numbering may result from differnt strings (e.g. 02 and 2).
-     */
+    
     String validateMultiProperty(String key, Object[] meta) {
 
         int    dbNumber;
@@ -274,10 +213,7 @@ public class ServerProperties extends HsqlProperties {
         return null;
     }
 
-    /**
-     * System properties are currently not checked, as different libraries in
-     * the environment may need different names?
-     */
+    
     String validateSystemProperty(String key, Object[] meta) {
 
         String prefix      = (String) meta[indexName];
@@ -295,14 +231,14 @@ public class ServerProperties extends HsqlProperties {
 
     static {
 
-        // properties with variable suffixes
+        
         meta.put(sc_key_database,
                  getMeta(sc_key_database, SERVER_MULTI_PROPERTY, null));
         meta.put(sc_key_dbname,
                  getMeta(sc_key_dbname, SERVER_MULTI_PROPERTY, null));
         meta.put(sc_key_system, getMeta(sc_key_system, SYSTEM_PROPERTY, null));
 
-        // properties with fixed names
+        
         meta.put(sc_key_silent,
                  getMeta(sc_key_silent, SERVER_PROPERTY, false));
         meta.put(sc_key_trace, getMeta(sc_key_trace, SERVER_PROPERTY, false));
@@ -325,7 +261,7 @@ public class ServerProperties extends HsqlProperties {
         meta.put(sc_key_max_databases,
                  getMeta(sc_key_max_databases, 0, 10, 1, 1000));
 
-        //
+        
         prefixes.add(sc_key_database);
         prefixes.add(sc_key_dbname);
         prefixes.add(sc_key_system);

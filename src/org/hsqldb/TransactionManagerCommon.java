@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -47,13 +19,7 @@ import org.hsqldb.lib.LongDeque;
 import org.hsqldb.lib.MultiValueHashMap;
 import org.hsqldb.lib.OrderedHashSet;
 
-/**
- * Shared code for TransactionManager classes
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 2.0.0
- */
+
 class TransactionManagerCommon {
 
     Database   database;
@@ -61,26 +27,26 @@ class TransactionManagerCommon {
     int        txModel;
     HsqlName[] catalogNameList;
 
-    //
+    
     ReentrantReadWriteLock           lock      = new ReentrantReadWriteLock();
     ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
 
-    // functional unit - sessions involved in live transactions
+    
 
-    /** live transactions keeping committed transactions from being merged */
+    
     LongDeque liveTransactionTimestamps = new LongDeque();
 
-    /** live transactions keeping committed transactions from being merged */
+    
     AtomicLong globalChangeTimestamp = new AtomicLong(1);
     int        transactionCount      = 0;
 
-    //
+    
     HashMap           tableWriteLocks = new HashMap();
     MultiValueHashMap tableReadLocks  = new MultiValueHashMap();
 
-    // functional unit - cached table transactions
+    
 
-    /** Map : rowID -> RowAction */
+    
     public IntKeyHashMapConcurrent rowActionMap;
 
     void setTransactionControl(Session session, int mode) {
@@ -91,7 +57,7 @@ class TransactionManagerCommon {
             return;
         }
 
-        // statement runs as transaction
+        
         writeLock.lock();
 
         switch (txModel) {
@@ -225,7 +191,7 @@ class TransactionManagerCommon {
                     try {
                         synchronized (action) {
 
-                            // remove only if not changed
+                            
                             if (action.type == RowActionBase.ACTION_NONE) {
                                 rowActionMap.remove(action.getPos());
                             }
@@ -254,15 +220,13 @@ class TransactionManagerCommon {
                     action.store.commitRow(session, row, action.type, txModel);
                 } catch (Exception e) {
 
-//                    throw unexpectedException(e.getMessage());
+
                 }
             }
         }
     }
 
-    /**
-     * merge a given list of transaction rollback action with given timestamp
-     */
+    
     void mergeRolledBackTransaction(Session session, long timestamp,
                                     Object[] list, int start, int limit) {
 
@@ -280,8 +244,8 @@ class TransactionManagerCommon {
 
             if (row == null) {
 
-                // only if transaction has been merged
-                // shouldn't normally happen
+                
+                
                 continue;
             }
 
@@ -291,9 +255,7 @@ class TransactionManagerCommon {
         }
     }
 
-    /**
-     * merge a transaction committed at a given timestamp.
-     */
+    
     void mergeTransaction(Session session, Object[] list, int start,
                           int limit, long timestamp) {
 
@@ -304,9 +266,7 @@ class TransactionManagerCommon {
         }
     }
 
-    /**
-     * gets the next timestamp for an action
-     */
+    
     long nextChangeTimestamp() {
         return globalChangeTimestamp.incrementAndGet();
     }
@@ -359,13 +319,13 @@ class TransactionManagerCommon {
 
         if (session.sessionContext.currentStatement == null) {
 
-            // after java function / proc with db access
+            
             return;
         }
 
         if (session.sessionContext.depth > 0) {
 
-            // routine or trigger
+            
             return;
         }
 
@@ -389,7 +349,7 @@ class TransactionManagerCommon {
 
             boolean canUnlock = false;
 
-            // if write lock was used for read lock
+            
             for (int i = 0; i < readLocks.length; i++) {
                 if (tableWriteLocks.get(readLocks[i]) != session) {
                     canUnlock = true;
@@ -486,13 +446,13 @@ class TransactionManagerCommon {
 
             if (current.tempUnlocked) {
 
-                //
+                
             } else if (current.abortTransaction) {
 
-                //
+                
             } else {
 
-                // this can introduce additional waits for the sessions
+                
                 setWaitedSessionsTPL(current,
                                      current.sessionContext.currentStatement);
             }
@@ -508,12 +468,12 @@ class TransactionManagerCommon {
 
             if (!current.abortTransaction && current.tempSet.isEmpty()) {
 
-                // valid for top level statements
-//                boolean hasLocks = hasLocks(current, current.sessionContext.currentStatement);
-//                if (!hasLocks) {
-//                    System.out.println("trouble");
-//                    hasLocks(current, current.sessionContext.currentStatement);
-//                }
+                
+
+
+
+
+
             }
 
             setWaitingSessionTPL(current);
@@ -536,12 +496,12 @@ class TransactionManagerCommon {
 
             if (!current.abortTransaction && current.tempSet.isEmpty()) {
 
-                // valid for top level statements
-//                boolean hasLocks = hasLocks(current, current.sessionContext.currentStatement);
-//                if (!hasLocks) {
-//                    System.out.println("trouble");
-//                    hasLocks(current, current.sessionContext.currentStatement);
-//                }
+                
+
+
+
+
+
             }
 
             setWaitingSessionTPL(current);
@@ -760,9 +720,7 @@ class TransactionManagerCommon {
         return liveTransactionTimestamps.get(0);
     }
 
-    /**
-     * Return an array of all row actions sorted by System Change No.
-     */
+    
     RowAction[] getRowActionList() {
 
         writeLock.lock();
@@ -788,7 +746,7 @@ class TransactionManagerCommon {
                 long    minChangeNo  = Long.MAX_VALUE;
                 int     sessionIndex = 0;
 
-                // find the lowest available SCN across all sessions
+                
                 for (int i = 0; i < sessions.length; i++) {
                     int tSize = sessions[i].getTransactionSize();
 
@@ -817,7 +775,7 @@ class TransactionManagerCommon {
                     RowAction current =
                         (RowAction) currentList.get(tIndex[sessionIndex]);
 
-                    // if the next change no is in this session, continue adding
+                    
                     if (current.actionTimestamp == minChangeNo + 1) {
                         minChangeNo++;
                     }

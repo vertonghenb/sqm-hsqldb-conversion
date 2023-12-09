@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.dbinfo;
@@ -88,34 +60,21 @@ import org.hsqldb.types.NumberType;
 import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 
-// fredt@users - 1.7.2 - structural modifications to allow inheritance
-// boucherb@users - 1.7.2 - 20020225
-// - factored out all reusable code into DIXXX support classes
-// - completed Fred's work on allowing inheritance
-// boucherb@users - 1.7.2 - 20020304 - bug fixes, refinements, better java docs
-// fredt@users - 1.8.0 - updated to report latest enhancements and changes
-// boucherb@users - 1.8.0 - 20050515 - further SQL 2003 metadata support
-// boucherb@users 20051207 - patch 1.8.x initial JDBC 4.0 support work
-// fredt@users - 1.9.0 - new tables + renaming + upgrade of some others to SQL/SCHEMATA
-// Revision 1.12  2006/07/12 11:42:09  boucherb
-//  - merging back remaining material overritten by Fred's type-system upgrades
-//  - rework to use grantee (versus user) orientation for certain system table content
-//  - update collation and character set reporting to correctly reflect SQL3 spec
 
-/**
- * Provides definitions for most of the SQL Standard Schemata views that are
- * supported by HSQLDB.<p>
- *
- * Provides definitions for some of HSQLDB's additional system vies.
- *
- * The definitions for the rest of system vies are provided by
- * DatabaseInformationMain, which this class extends. <p>
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.1
- * @since 1.7.2
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 final class DatabaseInformationFull
 extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
@@ -148,27 +107,18 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         }
     }
 
-    /**
-     * Constructs a new DatabaseInformationFull instance. <p>
-     *
-     * @param db the database for which to produce system tables.
-     */
+    
     DatabaseInformationFull(Database db) {
         super(db);
     }
 
-    /**
-     * Retrieves the system table corresponding to the specified index. <p>
-     *
-     * @param tableIndex index identifying the system table to generate
-     * @return the system table corresponding to the specified index
-     */
+    
     protected Table generateTable(Session session, PersistentStore store,
                                   int tableIndex) {
 
         switch (tableIndex) {
 
-            // HSQLDB-specific
+            
             case SYSTEM_CACHEINFO :
                 return SYSTEM_CACHEINFO(session, store);
 
@@ -190,7 +140,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             case SYSTEM_TEXTTABLES :
                 return SYSTEM_TEXTTABLES(session, store);
 
-            // SQL views
+            
             case ADMINISTRABLE_ROLE_AUTHORIZATIONS :
                 return ADMINISTRABLE_ROLE_AUTHORIZATIONS(session, store);
 
@@ -394,52 +344,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         }
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * Retrieves a <code>Table</code> object describing the current
-     * state of all row caching objects for the accessible
-     * tables defined within this database. <p>
-     *
-     * Currently, the row caching objects for which state is reported are: <p>
-     *
-     * <OL>
-     * <LI> the system-wide <code>Cache</code> object used by CACHED tables.
-     * <LI> any <code>TextCache</code> objects in use by [TEMP] TEXT tables.
-     * </OL> <p>
-     *
-     * Each row is a cache object state description with the following
-     * columns: <p>
-     *
-     * <pre class="SqlCodeExample">
-     * CACHE_FILE          CHARACTER_DATA   absolute path of cache data file
-     * MAX_CACHE_SIZE      INTEGER   maximum allowable cached Row objects
-     * MAX_CACHE_BYTE_SIZE INTEGER   maximum allowable size of cached Row objects
-     * CACHE_LENGTH        INTEGER   number of data bytes currently cached
-     * CACHE_SIZE          INTEGER   number of rows currently cached
-     * FREE_BYTES          INTEGER   total bytes in available file allocation units
-     * FREE_COUNT          INTEGER   total # of allocation units available
-     * FREE_POS            INTEGER   largest file position allocated + 1
-     * </pre> <p>
-     *
-     * <b>Notes:</b> <p>
-     *
-     * <code>TextCache</code> objects do not maintain a free list because
-     * deleted rows are only marked deleted and never reused. As such, the
-     * columns FREE_BYTES, SMALLEST_FREE_ITEM, LARGEST_FREE_ITEM, and
-     * FREE_COUNT are always reported as zero for rows reporting on
-     * <code>TextCache</code> objects. <p>
-     *
-     * Currently, CACHE_SIZE, FREE_BYTES, SMALLEST_FREE_ITEM, LARGEST_FREE_ITEM,
-     * FREE_COUNT and FREE_POS are the only dynamically changing values.
-     * All others are constant for the life of a cache object. In a future
-     * release, other column values may also change over the life of a cache
-     * object, as SQL syntax may eventually be introduced to allow runtime
-     * modification of certain cache properties. <p>
-     *
-     * @return a description of the current state of all row caching
-     *      objects associated with the accessible tables of the database
-     */
+    
     Table SYSTEM_CACHEINFO(Session session, PersistentStore store) {
 
         Table t = sysTables[SYSTEM_CACHEINFO];
@@ -447,14 +352,14 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[SYSTEM_CACHEINFO]);
 
-            addColumn(t, "CACHE_FILE", CHARACTER_DATA);          // not null
-            addColumn(t, "MAX_CACHE_COUNT", CARDINAL_NUMBER);    // not null
-            addColumn(t, "MAX_CACHE_BYTES", CARDINAL_NUMBER);    // not null
-            addColumn(t, "CACHE_SIZE", CARDINAL_NUMBER);         // not null
-            addColumn(t, "CACHE_BYTES", CARDINAL_NUMBER);        // not null
-            addColumn(t, "FILE_FREE_BYTES", CARDINAL_NUMBER);    // not null
-            addColumn(t, "FILE_FREE_COUNT", CARDINAL_NUMBER);    // not null
-            addColumn(t, "FILE_FREE_POS", CARDINAL_NUMBER);      // not null
+            addColumn(t, "CACHE_FILE", CHARACTER_DATA);          
+            addColumn(t, "MAX_CACHE_COUNT", CARDINAL_NUMBER);    
+            addColumn(t, "MAX_CACHE_BYTES", CARDINAL_NUMBER);    
+            addColumn(t, "CACHE_SIZE", CARDINAL_NUMBER);         
+            addColumn(t, "CACHE_BYTES", CARDINAL_NUMBER);        
+            addColumn(t, "FILE_FREE_BYTES", CARDINAL_NUMBER);    
+            addColumn(t, "FILE_FREE_COUNT", CARDINAL_NUMBER);    
+            addColumn(t, "FILE_FREE_POS", CARDINAL_NUMBER);      
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[SYSTEM_CACHEINFO].name, false,
@@ -465,7 +370,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int icache_file      = 0;
         final int imax_cache_sz    = 1;
         final int imax_cache_bytes = 2;
@@ -475,7 +380,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int ifree_count      = 6;
         final int ifree_pos        = 7;
 
-        //
+        
         DataFileCache cache = null;
         Object[]      row;
         HashSet       cacheSet;
@@ -486,10 +391,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         int           iLargestFreeItem;
         long          lSmallestFreeItem;
 
-        // Initialization
+        
         cacheSet = new HashSet();
 
-        // dynamic system tables are never cached
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
 
@@ -512,7 +417,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
         caches = cacheSet.iterator();
 
-        // Do it.
+        
         while (caches.hasNext()) {
             cache = (DataFileCache) caches.next();
             row   = t.getEmptyRowData();
@@ -543,7 +448,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             t = createBlankTable(
                 sysTableHsqlNames[SYSTEM_COLUMN_SEQUENCE_USAGE]);
 
-            addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);    //0
+            addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);    
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);
             addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);
@@ -570,8 +475,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int sequence_schema  = 5;
         final int sequence_name    = 6;
 
-        //
-        // intermediate holders
+        
+        
         int            columnCount;
         Iterator       tables;
         Table          table;
@@ -579,7 +484,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         OrderedHashSet columnList;
         NumberSequence sequence;
 
-        // Initialization
+        
         tables = allTables();
 
         while (tables.hasNext()) {
@@ -640,7 +545,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "OBJECT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "OBJECT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);    
             addColumn(t, "OBJECT_TYPE", SQL_IDENTIFIER);
             addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);
             addColumn(t, "COMMENT", CHARACTER_DATA);
@@ -656,7 +561,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int catalog     = 0;
         final int schema      = 1;
         final int name        = 2;
@@ -664,11 +569,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int column_name = 4;
         final int remark      = 5;
 
-        //
+        
         Iterator it;
         Object[] row;
 
-        //
+        
         DITableInfo ti = new DITableInfo();
 
         it = allTables();
@@ -749,57 +654,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * Retrieves a <code>Table</code> object describing the capabilities
-     * and operating parameter properties for the engine hosting this
-     * database, as well as their applicability in terms of scope and
-     * name space. <p>
-     *
-     * Reported properties include certain predefined <code>Database</code>
-     * properties file values as well as certain database scope
-     * attributes. <p>
-     *
-     * It is intended that all <code>Database</code> attributes and
-     * properties that can be set via the database properties file,
-     * JDBC connection properties or SQL SET/ALTER statements will
-     * eventually be reported here or, where more applicable, in an
-     * ANSI/ISO conforming feature info base table in the defintion
-     * schema. <p>
-     *
-     * Currently, the database properties reported are: <p>
-     *
-     * <OL>
-     *     <LI>hsqldb.cache_file_scale - the scaling factor used to translate data and index structure file pointers
-     *     <LI>hsqldb.cache_scale - base-2 exponent scaling allowable cache row count
-     *     <LI>hsqldb.cache_size_scale - base-2 exponent scaling allowable cache byte count
-     *     <LI>hsqldb.cache_version -
-     *     <LI>hsqldb.catalogs - whether to report the database catalog (database uri)
-     *     <LI>hsqldb.compatible_version -
-     *     <LI>hsqldb.files_readonly - whether the database is in files_readonly mode
-     *     <LI>hsqldb.gc_interval - # new records forcing gc ({0|NULL}=>never)
-     *     <LI>hsqldb.max_nio_scale - scale factor for cache nio mapped buffers
-     *     <LI>hsqldb.nio_data_file - whether cache uses nio mapped buffers
-     *     <LI>hsqldb.original_version -
-     *     <LI>sql.enforce_strict_size - column length specifications enforced strictly (raise exception on overflow)?
-     *     <LI>textdb.all_quoted - default policy regarding whether to quote all character field values
-     *     <LI>textdb.cache_scale - base-2 exponent scaling allowable cache row count
-     *     <LI>textdb.cache_size_scale - base-2 exponent scaling allowable cache byte count
-     *     <LI>textdb.encoding - default TEXT table file encoding
-     *     <LI>textdb.fs - default field separator
-     *     <LI>textdb.vs - default varchar field separator
-     *     <LI>textdb.lvs - default long varchar field separator
-     *     <LI>textdb.ignore_first - default policy regarding whether to ignore the first line
-     *     <LI>textdb.quoted - default policy regarding treatement character field values that _may_ require quoting
-     *     <LI>IGNORECASE - create table VARCHAR_IGNORECASE?
-     *     <LI>LOGSIZSE - # bytes to which REDO log grows before auto-checkpoint
-     *     <LI>REFERENTIAL_INTEGITY - currently enforcing referential integrity?
-     *     <LI>SCRIPTFORMAT - 0 : TEXT, 1 : BINARY, ...
-     *     <LI>WRITEDELAY - does REDO log currently use buffered write strategy?
-     * </OL> <p>
-     *
-     * @return table describing database and session operating parameters
-     *      and capabilities
-     */
+    
     Table SYSTEM_PROPERTIES(Session session, PersistentStore store) {
 
         Table t = sysTables[SYSTEM_PROPERTIES];
@@ -813,8 +668,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "PROPERTY_VALUE", CHARACTER_DATA);
             addColumn(t, "PROPERTY_CLASS", CHARACTER_DATA);
 
-            // order PROPERTY_SCOPE, PROPERTY_NAMESPACE, PROPERTY_NAME
-            // true PK
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[SYSTEM_PROPERTIES].name, false,
                 SchemaObject.INDEX);
@@ -826,29 +681,29 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int iscope = 0;
         final int ins    = 1;
         final int iname  = 2;
         final int ivalue = 3;
         final int iclass = 4;
 
-        //
-        // calculated column values
+        
+        
         String scope;
         String nameSpace;
 
-        // intermediate holders
+        
         Object[]               row;
         HsqlDatabaseProperties props;
 
-        // First, we want the names and values for
-        // all JDBC capabilities constants
+        
+        
         scope     = "SESSION";
         props     = database.getProperties();
         nameSpace = "database.properties";
 
-        // boolean properties
+        
         Iterator it = props.getUserDefinedPropertyData().iterator();
 
         while (it.hasNext()) {
@@ -873,36 +728,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * Retrieves a <code>Table</code> object describing attributes
-     * for the calling session context.<p>
-     *
-     * The rows report the following {key,value} pairs:<p>
-     *
-     * <pre class="SqlCodeExample">
-     * KEY (VARCHAR)       VALUE (VARCHAR)
-     * ------------------- ---------------
-     * SESSION_ID          the id of the calling session
-     * AUTOCOMMIT          YES: session is in autocommit mode, else NO
-     * USER                the name of user connected in the calling session
-     * (was READ_ONLY)
-     * SESSION_READONLY    TRUE: session is in read-only mode, else FALSE
-     * (new)
-     * DATABASE_READONLY   TRUE: database is in read-only mode, else FALSE
-     * MAXROWS             the MAXROWS setting in the calling session
-     * DATABASE            the name of the database
-     * IDENTITY            the last identity value used by calling session
-     * </pre>
-     *
-     * <b>Note:</b>  This table <em>may</em> become deprecated in a future
-     * release, as the information it reports now duplicates information
-     * reported in the newer SYSTEM_SESSIONS and SYSTEM_PROPERTIES
-     * tables. <p>
-     *
-     * @return a <code>Table</code> object describing the
-     *        attributes of the connection associated
-     *        with the current execution context
-     */
+    
     Table SYSTEM_SESSIONINFO(Session session, PersistentStore store) {
 
         Table t = sysTables[SYSTEM_SESSIONINFO];
@@ -910,8 +736,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[SYSTEM_SESSIONINFO]);
 
-            addColumn(t, "KEY", CHARACTER_DATA);      // not null
-            addColumn(t, "VALUE", CHARACTER_DATA);    // not null
+            addColumn(t, "KEY", CHARACTER_DATA);      
+            addColumn(t, "VALUE", CHARACTER_DATA);    
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[SYSTEM_SESSIONINFO].name, false,
@@ -1003,32 +829,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * Retrieves a <code>Table</code> object describing all visible
-     * sessions. ADMIN users see *all* sessions
-     * while non-admin users see only their own session.<p>
-     *
-     * Each row is a session state description with the following columns: <p>
-     *
-     * <pre class="SqlCodeExample">
-     * SESSION_ID         BIGINT    session identifier
-     * CONNECTED          TIMESTAMP time at which session was created
-     * USER_NAME          VARCHAR   db user name of current session user
-     * IS_ADMIN           BOOLEAN   is session user an admin user?
-     * AUTOCOMMIT         BOOLEAN   is session in autocommit mode?
-     * READONLY           BOOLEAN   is session in read-only mode?
-     * LAST_IDENTITY      BIGINT    last identity value used by this session
-     * SCHEMA             VARCHAR   current schema for session
-     * TRANSACTION        BOOLEAN   is session in a transaction
-     * TRANSACTION_SIZE   BIGINT    # of undo items in current transaction
-     * WAITING_FOR_THIS   VARCHAR   comma separated list of sessions waiting for this one
-     * THIS_WAITING_FOR   VARCHAR   comma separated list of sessions this session is waiting for
-     * LATCH_COUNT        INTEGER   latch count for session
-     * </pre> <p>
-     *
-     * @return a <code>Table</code> object describing all visible
-     *      sessions
-     */
+    
     Table SYSTEM_SESSIONS(Session session, PersistentStore store) {
 
         Table t = sysTables[SYSTEM_SESSIONS];
@@ -1043,7 +844,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "AUTOCOMMIT", Type.SQL_BOOLEAN);
             addColumn(t, "READONLY", Type.SQL_BOOLEAN);
 
-            // Note: some sessions may have a NULL LAST_IDENTITY value
+            
             addColumn(t, "LAST_IDENTITY", CARDINAL_NUMBER);
             addColumn(t, "SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "TRANSACTION", Type.SQL_BOOLEAN);
@@ -1053,8 +854,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "CURRENT_STATEMENT", CHARACTER_DATA);
             addColumn(t, "LATCH_COUNT", CARDINAL_NUMBER);
 
-            // order:  SESSION_ID
-            // true primary key
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[SYSTEM_SESSIONS].name, false,
                 SchemaObject.INDEX);
@@ -1064,7 +865,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int isid           = 0;
         final int ict            = 1;
         final int iuname         = 2;
@@ -1080,16 +881,16 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int it_statement   = 12;
         final int it_latch_count = 13;
 
-        //
-        // intermediate holders
+        
+        
         Session[] sessions;
         Session   s;
         Object[]  row;
 
-        // Initialisation
+        
         sessions = database.sessionManager.getVisibleSessions(session);
 
-        // Do it.
+        
         for (int i = 0; i < sessions.length; i++) {
             if (sessions[i].isClosed()) {
                 continue;
@@ -1168,35 +969,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * Retrieves a <code>Table</code> object describing the TEXT TABLE objects
-     * defined within this database. The table contains one row for each row
-     * in the SYSTEM_TABLES table with a HSQLDB_TYPE of  TEXT . <p>
-     *
-     * Each row is a description of the attributes that defines its TEXT TABLE,
-     * with the following columns:
-     *
-     * <pre class="SqlCodeExample">
-     * TABLE_CAT                 VARCHAR   table's catalog name
-     * TABLE_SCHEM               VARCHAR   table's simple schema name
-     * TABLE_NAME                VARCHAR   table's simple name
-     * DATA_SOURCE_DEFINITION    VARCHAR   the "spec" proption of the table's
-     *                                     SET TABLE ... SOURCE DDL declaration
-     * FILE_PATH                 VARCHAR   absolute file path.
-     * FILE_ENCODING             VARCHAR   endcoding of table's text file
-     * FIELD_SEPARATOR           VARCHAR   default field separator
-     * VARCHAR_SEPARATOR         VARCAHR   varchar field separator
-     * LONGVARCHAR_SEPARATOR     VARCHAR   longvarchar field separator
-     * IS_IGNORE_FIRST           BOOLEAN   ignores first line of file?
-     * IS_QUOTED                 BOOLEAN   fields are quoted if necessary?
-     * IS_ALL_QUOTED             BOOLEAN   all fields are quoted?
-     * IS_DESC                   BOOLEAN   read rows starting at end of file?
-     * </pre> <p>
-     *
-     * @return a <code>Table</code> object describing the text attributes
-     * of the accessible text tables defined within this database
-     *
-     */
+    
     Table SYSTEM_TEXTTABLES(Session session, PersistentStore store) {
 
         Table t = sysTables[SYSTEM_TEXTTABLES];
@@ -1206,7 +979,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TABLE_CAT", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEM", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);    
             addColumn(t, "DATA_SOURCE_DEFINTION", CHARACTER_DATA);
             addColumn(t, "FILE_PATH", CHARACTER_DATA);
             addColumn(t, "FILE_ENCODING", CHARACTER_DATA);
@@ -1218,7 +991,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "IS_QUOTED", Type.SQL_BOOLEAN);
             addColumn(t, "IS_DESC", Type.SQL_BOOLEAN);
 
-            // ------------------------------------------------------------
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[SYSTEM_TEXTTABLES].name, false,
                 SchemaObject.INDEX);
@@ -1230,7 +1003,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int itable_cat   = 0;
         final int itable_schem = 1;
         final int itable_name  = 2;
@@ -1245,17 +1018,17 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int iiaq         = 11;
         final int iid          = 12;
 
-        //
-        // intermediate holders
+        
+        
         Iterator tables;
         Table    table;
         Object[] row;
 
-        // Initialization
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
 
-        // Do it.
+        
         while (tables.hasNext()) {
             table = (Table) tables.next();
 
@@ -1298,19 +1071,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-//------------------------------------------------------------------------------
-// SQL SCHEMATA VIEWS
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * ADMINISTRABLE_ROLE_AUTHORIZATIONS<p>
-     *
-     * Returns roles that are grantable by an admin user, which means all the
-     * roles.
-     *
-     * @return Table
-     */
+
+
+    
     Table ADMINISTRABLE_ROLE_AUTHORIZATIONS(Session session,
             PersistentStore store) {
 
@@ -1342,32 +1106,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * APPLICABLE_ROLES<p>
-     *
-     * Identifies the applicable roles for the current user.<p>
-     *
-     * <b>Definition</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     * CREATE RECURSIVE VIEW APPLICABLE_ROLES ( GRANTEE, ROLE_NAME, IS_GRANTABLE ) AS
-     *      ( ( SELECT GRANTEE, ROLE_NAME, IS_GRANTABLE
-     *            FROM DEFINITION_SCHEMA.ROLE_AUTHORIZATION_DESCRIPTORS
-     *           WHERE ( GRANTEE IN ( CURRENT_USER, 'PUBLIC' )
-     *                OR GRANTEE IN ( SELECT ROLE_NAME
-     *                                  FROM ENABLED_ROLES ) ) )
-     *      UNION
-     *      ( SELECT RAD.GRANTEE, RAD.ROLE_NAME, RAD.IS_GRANTABLE
-     *          FROM DEFINITION_SCHEMA.ROLE_AUTHORIZATION_DESCRIPTORS RAD
-     *          JOIN APPLICABLE_ROLES R
-     *            ON RAD.GRANTEE = R.ROLE_NAME ) );
-     *
-     * GRANT SELECT ON TABLE APPLICABLE_ROLES
-     *    TO PUBLIC WITH GRANT OPTION;
-     * </pre>
-     */
+    
     Table APPLICABLE_ROLES(Session session, PersistentStore store) {
 
         Table t = sysTables[APPLICABLE_ROLES];
@@ -1437,12 +1176,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         }
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ASSERTIONS view is empty.<p>
-     *
-     */
+    
     Table ASSERTIONS(Session session, PersistentStore store) {
 
         Table t = sysTables[ASSERTIONS];
@@ -1452,7 +1186,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    
             addColumn(t, "IS_DEFERRABLE", YES_OR_NO);
             addColumn(t, "INITIALLY_DEFERRED", YES_OR_NO);
 
@@ -1475,54 +1209,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     *  SYSTEM_AUTHORIZATIONS<p>
-     *
-     *  The AUTHORIZATIONS table has one row for each &lt;role name&gt; and
-     *  one row for each &lt;authorization identifier &gt; referenced in the
-     *  Information Schema. These are the &lt;role name&gt;s and
-     *  &lt;authorization identifier&gt;s that may grant privileges as well as
-     *  those that may create a schema, or currently own a schema created
-     *  through a &lt;schema definition&gt;. <p>
-     *
-     *  <b>Definition</b><p>
-     *
-     *  <pre class="SqlCodeExample">
-     *  CREATE TABLE AUTHORIZATIONS (
-     *       AUTHORIZATION_NAME INFORMATION_SCHEMA.SQL_IDENTIFIER,
-     *       AUTHORIZATION_TYPE INFORMATION_SCHEMA.CHARACTER_DATA
-     *           CONSTRAINT AUTHORIZATIONS_AUTHORIZATION_TYPE_NOT_NULL
-     *               NOT NULL
-     *           CONSTRAINT AUTHORIZATIONS_AUTHORIZATION_TYPE_CHECK
-     *               CHECK ( AUTHORIZATION_TYPE IN ( 'USER', 'ROLE' ) ),
-     *           CONSTRAINT AUTHORIZATIONS_PRIMARY_KEY
-     *               PRIMARY KEY (AUTHORIZATION_NAME)
-     *       )
-     *  </pre>
-     *
-     *  <b>Description</b><p>
-     *
-     *  <ol>
-     *  <li> The values of AUTHORIZATION_TYPE have the following meanings:<p>
-     *
-     *  <table border cellpadding="3">
-     *       <tr>
-     *           <td nowrap>USER</td>
-     *           <td nowrap>The value of AUTHORIZATION_NAME is a known
-     *                      &lt;user identifier&gt;.</td>
-     *       <tr>
-     *       <tr>
-     *           <td nowrap>NO</td>
-     *           <td nowrap>The value of AUTHORIZATION_NAME is a &lt;role
-     *                      name&gt; defined by a &lt;role definition&gt;.</td>
-     *       <tr>
-     *  </table> <p>
-     *  </ol>
-     *
-     * @return Table
-     */
+    
     Table AUTHORIZATIONS(Session session, PersistentStore store) {
 
         Table t = sysTables[AUTHORIZATIONS];
@@ -1530,10 +1217,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[AUTHORIZATIONS]);
 
-            addColumn(t, "AUTHORIZATION_NAME", SQL_IDENTIFIER);    // not null
-            addColumn(t, "AUTHORIZATION_TYPE", SQL_IDENTIFIER);    // not null
+            addColumn(t, "AUTHORIZATION_NAME", SQL_IDENTIFIER);    
+            addColumn(t, "AUTHORIZATION_TYPE", SQL_IDENTIFIER);    
 
-            // true PK
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[AUTHORIZATIONS].name, false,
                 SchemaObject.INDEX);
@@ -1543,15 +1230,15 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Intermediate holders
+        
         Iterator grantees;
         Grantee  grantee;
         Object[] row;
 
-        // initialization
+        
         grantees = session.getGrantee().visibleGrantees().iterator();
 
-        // Do it.
+        
         while (grantees.hasNext()) {
             grantee = (Grantee) grantees.next();
             row     = t.getEmptyRowData();
@@ -1601,7 +1288,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int default_collate_schema  = 6;
         final int default_collate_name    = 7;
 
-        //
+        
         Iterator it = database.schemaManager.databaseObjectIterator(
             SchemaObject.CHARSET);
 
@@ -1635,58 +1322,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The CHECK_CONSTRAINT_ROUTINE_USAGE view has one row for each
-     * SQL-invoked routine identified as the subject routine of either a
-     * &lt;routine invocation&gt;, a &lt;method reference&gt;, a
-     * &lt;method invocation&gt;, or a &lt;static method invocation&gt;
-     * contained in an &lt;assertion definition&gt;, a &lt;domain
-     * constraint&gt;, or a &lt;table constraint definition&gt;. <p>
-     *
-     * <b>Definition:</b> <p>
-     *
-     * <pre class="SqlCodeExample">
-     * CREATE TABLE SYSTEM_CHECK_ROUTINE_USAGE (
-     *      CONSTRAINT_CATALOG      VARCHAR NULL,
-     *      CONSTRAINT_SCHEMA       VARCHAR NULL,
-     *      CONSTRAINT_NAME         VARCHAR NOT NULL,
-     *      SPECIFIC_CATALOG        VARCHAR NULL,
-     *      SPECIFIC_SCHEMA         VARCHAR NULL,
-     *      SPECIFIC_NAME           VARCHAR NOT NULL,
-     *      UNIQUE( CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, CONSTRAINT_NAME,
-     *              SPECIFIC_CATALOG, SPECIFIC_SCHEMA, SPECIFIC_NAME )
-     * )
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The CHECK_ROUTINE_USAGE table has one row for each
-     *      SQL-invoked routine R identified as the subject routine of either a
-     *      &lt;routine invocation&gt;, a &lt;method reference&gt;, a &lt;method
-     *      invocation&gt;, or a &lt;static method invocation&gt; contained in
-     *      an &lt;assertion definition&gt; or in the &lt;check constraint
-     *      definition&gt; contained in either a &lt;domain constraint&gt; or a
-     *      &lt;table constraint definition&gt;. <p>
-     *
-     * <li> The values of CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, and
-     *      CONSTRAINT_NAME are the catalog name, schema name, and
-     *      identifier, respectively, of the assertion or check
-     *      constraint being described. <p>
-     *
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA, and SPECIFIC_NAME
-     *      are the catalog name, schema name, and qualified
-     *      identifier, respectively, of the specific name of R. <p>
-     *
-     * <1i> Routines are reported only if the user or one of its roles is
-     *      the authorization (owner) of the routine.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table CHECK_CONSTRAINT_ROUTINE_USAGE(Session session,
                                          PersistentStore store) {
 
@@ -1698,10 +1334,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    
             addColumn(t, "SPECIFIC_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "SPECIFIC_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "SPECIFIC_NAME", SQL_IDENTIFIER);      // not null
+            addColumn(t, "SPECIFIC_NAME", SQL_IDENTIFIER);      
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[CHECK_CONSTRAINT_ROUTINE_USAGE].name, false,
@@ -1714,7 +1350,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int constraint_catalog = 0;
         final int constraint_schema  = 1;
         final int constraint_name    = 2;
@@ -1722,8 +1358,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int specific_schema    = 4;
         final int specific_name      = 5;
 
-        //
-        // Intermediate holders
+        
+        
         Iterator       constraints;
         Constraint     constraint;
         OrderedHashSet references;
@@ -1809,42 +1445,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The CHECK_CONSTRAINTS view has one row for each domain
-     * constraint, table check constraint, and assertion. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      CONSTRAINT_CATALOG  VARCHAR NULL,
-     *      CONSTRAINT_SCHEMA   VARCHAR NULL,
-     *      CONSTRAINT_NAME     VARCHAR NOT NULL,
-     *      CHECK_CLAUSE        VARCHAR NOT NULL,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> A constraint is shown in this view if the authorization for the
-     *      schema that contains the constraint is the current user or is a role
-     *      assigned to the current user. <p>
-     *
-     * <li> The values of CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA and
-     *      CONSTRAINT_NAME are the catalog name, schema name,
-     *      and identifier, respectively, of the constraint being
-     *      described. <p>
-     *
-     * <li> the value of CHECK_CLAUSE is that character representation of
-     *      the search condition contained in the check constraint.
-     *
-     * <1i> Constraints are reported only if the user or one of its roles is
-     *      the authorization (owner) of the table.
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table CHECK_CONSTRAINTS(Session session, PersistentStore store) {
 
         Table t = sysTables[CHECK_CONSTRAINTS];
@@ -1854,8 +1455,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    // not null
-            addColumn(t, "CHECK_CLAUSE", CHARACTER_DATA);       // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    
+            addColumn(t, "CHECK_CLAUSE", CHARACTER_DATA);       
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[CHECK_CONSTRAINTS].name, false,
@@ -1868,15 +1469,15 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int constraint_catalog = 0;
         final int constraint_schema  = 1;
         final int constraint_name    = 2;
         final int check_clause       = 3;
 
-        //
-        // calculated column values
-        // Intermediate holders
+        
+        
+        
         Iterator     tables;
         Table        table;
         Constraint[] tableConstraints;
@@ -1884,7 +1485,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         Constraint   constraint;
         Object[]     row;
 
-        //
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
 
@@ -1957,54 +1558,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * COLLATIONS<p>
-     *
-     * The COLLATIONS view has one row for each character collation
-     * descriptor. <p>
-     *
-     * <b>Definition</b>
-     *
-     * <pre class="SqlCodeExample">
-     * CREATE TABLE COLLATIONS (
-     *      COLLATION_CATALOG INFORMATION_SCHEMA.SQL_IDENTIFIER,
-     *      COLLATION_SCHEMA INFORMATION_SCHEMA.SQL_IDENTIFIER,
-     *      COLLATION_NAME INFORMATION_SCHEMA.SQL_IDENTIFIER,
-     *      PAD_ATTRIBUTE INFORMATION_SCHEMA.CHARACTER_DATA
-     *          CONSTRAINT COLLATIONS_PAD_ATTRIBUTE_CHECK
-     *              CHECK ( PAD_ATTRIBUTE IN
-     *                  ( 'NO PAD', 'PAD SPACE' ) )
-     * )
-     * </pre>
-     *
-     * <b>Description</b><p>
-     *
-     * <ol>
-     *      <li>The values of COLLATION_CATALOG, COLLATION_SCHEMA, and
-     *          COLLATION_NAME are the catalog name, schema name,
-     *          and identifier, respectively, of the collation being
-     *          described.<p>
-     *
-     *      <li>The values of PAD_ATTRIBUTE have the following meanings:<p>
-     *
-     *      <table border cellpadding="3">
-     *          <tr>
-     *              <td nowrap>NO PAD</td>
-     *              <td nowrap>The collation being described has the NO PAD
-     *                  characteristic.</td>
-     *          <tr>
-     *          <tr>
-     *              <td nowrap>PAD</td>
-     *              <td nowrap>The collation being described has the PAD SPACE
-     *                         characteristic.</td>
-     *          <tr>
-     *      </table> <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table COLLATIONS(Session session, PersistentStore store) {
 
         Table t = sysTables[COLLATIONS];
@@ -2013,11 +1567,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             t = createBlankTable(sysTableHsqlNames[COLLATIONS]);
 
             addColumn(t, "COLLATION_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "COLLATION_SCHEMA", SQL_IDENTIFIER);    // not null
-            addColumn(t, "COLLATION_NAME", SQL_IDENTIFIER);      // not null
+            addColumn(t, "COLLATION_SCHEMA", SQL_IDENTIFIER);    
+            addColumn(t, "COLLATION_NAME", SQL_IDENTIFIER);      
             addColumn(t, "PAD_ATTRIBUTE", CHARACTER_DATA);
 
-            // false PK, as rows may have NULL COLLATION_CATALOG
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[COLLATIONS].name, false, SchemaObject.INDEX);
 
@@ -2028,24 +1582,24 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Column number mappings
+        
         final int collation_catalog = 0;
         final int collation_schema  = 1;
         final int collation_name    = 2;
         final int pad_attribute     = 3;
 
-        //
-        // Intermediate holders
+        
+        
         Iterator collations;
         String   collation;
         String   collationSchema = SqlInvariants.PUBLIC_SCHEMA;
         String   padAttribute    = "NO PAD";
         Object[] row;
 
-        // Initialization
+        
         collations = Collation.nameToJavaName.keySet().iterator();
 
-        // Do it.
+        
         while (collations.hasNext()) {
             row                    = t.getEmptyRowData();
             collation              = (String) collations.next();
@@ -2060,40 +1614,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     * The COLUMN_COLUMN_USAGE view has one row for each column referenced by
-     * a GENERATED column.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      TABLE_CATALOG       VARCHAR
-     *      TABLE_SCHEMA        VARCHAR
-     *      TABLE_NAME          VARCHAR
-     *      COLUMN_NAME         VARCHAR
-     *      DEPENDENT_COLUMN    VARCHAR
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, and
-     *      COLUMN_NAME are the catalog name, schema name,
-     *      identifier, and column name, respectively, of a column
-     *      defined as GENERATED ALWAYS..
-     *
-     * <li> The value of DEPENDENT_COLUMN is the name of generated column. The value
-     *      of COLUMN_NAME is the name of a column referenced by the generated
-     *      column. There may be multiple rows for each generated column.
-     *
-     * <1i> Columns are reported only if the user or one of its roles is
-     *      the authorization (owner) of the table.
-     * </ol>
-     * <p>
-     *
-     * @return Table
-     */
+    
     Table COLUMN_COLUMN_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[COLUMN_COLUMN_USAGE];
@@ -2124,7 +1645,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int column_name      = 3;
         final int dependent_column = 4;
 
-        //
+        
         Iterator tables;
         Table    table;
         Object[] row;
@@ -2174,42 +1695,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     * The COLUMN_DOMAIN_USAGE view has one row for each column defined with a
-     * a DOMAIN data type.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      DOMAIN_CATALOG      VARCHAR
-     *      DOMAIN_SCHEMA       VARCHAR
-     *      DOMAIN_NAME         VARCHAR
-     *      TABLE_CATALOG       VARCHAR
-     *      TABLE_SCHEMA        VARCHAR
-     *      TABLE_NAME          VARCHAR
-     *      COLUMN_NAME         VARCHAR
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of DOMAIN_CATALOG, DOMAIN_SCHEMA and DOMAIN_NAME
-     *      are the catalog name, schema name,
-     *      name, respectively, of a DOMAIN data type.
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, and
-     *      COLUMN_NAME are the catalog name, schema name,
-     *      identifier, and column name, respectively, of a column
-     *      defined with a DOMAIN data type.
-     *
-     * <1i> Columns are reported only if the user or one of its roles is
-     *      the authorization (owner) of the DOMAIN.
-     * </ol>
-     * <p>
-     *
-     * @return Table
-     */
+    
     Table COLUMN_DOMAIN_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[COLUMN_DOMAIN_USAGE];
@@ -2222,8 +1708,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "DOMAIN_NAME", SQL_IDENTIFIER);
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);     // not null
-            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);     
+            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);    
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[COLUMN_DOMAIN_USAGE].name, false,
@@ -2236,7 +1722,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int domain_catalog = 0;
         final int domain_schema  = 1;
         final int domain_name    = 2;
@@ -2245,7 +1731,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int table_name     = 5;
         final int column_name    = 6;
 
-        // intermediate holders
+        
         int      columnCount;
         Iterator tables;
         Table    table;
@@ -2253,7 +1739,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         Type     type;
         HsqlName tableName;
 
-        // Initialization
+        
         tables = allTables();
 
         Grantee grantee = session.getGrantee();
@@ -2292,42 +1778,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     * The COLUMN_DOMAIN_USAGE view has one row for each column defined with a
-     * a DOMAIN data type.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      UDT_CATALOG      VARCHAR
-     *      UDT_SCHEMA       VARCHAR
-     *      UDT_NAME         VARCHAR
-     *      TABLE_CATALOG    VARCHAR
-     *      TABLE_SCHEMA     VARCHAR
-     *      TABLE_NAME       VARCHAR
-     *      COLUMN_NAME      VARCHAR
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of UDT_CATALOG, UDT_SCHEMA and UDT_NAME
-     *      are the catalog name, schema name,
-     *      name, respectively, of a DISTINCT TYPE data type.
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, and
-     *      COLUMN_NAME are the catalog name, schema name,
-     *      identifier, and column name, respectively, of a column
-     *      defined with a DICTINCT TYPE data type.
-     *
-     * <1i> Columns are reported only if the user or one of its roles is
-     *      the authorization (owner) of the DISTINCT TYPE.
-     * </ol>
-     * <p>
-     *
-     * @return Table
-     */
+    
     Table COLUMN_UDT_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[COLUMN_UDT_USAGE];
@@ -2340,8 +1791,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "UDT_NAME", SQL_IDENTIFIER);
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);     // not null
-            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);     
+            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);    
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[COLUMN_UDT_USAGE].name, false,
@@ -2354,7 +1805,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int udt_catalog   = 0;
         final int udt_schema    = 1;
         final int udt_name      = 2;
@@ -2363,7 +1814,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int table_name    = 5;
         final int column_name   = 6;
 
-        // intermediate holders
+        
         int      columnCount;
         Iterator tables;
         Table    table;
@@ -2371,7 +1822,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         Type     type;
         HsqlName tableName;
 
-        // Initialization
+        
         tables = allTables();
 
         Grantee grantee = session.getGrantee();
@@ -2410,19 +1861,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     * The COLUMNS view has one row for each column of each table or view.
-     * The column, its data type characteristics, together with its
-     * IDENTITY or GENERATED characteristics are reported in this view.<p>
-     * <ol>
-     * <1i> Columns are reported only if the user or one of its roles is
-     *      the authorization (owner) of the table, or is granted any privilege
-     *      on the table or the column.
-     *
-     * </ol>
-     *
-     */
+    
     Table COLUMNS(Session session, PersistentStore store) {
 
         Table t = sysTables[COLUMNS];
@@ -2430,7 +1869,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[COLUMNS]);
 
-            addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);           //0
+            addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);           
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);
             addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);
@@ -2440,7 +1879,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "DATA_TYPE", CHARACTER_DATA);
             addColumn(t, "CHARACTER_MAXIMUM_LENGTH", CARDINAL_NUMBER);
             addColumn(t, "CHARACTER_OCTET_LENGTH", CARDINAL_NUMBER);
-            addColumn(t, "NUMERIC_PRECISION", CARDINAL_NUMBER);      //10
+            addColumn(t, "NUMERIC_PRECISION", CARDINAL_NUMBER);      
             addColumn(t, "NUMERIC_PRECISION_RADIX", CARDINAL_NUMBER);
             addColumn(t, "NUMERIC_SCALE", CARDINAL_NUMBER);
             addColumn(t, "DATETIME_PRECISION", CARDINAL_NUMBER);
@@ -2450,7 +1889,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "CHARACTER_SET_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "CHARACTER_SET_NAME", SQL_IDENTIFIER);
             addColumn(t, "COLLATION_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "COLLATION_SCHEMA", SQL_IDENTIFIER);        //20
+            addColumn(t, "COLLATION_SCHEMA", SQL_IDENTIFIER);        
             addColumn(t, "COLLATION_NAME", SQL_IDENTIFIER);
             addColumn(t, "DOMAIN_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "DOMAIN_SCHEMA", SQL_IDENTIFIER);
@@ -2460,27 +1899,27 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "UDT_NAME", SQL_IDENTIFIER);
             addColumn(t, "SCOPE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "SCOPE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "SCOPE_NAME", SQL_IDENTIFIER);              //30
-            addColumn(t, "MAXIMUM_CARDINALITY", CARDINAL_NUMBER);    // (only for array tyes)
+            addColumn(t, "SCOPE_NAME", SQL_IDENTIFIER);              
+            addColumn(t, "MAXIMUM_CARDINALITY", CARDINAL_NUMBER);    
             addColumn(t, "DTD_IDENTIFIER", SQL_IDENTIFIER);
             addColumn(t, "IS_SELF_REFERENCING", YES_OR_NO);
             addColumn(t, "IS_IDENTITY", YES_OR_NO);
-            addColumn(t, "IDENTITY_GENERATION", CHARACTER_DATA);     // ALWAYS / BY DEFAULT
+            addColumn(t, "IDENTITY_GENERATION", CHARACTER_DATA);     
             addColumn(t, "IDENTITY_START", CHARACTER_DATA);
             addColumn(t, "IDENTITY_INCREMENT", CHARACTER_DATA);
             addColumn(t, "IDENTITY_MAXIMUM", CHARACTER_DATA);
             addColumn(t, "IDENTITY_MINIMUM", CHARACTER_DATA);
-            addColumn(t, "IDENTITY_CYCLE", YES_OR_NO);               //40
-            addColumn(t, "IS_GENERATED", CHARACTER_DATA);            // ALWAYS / NEVER
+            addColumn(t, "IDENTITY_CYCLE", YES_OR_NO);               
+            addColumn(t, "IS_GENERATED", CHARACTER_DATA);            
             addColumn(t, "GENERATION_EXPRESSION", CHARACTER_DATA);
             addColumn(t, "IS_UPDATABLE", YES_OR_NO);
             addColumn(t, "DECLARED_DATA_TYPE", CHARACTER_DATA);
             addColumn(t, "DECLARED_NUMERIC_PRECISION", CARDINAL_NUMBER);
             addColumn(t, "DECLARED_NUMERIC_SCALE", CARDINAL_NUMBER);
 
-            // order: TABLE_SCHEM, TABLE_NAME, ORDINAL_POSITION
-            // added for unique: TABLE_CAT
-            // false PK, as TABLE_SCHEM and/or TABLE_CAT may be null
+            
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[COLUMNS].name, false, SchemaObject.INDEX);
 
@@ -2491,7 +1930,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int table_cat                  = 0;
         final int table_schem                = 1;
         final int table_name                 = 2;
@@ -2540,8 +1979,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int declared_numeric_precision = 45;
         final int declared_numeric_scale     = 46;
 
-        //
-        // intermediate holders
+        
+        
         int            columnCount;
         Iterator       tables;
         Table          table;
@@ -2549,7 +1988,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         OrderedHashSet columnList;
         Type           type;
 
-        // Initialization
+        
         tables = allTables();
 
         while (tables.hasNext()) {
@@ -2583,7 +2022,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                                                             : "NO";
                 row[data_type]        = type.getFullNameString();
 
-                // common type block
+                
                 if (type.isCharacterType()) {
                     row[character_maximum_length] =
                         ValuePool.getLong(type.precision);
@@ -2618,7 +2057,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                         ValuePool.getLong(type.getPrecisionRadix());
                 } else if (type.isBooleanType()) {
 
-                    //
+                    
                 } else if (type.isDateTimeType()) {
                     row[datetime_precision] = ValuePool.getLong(type.scale);
                 } else if (type.isIntervalType()) {
@@ -2705,49 +2144,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The CONSTRAINT_COLUMN_USAGE view has one row for each column identified by
-     * a table constraint or assertion.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      TABLE_CATALOG       VARCHAR
-     *      TABLE_SCHEMA        VARCHAR
-     *      TABLE_NAME          VARCHAR
-     *      COLUMN_NAME         VARCHAR
-     *      CONSTRAINT_CATALOG  VARCHAR
-     *      CONSTRAINT_SCHEMA   VARCHAR
-     *      CONSTRAINT_NAME     VARCHAR
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, and
-     *      COLUMN_NAME are the catalog name, schema name,
-     *      identifier, and column name, respectively, of a column
-     *      identified by a &lt;column reference&gt; explicitly or implicitly
-     *      contained in the &lt;search condition&gt; of the constraint
-     *      being described.
-     *
-     * <li> The values of CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, and
-     *      CONSTRAINT_NAME are the catalog name, schema name,
-     *      and identifier, respectively, of the constraint being
-     *      described. <p>
-     *
-     * <li> For FOREIGN KEY constraints, the columns of the UNIQUE constraint
-     *      in the referenced table are also included in this view.
-     *
-     * <1i> Columns are reported only if the user or one of its roles is
-     *      the authorization (owner) of the table.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table CONSTRAINT_COLUMN_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[CONSTRAINT_COLUMN_USAGE];
@@ -2757,11 +2154,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);         // not null
-            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);        // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);         
+            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);        
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[CONSTRAINT_COLUMN_USAGE].name, false,
@@ -2774,7 +2171,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int table_catalog      = 0;
         final int table_schema       = 1;
         final int table_name         = 2;
@@ -2783,13 +2180,13 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int constraint_schema  = 5;
         final int constraint_name    = 6;
 
-        //
-        // calculated column values
+        
+        
         String constraintCatalog;
         String constraintSchema;
         String constraintName;
 
-        // Intermediate holders
+        
         Iterator     tables;
         Table        table;
         Constraint[] constraints;
@@ -2798,11 +2195,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         Iterator     iterator;
         Object[]     row;
 
-        // Initialization
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
 
-        // Do it.
+        
         while (tables.hasNext()) {
             table = (Table) tables.next();
 
@@ -2817,7 +2214,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             constraintCatalog = database.getCatalogName().name;
             constraintSchema  = table.getSchemaName().name;
 
-            // process constraints
+            
             for (int i = 0; i < constraintCount; i++) {
                 constraint     = constraints[i];
                 constraintName = constraint.getName().name;
@@ -2834,7 +2231,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
                         iterator = expressions.iterator();
 
-                        // calculate distinct column references
+                        
                         while (iterator.hasNext()) {
                             ExpressionColumn expr =
                                 (ExpressionColumn) iterator.next();
@@ -2896,48 +2293,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The CONSTRAINT_TABLE_USAGE view has one row for each table identified by a
-     * &lt;table name&gt; simply contained in a &lt;table reference&gt;
-     * contained in the &lt;search condition&gt; of a check constraint,
-     * domain constraint, or assertion. It has one row for each table
-     * containing / referenced by each PRIMARY KEY, UNIQUE and FOREIGN KEY
-     * constraint<p>
-     *
-     * <b>Definition:</b> <p>
-     *
-     * <pre class="SqlCodeExample">
-     *      TABLE_CATALOG           VARCHAR
-     *      TABLE_SCHEMA            VARCHAR
-     *      TABLE_NAME              VARCHAR
-     *      CONSTRAINT_CATALOG      VARCHAR
-     *      CONSTRAINT_SCHEMA       VARCHAR
-     *      CONSTRAINT_NAME         VARCHAR
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, and
-     *      CONSTRAINT_NAME are the catalog name, schema name,
-     *       and identifier, respectively, of the constraint being
-     *      described. <p>
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, and TABLE_NAME are the
-     *      catalog name, schema name, and identifier,
-     *      respectively, of a table identified by a &lt;table name&gt;
-     *      simply contained in a &lt;table reference&gt; contained in the
-     *      *lt;search condition&gt; of the constraint being described, or
-     *      its columns.
-     *
-     * <1i> Tables are reported only if the user or one of its roles is
-     *      the authorization (owner) of the table.
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table CONSTRAINT_TABLE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[CONSTRAINT_TABLE_USAGE];
@@ -2947,10 +2303,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);         // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);         
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[CONSTRAINT_TABLE_USAGE].name, false,
@@ -2963,7 +2319,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        //
+        
         Session sys = database.sessionManager.newSysSession(
             SqlInvariants.INFORMATION_SCHEMA_HSQLNAME, session.getUser());
         Result rs = sys.executeDirectStatement(
@@ -2977,37 +2333,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The DATA_TYPE_PRIVILEGES view has one row for each use of a data type.
-     * Currently this view does not report the DTD_IDENTIFIER column.
-     * <b>Definition:</b> <p>
-     *
-     * <pre class="SqlCodeExample">
-     *      OBJECT_CATALOG      VARCHAR
-     *      OBJECT_SCHEMA       VARCHAR
-     *      OBJECT_NAME         VARCHAR
-     *      OBJECT_TYPE         VARCHAR
-     *      DTD_IDENTIFIER      VARCHAR
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of OBJECT_CATALOG, OBJECT_SCHEMA, and
-     *      OBJECT_NAME are the catalog name, schema name,
-     *       and identifier, respectively, of the object. <p>
-     *
-     * <li> The value of OBJECT_TYPE is the type of the object, for example
-     *      'TABLE'.
-     *
-     * <1i> Tables are reported only if the user or one of its roles is
-     *      the authorization (owner) of the table.
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table DATA_TYPE_PRIVILEGES(Session session, PersistentStore store) {
 
         Table t = sysTables[DATA_TYPE_PRIVILEGES];
@@ -3017,7 +2343,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "OBJECT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "OBJECT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);    
             addColumn(t, "OBJECT_TYPE", SQL_IDENTIFIER);
             addColumn(t, "DTD_IDENTIFIER", SQL_IDENTIFIER);
 
@@ -3032,7 +2358,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        //
+        
         Session sys = database.sessionManager.newSysSession(
             SqlInvariants.INFORMATION_SCHEMA_HSQLNAME, session.getUser());
         String sql = (String) statementMap.get("/*data_type_privileges*/");
@@ -3044,126 +2370,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * a DEFINITION_SCHEMA table. Not in the INFORMATION_SCHEMA list
-     */
-/*
-    Table DATA_TYPE_DESCRIPTOR() {
+    
 
-        Table t = sysTables[DATA_TYPE_DESCRIPTOR];
 
-        if (t == null) {
-            t = createBlankTable(sysTableHsqlNames[DATA_TYPE_DESCRIPTOR]);
-
-            addColumn(t, "OBJECT_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "OBJECT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);
-            addColumn(t, "OBJECT_TYPE", CHARACTER_DATA);
-            addColumn(t, "DTD_IDENTIFIER", SQL_IDENTIFIER);
-            addColumn(t, "DATA_TYPE", CHARACTER_DATA);
-            addColumn(t, "CHARACTER_SET_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "CHARACTER_SET_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CHARACTER_SET_NAME", SQL_IDENTIFIER);
-            addColumn(t, "CHARACTER_MAXIMUM_LENGTH", CARDINAL_NUMBER);
-            addColumn(t, "CHARACTER_OCTET_LENGTH", CARDINAL_NUMBER);
-            addColumn(t, "COLLATION_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "COLLATION_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "COLLATION_NAME", SQL_IDENTIFIER);
-            addColumn(t, "NUMERIC_PRECISION", CARDINAL_NUMBER);
-            addColumn(t, "NUMERIC_PRECISION_RADIX", CARDINAL_NUMBER);
-            addColumn(t, "NUMERIC_SCALE", CARDINAL_NUMBER);
-            addColumn(t, "DECLARED_DATA_TYPE", CHARACTER_DATA);
-            addColumn(t, "DECLARED_NUMERIC_PRECISION", CARDINAL_NUMBER);
-            addColumn(t, "DECLARED_NUMERIC_SCALE", CARDINAL_NUMBER);
-            addColumn(t, "DATETIME_PRECISION", CARDINAL_NUMBER);
-            addColumn(t, "INTERVAL_TYPE", CHARACTER_DATA);
-            addColumn(t, "INTERVAL_PRECISION", CARDINAL_NUMBER);
-            addColumn(t, "USER_DEFINED_TYPE_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "USER_DEFINED_TYPE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "USER_DEFINED_TYPE_NAME", SQL_IDENTIFIER);
-            addColumn(t, "SCOPE_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "SCOPE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "SCOPE_NAME", SQL_IDENTIFIER);
-            addColumn(t, "MAXIMUM_CARDINALITY", CARDINAL_NUMBER);
-            t.createPrimaryKeyConstraint(null, new int[] {
-                0, 1, 2, 4, 5, 6
-            }, false);
-
-            return t;
-        }
-
-        PersistentStore store =  session.sessionData.getRowStore(t);
-        final int       object_catalog             = 0;
-        final int       object_schema              = 1;
-        final int       object_name                = 2;
-        final int       object_type                = 3;
-        final int       dtd_identifier             = 4;
-        final int       data_type                  = 5;
-        final int       character_set_catalog      = 6;
-        final int       character_set_schema       = 7;
-        final int       character_set_name         = 8;
-        final int       character_maximum_length   = 9;
-        final int       character_octet_length     = 10;
-        final int       collation_catalog          = 11;
-        final int       collation_schema           = 12;
-        final int       collation_name             = 13;
-        final int       numeric_precision          = 14;
-        final int       numeric_precision_radix    = 15;
-        final int       numeric_scale              = 16;
-        final int       declared_data_type         = 17;
-        final int       declared_numeric_precision = 18;
-        final int       declared_numeric_scale     = 19;
-        final int       datetime_precision         = 20;
-        final int       interval_type              = 21;
-        final int       interval_precision         = 22;
-        final int       user_defined_type_catalog  = 23;
-        final int       user_defined_type_schema   = 24;
-        final int       user_defined_type_name     = 25;
-        final int       scope_catalog              = 26;
-        final int       scope_schema               = 27;
-        final int       scope_name                 = 28;
-        final int       maximum_cardinality        = 29;
-        return t;
-    }
-*/
-
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The DOMAIN_CONSTRAINTS view has one row for each domain
-     * constraint. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      CONSTRAINT_CATALOG  VARCHAR NULL,
-     *      CONSTRAINT_SCHEMA   VARCHAR NULL,
-     *      CONSTRAINT_NAME     VARCHAR NOT NULL,
-     *      DOMAIN_CATALOG      VARCHAR
-     *      DOMAIN_SCHEMA       VARCHAR
-     *      DOMAIN_NAME         VARCHAR
-     *      IS_DEFERABLE        VARCHAR NOT NULL,
-     *      INITIALLY_DEFERRED  VARCHAR NOT NULL,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> A constraint is shown in this view if the authorization for the
-     *      DOMAIN that contains the constraint is the current user or is a role
-     *      assigned to the current user. <p>
-     *
-     * <li> The values of CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA and
-     *      CONSTRAINT_NAME are the catalog name, schema name,
-     *      and identifier, respectively, of the constraint being
-     *      described. <p>
-     *
-     * <1i> Constraints are reported only if the user or one of its roles is
-     *      the authorization (owner) of the DOMAIN.
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table DOMAIN_CONSTRAINTS(Session session, PersistentStore store) {
 
         Table t = sysTables[DOMAIN_CONSTRAINTS];
@@ -3173,7 +2383,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    
             addColumn(t, "DOMAIN_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "DOMAIN_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "DOMAIN_NAME", SQL_IDENTIFIER);
@@ -3200,8 +2410,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int is_deferrable      = 6;
         final int initially_deferred = 7;
 
-        //
-        //
+        
+        
         Iterator it =
             database.schemaManager.databaseObjectIterator(SchemaObject.DOMAIN);
 
@@ -3239,13 +2449,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The DOMAINS view has one row for each domain. <p>
-     *
-     * @return Table
-     */
+    
     Table DOMAINS(Session session, PersistentStore store) {
 
         Table t = sysTables[DOMAINS];
@@ -3313,8 +2517,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int declared_numeric_precision = 22;
         final int declared_numeric_scale     = 23;
 
-        //
-        //
+        
+        
         Iterator it =
             database.schemaManager.databaseObjectIterator(SchemaObject.DOMAIN);
 
@@ -3336,7 +2540,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             row[domain_name]    = type.getName().name;
             row[data_type]      = type.getFullNameString();
 
-            // common type block
+            
             if (type.isCharacterType()) {
                 row[character_maximum_length] =
                     ValuePool.getLong(type.precision);
@@ -3368,7 +2572,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                     ValuePool.getLong(type.getPrecisionRadix());
             } else if (type.isBooleanType()) {
 
-                //
+                
             } else if (type.isDateTimeType()) {
                 row[datetime_precision] = ValuePool.getLong(type.scale);
             } else if (type.isIntervalType()) {
@@ -3396,7 +2600,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             row[dtd_identifier]     = type.getDefinition();
             row[declared_data_type] = row[data_type];
 
-            // end common block
+            
             Expression defaultExpression =
                 type.userTypeModifier.getDefaultClause();
 
@@ -3410,15 +2614,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The type attributes of elements of array. <p>
-     *
-     * The ELEMENT_TYPES view is empty.<p>
-     *
-     * @return Table
-     */
+    
     Table ELEMENT_TYPES(Session session, PersistentStore store) {
 
         Table t = sysTables[ELEMENT_TYPES];
@@ -3475,7 +2671,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int object_type                = 3;
         final int collection_type_identifier = 4;
 
-        //
+        
         final int udt_catalog   = 20;
         final int udt_schema    = 21;
         final int udt_name      = 22;
@@ -3483,8 +2679,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int scope_schema  = 24;
         final int scope_name    = 25;
 
-        //
-        // intermediate holders
+        
+        
         int            columnCount;
         Iterator       tables;
         Table          table;
@@ -3492,7 +2688,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         OrderedHashSet columnList;
         Type           type;
 
-        // Initialization
+        
         tables = allTables();
 
         while (tables.hasNext()) {
@@ -3603,7 +2799,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             if (type == null || type.isDistinctType() || type.isDomainType()
                     || !type.isArrayType()) {
 
-                //
+                
             } else {
                 row                             = t.getEmptyRowData();
                 row[object_catalog] = database.getCatalogName().name;
@@ -3672,7 +2868,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int interval_type            = 18;
         final int interval_precision       = 19;
 
-        //
+        
         final int maximum_cardinality        = 26;
         final int dtd_identifier             = 27;
         final int declared_data_type         = 28;
@@ -3710,7 +2906,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                 ValuePool.getLong(type.getPrecisionRadix());
         } else if (type.isBooleanType()) {
 
-            //
+            
         } else if (type.isDateTimeType()) {
             row[datetime_precision] = ValuePool.getLong(type.scale);
         } else if (type.isIntervalType()) {
@@ -3734,28 +2930,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         row[declared_data_type] = row[data_type];
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * ENABLED_ROLES<p>
-     *
-     * Identify the enabled roles for the current SQL-session.<p>
-     *
-     * Definition<p>
-     *
-     * <pre class="SqlCodeExample">
-     * CREATE RECURSIVE VIEW ENABLED_ROLES ( ROLE_NAME ) AS
-     *      VALUES ( CURRENT_ROLE )
-     *      UNION
-     *      SELECT RAD.ROLE_NAME
-     *        FROM DEFINITION_SCHEMA.ROLE_AUTHORIZATION_DESCRIPTORS RAD
-     *        JOIN ENABLED_ROLES R
-     *          ON RAD.GRANTEE = R.ROLE_NAME;
-     *
-     * GRANT SELECT ON TABLE ENABLED_ROLES
-     *    TO PUBLIC WITH GRANT OPTION;
-     * </pre>
-     */
+    
     Table ENABLED_ROLES(Session session, PersistentStore store) {
 
         Table t = sysTables[ENABLED_ROLES];
@@ -3765,7 +2940,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "ROLE_NAME", SQL_IDENTIFIER);
 
-            // true PK
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[ENABLED_ROLES].name, false,
                 SchemaObject.INDEX);
@@ -3775,12 +2950,12 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Intermediate holders
+        
         Iterator grantees;
         Grantee  grantee;
         Object[] row;
 
-        // initialization
+        
         grantees = session.getGrantee().getAllRoles().iterator();
 
         while (grantees.hasNext()) {
@@ -3794,12 +2969,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The JAR_JAR_USAGE view is empty.<p>
-     *
-     */
+    
     Table JAR_JAR_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[JAR_JAR_USAGE];
@@ -3825,7 +2995,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int path_jar_catalog = 0;
         final int path_jar_schema  = 1;
         final int path_jar_name    = 2;
@@ -3833,19 +3003,14 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int jar_schema       = 4;
         final int jar_name         = 5;
 
-        //
+        
         Iterator it;
         Object[] row;
 
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The JARS view is empty.<p>
-     *
-     */
+    
     Table JARS(Session session, PersistentStore store) {
 
         Table t = sysTables[JARS];
@@ -3868,53 +3033,20 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int jar_catalog = 0;
         final int jar_schema  = 1;
         final int jar_name    = 2;
         final int jar_path    = 3;
 
-        //
+        
         Iterator it;
         Object[] row;
 
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The KEY_COLUMN_USAGE view describes the columns of
-     * PRIMARY KEY, UNIQUE, FOREIGN KEY, and CHECK  constraint of each accessible table
-     * defined within this database. <p>
-     *
-     * Each row is a PRIMARY KEY or UNIQUE column description with the following
-     * columns: <p>
-     *
-     * <pre class="SqlCodeExample">
-     * CONSTRAINT_CATALOG              VARCHAR NULL,
-     * CONSTRAINT_SCHEMA               VARCHAR NULL,
-     * CONSTRAINT_NAME                 VARCHAR NOT NULL,
-     * TABLE_CATALOG                   VARCHAR   table catalog
-     * TABLE_SCHEMA                    VARCHAR   table schema
-     * TABLE_NAME                      VARCHAR   table name
-     * COLUMN_NAME                     VARCHAR   column name
-     * ORDINAL_POSITION                INT
-     * POSITION_IN_UNIQUE_CONSTRAINT   INT
-     * </pre> <p>
-     *
-     * The ORDINAL_POSITION column refers to the position of the column in the
-     * definition of the UNIQUE or FOREIGN KEY constraints.<p>
-     * The POSITION_IN_UNIQUE_CONSTRAINT column is defined for FOREIGN KEY constraints
-     * only. It refers to the position of the referenced column in the UNIQUE
-     * constraint in the reference table.<p>
-     * A column is included in this view if the user has some privilege on al
-     * the columns of the constraint.<p>
-     *
-     * @return a <code>Table</code> object describing the visible
-     *        primary key and unique columns of each accessible table
-     *        defined within this database.
-     */
+    
     Table KEY_COLUMN_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[KEY_COLUMN_USAGE];
@@ -3924,13 +3056,13 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);                   // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);                   
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);                        // not null
-            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);                       // not null
-            addColumn(t, "ORDINAL_POSITION", CARDINAL_NUMBER);                 // not null
-            addColumn(t, "POSITION_IN_UNIQUE_CONSTRAINT", CARDINAL_NUMBER);    // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);                        
+            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);                       
+            addColumn(t, "ORDINAL_POSITION", CARDINAL_NUMBER);                 
+            addColumn(t, "POSITION_IN_UNIQUE_CONSTRAINT", CARDINAL_NUMBER);    
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[KEY_COLUMN_USAGE].name, false,
@@ -3943,11 +3075,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Intermediate holders
+        
         Iterator tables;
         Object[] row;
 
-        // column number mappings
+        
         final int constraint_catalog            = 0;
         final int constraint_schema             = 1;
         final int constraint_name               = 2;
@@ -3958,7 +3090,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int ordinal_position              = 7;
         final int position_in_unique_constraint = 8;
 
-        // Initialization
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
 
@@ -4040,97 +3172,38 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The METHOD_SPECIFICATION_PARAMETERS view is not implemented.<p>
-     *
-     */
+    
     Table METHOD_SPECIFICATION_PARAMETERS(Session session,
                                           PersistentStore store) {
         return null;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The METHOD_SPECIFICATIONS view is not implemented.<p>
-     *
-     */
+    
     Table METHOD_SPECIFICATIONS(Session session, PersistentStore store) {
         return null;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The MODULE_COLUMN_USAGE view is not implemented.<p>
-     *
-     */
+    
     Table MODULE_COLUMN_USAGE(Session session, PersistentStore store) {
         return null;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The MODULE_PRIVILEGES view is not implemented.<p>
-     *
-     */
+    
     Table MODULE_PRIVILEGES(Session session, PersistentStore store) {
         return null;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The MODULE_TABLE_USAGE view is not implemented.<p>
-     *
-     */
+    
     Table MODULE_TABLE_USAGE(Session session, PersistentStore store) {
         return null;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The MODULES view is not implemented.<p>
-     *
-     */
+    
     Table MODULES(Session session, PersistentStore store) {
         return null;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The PARAMETERS view has one row for each parameter of a user defined
-     * routine.<p>
-     *
-     * <pre class="SqlCodeExample">
-     *      OBJECT_CATALOG      VARCHAR
-     *      OBJECT_SCHEMA       VARCHAR
-     *      OBJECT_NAME         VARCHAR
-     *      OBJECT_TYPE         VARCHAR
-     *      DTD_IDENTIFIER      VARCHAR
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of OBJECT_CATALOG, OBJECT_SCHEMA, and
-     *      OBJECT_NAME are the catalog name, schema name,
-     *       and identifier, respectively, of the object. <p>
-     *
-     * <li> The value of OBJECT_TYPE is the type of the object, for example
-     *      'TABLE'.
-     *
-     * <1i> Tables are reported only if the user or one of its roles is
-     *      the authorization (owner) of the table.
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table PARAMETERS(Session session, PersistentStore store) {
 
         Table t = sysTables[PARAMETERS];
@@ -4147,17 +3220,17 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "AS_LOCATOR", YES_OR_NO);
             addColumn(t, "PARAMETER_NAME", SQL_IDENTIFIER);
 
-            //
+            
             addColumn(t, "FROM_SQL_SPECIFIC_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "FROM_SQL_SPECIFIC_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "FROM_SQL_SPECIFIC_NAME", SQL_IDENTIFIER);
 
-            //
+            
             addColumn(t, "TO_SQL_SPECIFIC_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TO_SQL_SPECIFIC_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "TO_SQL_SPECIFIC_NAME", SQL_IDENTIFIER);
 
-            //
+            
             addColumn(t, "DATA_TYPE", CHARACTER_DATA);
             addColumn(t, "CHARACTER_MAXIMUM_LENGTH", CARDINAL_NUMBER);
             addColumn(t, "CHARACTER_OCTET_LENGTH", CARDINAL_NUMBER);
@@ -4195,7 +3268,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int specific_cat             = 0;
         final int specific_schem           = 1;
         final int specific_name            = 2;
@@ -4234,7 +3307,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int maximum_cardinality      = 35;
         final int dtd_identifier           = 36;
 
-        // intermediate holders
+        
         int           columnCount;
         Iterator      routines;
         RoutineSchema routineSchema;
@@ -4242,7 +3315,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         Object[]      row;
         Type          type;
 
-        // Initialization
+        
         routines = database.schemaManager.databaseObjectIterator(
             SchemaObject.ROUTINE);
 
@@ -4289,7 +3362,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                     row[as_locator] = "NO";
                     row[data_type]  = type.getFullNameString();
 
-                    // common type block
+                    
                     if (type.isCharacterType()) {
                         row[character_maximum_length] =
                             ValuePool.getLong(type.precision);
@@ -4318,7 +3391,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                             ValuePool.getLong(type.getPrecisionRadix());
                     } else if (type.isBooleanType()) {
 
-                        //
+                        
                     } else if (type.isDateTimeType()) {
                         row[datetime_precision] =
                             ValuePool.getLong(type.scale);
@@ -4354,7 +3427,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
                     row[dtd_identifier] = type.getDefinition();
 
-                    // end common block
+                    
                     t.insertSys(session, store, row);
                 }
             }
@@ -4363,45 +3436,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The REFERENTIAL_CONSTRAINTS view has one row for each FOREIGN KEY
-     * constraint. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      CONSTRAINT_CATALOG             VARCHAR ,
-     *      CONSTRAINT_SCHEMA              VARCHAR ,
-     *      CONSTRAINT_NAME                VARCHAR ,
-     *      UNIQUE_CONSTRAINT_CATALOG      VARCHAR ,
-     *      UNIQUE_CONSTRAINT_SCHEMA       VARCHAR ,
-     *      UNIQUE_CONSTRAINT_NAME         VARCHAR ,
-     *      MATCH_OPTION                   VARCHAR ,
-     *      UPDATE_RULE                    VARCHAR ,
-     *      DELETE_RULE                    VARCHAR ,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> The values of CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA and
-     *      CONSTRAINT_NAME are the catalog name, schema name,
-     *      and identifier, respectively, of the constraint being
-     *      described. <p>
-     *
-     * <li> The values of UNIQUE_CONSTRAINT_CATALOG, UNIQUE_CONSTRAINT_SCHEMA and
-     *      UNIQUE_CONSTRAINT_NAME are the catalog name, schema name,
-     *      and identifier, respectively, of the referenced UNIQUE constraint. <p>
-     *
-     * <li> A constraint is shown in this view if the user has table level
-     *      privilege of at lease one of the types, INSERT, UPDATE, DELETE,
-     *      REFERENCES or TRIGGER.
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table REFERENTIAL_CONSTRAINTS(Session session, PersistentStore store) {
 
         Table t = sysTables[REFERENTIAL_CONSTRAINTS];
@@ -4411,13 +3446,13 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);              // not null
-            addColumn(t, "UNIQUE_CONSTRAINT_CATALOG", SQL_IDENTIFIER);    // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);              
+            addColumn(t, "UNIQUE_CONSTRAINT_CATALOG", SQL_IDENTIFIER);    
             addColumn(t, "UNIQUE_CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "UNIQUE_CONSTRAINT_NAME", SQL_IDENTIFIER);
-            addColumn(t, "MATCH_OPTION", CHARACTER_DATA);                 // not null
-            addColumn(t, "UPDATE_RULE", CHARACTER_DATA);                  // not null
-            addColumn(t, "DELETE_RULE", CHARACTER_DATA);                  // not null
+            addColumn(t, "MATCH_OPTION", CHARACTER_DATA);                 
+            addColumn(t, "UPDATE_RULE", CHARACTER_DATA);                  
+            addColumn(t, "DELETE_RULE", CHARACTER_DATA);                  
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[REFERENTIAL_CONSTRAINTS].name, false,
@@ -4430,7 +3465,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int constraint_catalog        = 0;
         final int constraint_schema         = 1;
         final int constraint_name           = 2;
@@ -4441,7 +3476,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int update_rule               = 7;
         final int delete_rule               = 8;
 
-        //
+        
         Iterator     tables;
         Table        table;
         Constraint[] constraints;
@@ -4494,43 +3529,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROLE_COLUMN_GRANTS view has one row for each privilege granted to each
-     * ROLE on each column. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      GRANTOR                        VARCHAR ,
-     *      GRANTEE                        VARCHAR ,
-     *      TABLE_CATALOG                  VARCHAR ,
-     *      TABLE_SCHEMA                   VARCHAR ,
-     *      TABLE_NAME                     VARCHAR ,
-     *      COLUMN_NAME                    VARCHAR ,
-     *      PRIVILEGE_TYPE                 VARCHAR ,
-     *      IS_GRANTABLE                   VARCHAR ,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> The values of GRANTOR is the grantor of the privilege. The value of
-     *      GRANTEE is the name of the ROLE.
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA,
-     *      TABLE_NAME and COLUMN_NAME are the catalog name, schema name,
-     *      table name and column identifier, respectively, of the column grant being
-     *      described. <p>
-     *
-     * <li> The value of PRIVILEGE_TYPE is the type of the privilege, including,
-     *      'SELECT', 'UPDATE', 'INSERT', 'REFERENCES' and 'TRIGGER'.
-     *      The value IS_GRANTABLE is 'YES' if the privilege is grantable. <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROLE_COLUMN_GRANTS(Session session, PersistentStore store) {
 
         Table t = sysTables[ROLE_COLUMN_GRANTS];
@@ -4538,18 +3537,18 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[ROLE_COLUMN_GRANTS]);
 
-            addColumn(t, "GRANTOR", SQL_IDENTIFIER);           // not null
-            addColumn(t, "GRANTEE", SQL_IDENTIFIER);           // not null
+            addColumn(t, "GRANTOR", SQL_IDENTIFIER);           
+            addColumn(t, "GRANTEE", SQL_IDENTIFIER);           
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);        // not null
-            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);       // not null
-            addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);    // not null
-            addColumn(t, "IS_GRANTABLE", YES_OR_NO);           // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);        
+            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);       
+            addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);    
+            addColumn(t, "IS_GRANTABLE", YES_OR_NO);           
 
-            // order: COLUMN_NAME, PRIVILEGE
-            // for unique: GRANTEE, GRANTOR, TABLE_NAME, TABLE_SCHEMA, TABLE_CAT
-            // false PK, as TABLE_SCHEMA and/or TABLE_CAT may be null
+            
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[ROLE_COLUMN_GRANTS].name, false,
                 SchemaObject.INDEX);
@@ -4574,45 +3573,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROLE_ROUTINE_GRANTS view has one row for each privilege granted to each
-     * ROLE on each specific routine. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      GRANTOR                        VARCHAR ,
-     *      GRANTEE                        VARCHAR ,
-     *      SPECIFIC_CATALOG               VARCHAR ,
-     *      SPECIFIC_SCHEMA                VARCHAR ,
-     *      SPECIFIC_NAME                  VARCHAR ,
-     *      ROUTINE_CATALOG                VARCHAR ,
-     *      ROUTINE_SCHEMA                 VARCHAR ,
-     *      ROUTINE_NAME                   VARCHAR ,
-     *      PRIVILEGE_TYPE                 VARCHAR ,
-     *      IS_GRANTABLE                   VARCHAR ,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> The values of GRANTOR is the grantor of the privilege. The value of
-     *      GRANTEE is the name of the ROLE.
-     *
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA and
-     *      SPECIFIC_NAME are the catalog name, schema name,
-     *      routine identifier, respectively, of the grant being
-     *      described. <p>
-     *
-     * <li> The value of PRIVILEGE_TYPE is the type of the privilege, including
-     *      'EXECUTE'.
-     *      The value IS_GRANTABLE is 'YES' if the privilege is grantable. <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROLE_ROUTINE_GRANTS(Session session, PersistentStore store) {
 
         Table t = sysTables[ROLE_ROUTINE_GRANTS];
@@ -4620,11 +3581,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[ROLE_ROUTINE_GRANTS]);
 
-            addColumn(t, "GRANTOR", SQL_IDENTIFIER);          // not null
-            addColumn(t, "GRANTEE", SQL_IDENTIFIER);          // not null
+            addColumn(t, "GRANTOR", SQL_IDENTIFIER);          
+            addColumn(t, "GRANTEE", SQL_IDENTIFIER);          
             addColumn(t, "SPECIFIC_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "SPECIFIC_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "SPECIFIC_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "SPECIFIC_NAME", SQL_IDENTIFIER);    
             addColumn(t, "ROUTINE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "ROUTINE_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "ROUTINE_NAME", SQL_IDENTIFIER);
@@ -4654,7 +3615,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         t.insertSys(session, store, rs);
         sys.close();
 
-        // Column number mappings
+        
         final int grantor          = 0;
         final int grantee          = 1;
         final int table_name       = 2;
@@ -4667,47 +3628,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int privilege_type   = 9;
         final int is_grantable     = 10;
 
-        //
+        
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROLE_ROUTINE_GRANTS view has one row for each privilege granted to each
-     * ROLE on each table. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      GRANTOR                        VARCHAR ,
-     *      GRANTEE                        VARCHAR ,
-     *      TABLE_CATALOG                  VARCHAR ,
-     *      TABLE_SCHEMA                   VARCHAR ,
-     *      TABLE_NAME                     VARCHAR ,
-     *      PRIVILEGE_TYPE                 VARCHAR ,
-     *      IS_GRANTABLE                   VARCHAR ,
-     *      WITH_HIERARCHY                 VARCHAR ,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> The values of GRANTOR is the grantor of the privilege. The value of
-     *      GRANTEE is the name of the ROLE.
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA and
-     *      TABLE_NAME are the catalog name, schema name and
-     *      table name, respectively, of the table level grant being
-     *      described. <p>
-     *
-     * <li> The value of PRIVILEGE_TYPE is the type of the privilege, including,
-     *      'DELETE', 'SELECT', 'UPDATE', 'INSERT', 'REFERENCES' and 'TRIGGER'.
-     *      The value IS_GRANTABLE is 'YES' if the privilege is grantable. <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROLE_TABLE_GRANTS(Session session, PersistentStore store) {
 
         Table t = sysTables[ROLE_TABLE_GRANTS];
@@ -4715,18 +3640,18 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[ROLE_TABLE_GRANTS]);
 
-            addColumn(t, "GRANTOR", SQL_IDENTIFIER);           // not null
-            addColumn(t, "GRANTEE", SQL_IDENTIFIER);           // not null
+            addColumn(t, "GRANTOR", SQL_IDENTIFIER);           
+            addColumn(t, "GRANTEE", SQL_IDENTIFIER);           
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);        // not null
-            addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);    // not null
-            addColumn(t, "IS_GRANTABLE", YES_OR_NO);           // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);        
+            addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);    
+            addColumn(t, "IS_GRANTABLE", YES_OR_NO);           
             addColumn(t, "WITH_HIERARCHY", YES_OR_NO);
 
-            // order:  TABLE_SCHEM, TABLE_NAME, and PRIVILEGE,
-            // added for unique:  GRANTEE, GRANTOR,
-            // false PK, as TABLE_SCHEM and/or TABLE_CAT may be null
+            
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[ROLE_TABLE_GRANTS].name, false,
                 SchemaObject.INDEX);
@@ -4752,42 +3677,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROLE_UDT_GRANT view has one row for each privilege granted to each
-     * user defined type. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      GRANTOR                        VARCHAR ,
-     *      GRANTEE                        VARCHAR ,
-     *      UDT_CATALOG                    VARCHAR ,
-     *      UDT_SCHEMA                     VARCHAR ,
-     *      UDT_NAME                       VARCHAR ,
-     *      PRIVILEGE_TYPE                 VARCHAR ,
-     *      IS_GRANTABLE                   VARCHAR ,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> The values of GRANTOR is the grantor of the privilege. The value of
-     *      GRANTEE is the name of the ROLE.
-     *
-     * <li> The values of UDT_CATALOG, UDT_SCHEMA and
-     *      UDT_NAME are the catalog name, schema name and
-     *      table name, respectively, of the table level grant being
-     *      described. <p>
-     *
-     * <li> The value of PRIVILEGE_TYPE is the type of the privilege, including,
-     *      'USAGE'.
-     *      The value IS_GRANTABLE is 'YES' if the privilege is grantable. <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROLE_UDT_GRANTS(Session session, PersistentStore store) {
 
         Table t = sysTables[ROLE_UDT_GRANTS];
@@ -4795,13 +3685,13 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[ROLE_UDT_GRANTS]);
 
-            addColumn(t, "GRANTOR", SQL_IDENTIFIER);     // not null
-            addColumn(t, "GRANTEE", SQL_IDENTIFIER);     // not null
+            addColumn(t, "GRANTOR", SQL_IDENTIFIER);     
+            addColumn(t, "GRANTEE", SQL_IDENTIFIER);     
             addColumn(t, "UDT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "UDT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "UDT_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "UDT_NAME", SQL_IDENTIFIER);    
             addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);
-            addColumn(t, "IS_GRANTABLE", YES_OR_NO);     // not null
+            addColumn(t, "IS_GRANTABLE", YES_OR_NO);     
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[ROLE_TABLE_GRANTS].name, false,
@@ -4826,44 +3716,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROLE_USAGE_GRANTS view has one row for each privilege granted to each
-     * ROLE on each table. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      GRANTOR                        VARCHAR ,
-     *      GRANTEE                        VARCHAR ,
-     *      OBJECT_CATALOG                 VARCHAR ,
-     *      OBJECT_SCHEMA                  VARCHAR ,
-     *      OBJECT_NAME                    VARCHAR ,
-     *      OBJECT_TYPE                    VARCHAR ,
-     *      PRIVILEGE_TYPE                 VARCHAR ,
-     *      IS_GRANTABLE                   VARCHAR ,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> The values of GRANTOR is the grantor of the privilege. The value of
-     *      GRANTEE is the name of the ROLE.
-     *
-     * <li> The values of OBJECT_CATALOG, OBJECT_SCHEMA and
-     *      OBJECT_NAME are the catalog name, schema name and
-     *      table name, respectively, of the object being
-     *      described. <p>
-     * <li> The value of OBJECT_TYPE is they type of object, including 'DOMAIN', 'CHARACTER SET',
-     *      'COLLATION', 'TRANSLATION' and 'SEQUENCE'.
-     * <li> The value of PRIVILEGE_TYPE is the type of the privilege, including,
-     *      'USAGE'.
-     *      The value IS_GRANTABLE is 'YES' if the privilege is grantable. <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROLE_USAGE_GRANTS(Session session, PersistentStore store) {
 
         Table t = sysTables[ROLE_USAGE_GRANTS];
@@ -4871,14 +3724,14 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[ROLE_USAGE_GRANTS]);
 
-            addColumn(t, "GRANTOR", SQL_IDENTIFIER);        // not null
-            addColumn(t, "GRANTEE", SQL_IDENTIFIER);        // not null
+            addColumn(t, "GRANTOR", SQL_IDENTIFIER);        
+            addColumn(t, "GRANTEE", SQL_IDENTIFIER);        
             addColumn(t, "OBJECT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "OBJECT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);    // not null
-            addColumn(t, "OBJECT_TYPE", CHARACTER_DATA);    // not null
+            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);    
+            addColumn(t, "OBJECT_TYPE", CHARACTER_DATA);    
             addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);
-            addColumn(t, "IS_GRANTABLE", YES_OR_NO);        // not null
+            addColumn(t, "IS_GRANTABLE", YES_OR_NO);        
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[ROLE_USAGE_GRANTS].name, false,
@@ -4905,46 +3758,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROUTINE_COLUMN_USAGE view has one row for each column
-     * referenced in the body of a routine.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      SPECIFIC_CATALOG    VARCHAR ,
-     *      SPECIFIC_SCHEMA     VARCHAR ,
-     *      SPECIFIC_NAME       VARCHAR ,
-     *      ROUTINE_CATALOG     VARCHAR ,
-     *      ROUTINE_SCHEMA      VARCHAR ,
-     *      ROUTINE_NAME        VARCHAR ,
-     *      TABLE_CATALOG       VARCHAR ,
-     *      TABLE_SCHEMA        VARCHAR ,
-     *      TABLE_NAME          VARCHAR ,
-     *      COLUMN_NAME         VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA and
-     *      SPECIFIC_NAME are the catalog name, schema name,
-     *      specific routine identifier, respectively, of the grant being
-     *      described. <p>
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, and
-     *      COLUMN_NAME are the catalog name, schema name,
-     *      identifier, and column name, respectively, of a column
-     *      reference in the routine body.<>
-     *
-     * <1i> Columns are reported only if the user or one of its roles is
-     *      the authorization (owner) of the table.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROUTINE_COLUMN_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[ROUTINE_COLUMN_USAGE];
@@ -4974,7 +3788,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int specific_catalog = 0;
         final int specific_schema  = 1;
         final int specific_name    = 2;
@@ -4986,7 +3800,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int table_name       = 8;
         final int column_name      = 9;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -5010,7 +3824,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
                 row = t.getEmptyRowData();
 
-                //
+                
                 row[specific_catalog] = database.getCatalogName().name;
                 row[specific_schema]  = routine.getSchemaName().name;
                 row[specific_name]    = routine.getSpecificName().name;
@@ -5031,46 +3845,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROUTINE_PRIVILEGES view has one row for each privilege granted on
-     * a PROCEDURE or CATALOG.
-     *
-     * <pre class="SqlCodeExample">
-     *      GRANTOR               VARCHAR ,
-     *      GRANTEE               VARCHAR ,
-     *      SPECIFIC_CATALOG      VARCHAR ,
-     *      SPECIFIC_SCHEMA       VARCHAR ,
-     *      SPECIFIC_NAME         VARCHAR ,
-     *      ROUTINE_CATALOG       VARCHAR ,
-     *      ROUTINE_SCHEMA        VARCHAR ,
-     *      ROUTINE_NAME          VARCHAR ,
-     *      PRIVILEGE_TYPE        VARCHAR ,
-     *      IS_GRANTABLE          VARCHAR ,
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of GRANTOR is the grantor of the privilege. The value of
-     *      GRANTEE is the name of the grantee.
-     *
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA and
-     *      SPECIFIC_NAME are the catalog name, schema name
-     *      and identifier, respectively, of the specific ROUTINE. <p>
-     *
-     * <li> The values of ROUTINE_CATALOG, ROUTINE_SCHEMA and
-     *      ROUTINE_NAME are the catalog name, schema name
-     *      and identifier, respectively, of the ROUTINE. <p>
-     *
-     * <li> The value of PRIVILEGE_TYPE is the type of the privilege, including,
-     *      'EXECUTE'
-     *      The value IS_GRANTABLE is 'YES' if the privilege is grantable. <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROUTINE_PRIVILEGES(Session session, PersistentStore store) {
 
         Table t = sysTables[ROUTINE_PRIVILEGES];
@@ -5078,18 +3853,18 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[ROUTINE_PRIVILEGES]);
 
-            addColumn(t, "GRANTOR", SQL_IDENTIFIER);           // not null
-            addColumn(t, "GRANTEE", SQL_IDENTIFIER);           // not null
+            addColumn(t, "GRANTOR", SQL_IDENTIFIER);           
+            addColumn(t, "GRANTEE", SQL_IDENTIFIER);           
             addColumn(t, "SPECIFIC_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "SPECIFIC_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "SPECIFIC_NAME", SQL_IDENTIFIER);     // not null
+            addColumn(t, "SPECIFIC_NAME", SQL_IDENTIFIER);     
             addColumn(t, "ROUTINE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "ROUTINE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "ROUTINE_NAME", SQL_IDENTIFIER);      // not null
-            addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);    // not null
-            addColumn(t, "IS_GRANTABLE", YES_OR_NO);           // not null
+            addColumn(t, "ROUTINE_NAME", SQL_IDENTIFIER);      
+            addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);    
+            addColumn(t, "IS_GRANTABLE", YES_OR_NO);           
 
-            //
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[ROUTINE_PRIVILEGES].name, false,
                 SchemaObject.INDEX);
@@ -5101,7 +3876,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int grantor          = 0;
         final int grantee          = 1;
         final int specific_catalog = 2;
@@ -5113,12 +3888,12 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int privilege_type   = 8;
         final int is_grantable     = 9;
 
-        //
-        // calculated column values
+        
+        
         Grantee granteeObject;
         String  privilege;
 
-        // intermediate holders
+        
         Iterator       routines;
         Routine        routine;
         Object[]       row;
@@ -5155,7 +3930,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                     privilege = Tokens.T_EXECUTE;
                     row       = t.getEmptyRowData();
 
-                    //
+                    
                     row[grantor]          = right.getGrantor().getName().name;
                     row[grantee]          = right.getGrantee().getName().name;
                     row[specific_catalog] = database.getCatalogName().name;
@@ -5181,41 +3956,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROUTINE_JAR_USAGE view has one row for each jar archive
-     * referenced in the body of a Java routine.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      SPECIFIC_CATALOG    VARCHAR ,
-     *      SPECIFIC_SCHEMA     VARCHAR ,
-     *      SPECIFIC_NAME       VARCHAR ,
-     *      JAR_CATALOG         VARCHAR ,
-     *      JAR_SCHEMA          VARCHAR ,
-     *      JAR_NAME            VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA and
-     *      SPECIFIC_NAME are the catalog name, schema name,
-     *      specific routine identifier, respectively. <p>
-     *
-     * <li> The values of JAR_CATALOG, JAR_SCHEMA and JAR_NAME are
-     *      the catalog name, schema name,
-     *      identifier, and column name, respectively, of a jar
-     *      reference in the routine body.<>
-     *
-     * <1i> Currently 'CLASSPATH' is reported for all entries.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROUTINE_JAR_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[ROUTINE_JAR_USAGE];
@@ -5241,7 +3982,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int specific_catalog = 0;
         final int specific_schema  = 1;
         final int specific_name    = 2;
@@ -5249,7 +3990,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int jar_schema       = 4;
         final int jar_name         = 5;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -5281,41 +4022,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROUTINE_ROUTINE_USAGE view has one row for each routine
-     * referenced in the body of a routine.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      SPECIFIC_CATALOG    VARCHAR ,
-     *      SPECIFIC_SCHEMA     VARCHAR ,
-     *      SPECIFIC_NAME       VARCHAR ,
-     *      ROUTINE_CATALOG     VARCHAR ,
-     *      ROUTINE_SCHEMA      VARCHAR ,
-     *      ROUTINE_NAME        VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA and
-     *      SPECIFIC_NAME are the catalog name, schema name,
-     *      specific routine identifier, respectively, of the routine
-     *      which contains the reference. <p>
-     * <li> The values of ROUTINE_CATALOG, ROUTINE_SCHEMA and ROUTINE_NAME
-     *      are the catalog name, schema name and
-     *      identifier, respectively, of the routine that is referenced.<p>
-     *
-     * <1i> Referenced routines are reported only if the user or one of its roles is
-     *      the authorization (owner) of the referenced routine.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROUTINE_ROUTINE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[ROUTINE_ROUTINE_USAGE];
@@ -5341,7 +4048,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int specific_catalog = 0;
         final int specific_schema  = 1;
         final int specific_name    = 2;
@@ -5349,7 +4056,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int routine_schema   = 4;
         final int routine_name     = 5;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -5388,41 +4095,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROUTINE_SEQUENCE_USAGE view has one row for each SEQUENCE
-     * referenced in the body of a routine.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      SPECIFIC_CATALOG    VARCHAR ,
-     *      SPECIFIC_SCHEMA     VARCHAR ,
-     *      SPECIFIC_NAME       VARCHAR ,
-     *      SEQUENCE_CATALOG    VARCHAR ,
-     *      SEQUENCE_SCHEMA     VARCHAR ,
-     *      SEQUENCE_NAME       VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA and
-     *      SPECIFIC_NAME are the catalog name, schema name,
-     *      specific routine identifier, respectively, of the routine. <p>
-     * <li> The values of SEQUENCE_CATALOG, SEQUENCE_SCHEMA and SEQUENCE_NAME
-     *      are the catalog name, schema name and
-     *      identifier, respectively, of a SEQUENCE
-     *      reference in the routine body.<>
-     *
-     * <1i> Referenced sequences are reported only if the user or one of its roles is
-     *      the authorization (owner) of the SEQUENCE.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROUTINE_SEQUENCE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[ROUTINE_SEQUENCE_USAGE];
@@ -5448,7 +4121,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int specific_catalog = 0;
         final int specific_schema  = 1;
         final int specific_name    = 2;
@@ -5456,7 +4129,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int sequence_schema  = 4;
         final int sequence_name    = 5;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -5495,44 +4168,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROUTINE_TABLE_USAGE view has one row for each TABLE
-     * referenced in the body of a routine.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      SPECIFIC_CATALOG    VARCHAR ,
-     *      SPECIFIC_SCHEMA     VARCHAR ,
-     *      SPECIFIC_NAME       VARCHAR ,
-     *      ROUTINE_CATALOG     VARCHAR ,
-     *      ROUTINE_SCHEMA      VARCHAR ,
-     *      ROUTINE_NAME        VARCHAR ,
-     *      TABLE_CATALOG       VARCHAR ,
-     *      TABLE_SCHEMA        VARCHAR ,
-     *      TABLE_NAME          VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA and
-     *      SPECIFIC_NAME are the catalog name, schema name,
-     *      specific routine identifier, respectively, of the routine. <p>
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA and TABLE_NAME
-     *      are the catalog name, schema name and
-     *      identifier, respectively, of a TABLE
-     *      reference in the routine body.<>
-     *
-     * <1i> Tables are reported only if the user or one of its roles is
-     *      the authorization (owner) of the TABLE.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table ROUTINE_TABLE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[ROUTINE_TABLE_USAGE];
@@ -5561,7 +4197,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int specific_catalog = 0;
         final int specific_schema  = 1;
         final int specific_name    = 2;
@@ -5572,7 +4208,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int table_schema     = 7;
         final int table_name       = 8;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -5615,12 +4251,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The ROUTINES view has one row for each PROCEDURE and FUNCTION.<p>
-     *
-     */
+    
     Table ROUTINES(Session session, PersistentStore store) {
 
         Table t = sysTables[ROUTINES];
@@ -5648,9 +4279,9 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "CHARACTER_SET_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "CHARACTER_SET_NAME", SQL_IDENTIFIER);
             addColumn(t, "COLLATION_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "COLLATION_SCHEMA", SQL_IDENTIFIER);          //
+            addColumn(t, "COLLATION_SCHEMA", SQL_IDENTIFIER);          
             addColumn(t, "COLLATION_NAME", SQL_IDENTIFIER);
-            addColumn(t, "NUMERIC_PRECISION", CARDINAL_NUMBER);        //
+            addColumn(t, "NUMERIC_PRECISION", CARDINAL_NUMBER);        
             addColumn(t, "NUMERIC_PRECISION_RADIX", CARDINAL_NUMBER);
             addColumn(t, "NUMERIC_SCALE", CARDINAL_NUMBER);
             addColumn(t, "DATETIME_PRECISION", CARDINAL_NUMBER);
@@ -5661,8 +4292,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "TYPE_UDT_NAME", SQL_IDENTIFIER);
             addColumn(t, "SCOPE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "SCOPE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "SCOPE_NAME", SQL_IDENTIFIER);                //
-            addColumn(t, "MAXIMUM_CARDINALITY", CARDINAL_NUMBER);      // (only for array tyes)
+            addColumn(t, "SCOPE_NAME", SQL_IDENTIFIER);                
+            addColumn(t, "MAXIMUM_CARDINALITY", CARDINAL_NUMBER);      
             addColumn(t, "DTD_IDENTIFIER", SQL_IDENTIFIER);
             addColumn(t, "ROUTINE_BODY", CHARACTER_DATA);
             addColumn(t, "ROUTINE_DEFINITION", CHARACTER_DATA);
@@ -5673,13 +4304,13 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "SQL_DATA_ACCESS", CHARACTER_DATA);
             addColumn(t, "IS_NULL_CALL", YES_OR_NO);
             addColumn(t, "SQL_PATH", CHARACTER_DATA);
-            addColumn(t, "SCHEMA_LEVEL_ROUTINE", YES_OR_NO);           //
+            addColumn(t, "SCHEMA_LEVEL_ROUTINE", YES_OR_NO);           
             addColumn(t, "MAX_DYNAMIC_RESULT_SETS", CARDINAL_NUMBER);
             addColumn(t, "IS_USER_DEFINED_CAST", YES_OR_NO);
             addColumn(t, "IS_IMPLICITLY_INVOCABLE", YES_OR_NO);
             addColumn(t, "SECURITY_TYPE", CHARACTER_DATA);
             addColumn(t, "TO_SQL_SPECIFIC_CATALOG", SQL_IDENTIFIER);
-            addColumn(t, "TO_SQL_SPECIFIC_SCHEMA", SQL_IDENTIFIER);    //
+            addColumn(t, "TO_SQL_SPECIFIC_SCHEMA", SQL_IDENTIFIER);    
             addColumn(t, "TO_SQL_SPECIFIC_NAME", SQL_IDENTIFIER);
             addColumn(t, "AS_LOCATOR", YES_OR_NO);
             addColumn(t, "CREATED", TIME_STAMP);
@@ -5730,7 +4361,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int specific_catalog                       = 0;
         final int specific_schema                        = 1;
         final int specific_name                          = 2;
@@ -5820,7 +4451,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int result_cast_declared_numeric_precision = 86;
         final int result_cast_declared_numeric_scale     = 87;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -5842,7 +4473,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             Type type = routine.isProcedure() ? null
                                               : routine.getReturnType();
 
-            //
+            
             row[specific_catalog] = database.getCatalogName().name;
             row[specific_schema]  = routine.getSchemaName().name;
             row[specific_name]    = routine.getSpecificName().name;
@@ -5862,7 +4493,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             if (type != null) {
 
-                // common type block
+                
                 if (type.isCharacterType()) {
                     row[character_maximum_length] =
                         ValuePool.getLong(type.precision);
@@ -5897,7 +4528,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                         ValuePool.getLong(type.getPrecisionRadix());
                 } else if (type.isBooleanType()) {
 
-                    //
+                    
                 } else if (type.isDateTimeType()) {
                     row[datetime_precision] = ValuePool.getLong(type.scale);
                 } else if (type.isIntervalType()) {
@@ -5926,7 +4557,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                 row[dtd_identifier]     = type.getDefinition();
                 row[declared_data_type] = row[data_type];
 
-                // end common block
+                
             }
 
             row[type_udt_catalog] = null;
@@ -6007,56 +4638,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The SCHEMATA view has one row for each accessible schema. <p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      CATALOG_NAME                       VARCHAR ,
-     *      SCHEMA_NAME                        VARCHAR ,
-     *      SCHEMA_OWNER                       VARCHAR ,
-     *      DEFAULT_CHARACTER_SET_CATALOG      VARCHAR ,
-     *      DEFAULT_CHARACTER_SET_SCHEMA       VARCHAR ,
-     *      DEFAULT_CHARACTER_SET_NAME         VARCHAR ,
-     *      SQL_PATH                           VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description</b><p>
-     *
-     * <ol>
-     *      <li>The value of CATALOG_NAME is the name of the catalog of the
-     *          schema described by this row.<p>
-     *
-     *      <li>The value of SCHEMA_NAME is the schema name of
-     *          the schema described by this row.<p>
-     *
-     *      <li>The values of SCHEMA_OWNER are the authorization identifiers
-     *          that own the schemata.<p>
-     *
-     *      <li>The values of DEFAULT_CHARACTER_SET_CATALOG,
-     *          DEFAULT_CHARACTER_SET_SCHEMA, and DEFAULT_CHARACTER_SET_NAME
-     *          are the catalog name, schema name, and qualified
-     *          identifier, respectively, of the default character set for
-     *          columns and domains in the schemata.<p>
-     *
-     *      <li>Case:<p>
-     *          <ul>
-     *              <li>If &lt;schema path specification&gt; was specified in
-     *                  the &lt;schema definition&gt; that defined the schema
-     *                  described by this row and the character representation
-     *                  of the &lt;schema path specification&gt; can be
-     *                  represented without truncation, then the value of
-     *                  SQL_PATH is that character representation.<p>
-     *
-     *              <li>Otherwise, the value of SQL_PATH is the null value.
-     *         </ul>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table SCHEMATA(Session session, PersistentStore store) {
 
         Table t = sysTables[SCHEMATA];
@@ -6072,8 +4654,8 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             addColumn(t, "DEFAULT_CHARACTER_SET_NAME", SQL_IDENTIFIER);
             addColumn(t, "SQL_PATH", CHARACTER_DATA);
 
-            // order: CATALOG_NAME, SCHEMA_NAME
-            // false PK, as rows may have NULL CATALOG_NAME
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[SCHEMATA].name, false, SchemaObject.INDEX);
 
@@ -6084,7 +4666,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Intermediate holders
+        
         Schema[] schemas;
         Schema   schema;
         String   dcsSchema = SqlInvariants.INFORMATION_SCHEMA;
@@ -6093,7 +4675,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         Grantee  user      = session.getGrantee();
         Object[] row;
 
-        // column number mappings
+        
         final int schema_catalog                = 0;
         final int schema_name                   = 1;
         final int schema_owner                  = 2;
@@ -6102,10 +4684,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int default_character_set_name    = 5;
         final int sql_path                      = 6;
 
-        // Initialization
+        
         schemas = database.schemaManager.getAllSchemas();
 
-        // Do it.
+        
         for (int i = 0; i < schemas.length; i++) {
             schema = schemas[i];
 
@@ -6130,13 +4712,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The SQL_FEATURES view lists the individual features of the SQL Standard
-     * supported by HyperSQL.<p>
-     *
-     */
+    
     Table SQL_FEATURES(Session session, PersistentStore store) {
 
         Table t = sysTables[SQL_FEATURES];
@@ -6173,12 +4749,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The SQL_IMPLEMENTATION_INFO view is empty.<p>
-     *
-     */
+    
     Table SQL_IMPLEMENTATION_INFO(Session session, PersistentStore store) {
 
         Table t = sysTables[SQL_IMPLEMENTATION_INFO];
@@ -6211,13 +4782,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The SQL_PACHAGES view lists the packages of the SQL Standard supported by
-     * HyperSQL.<p>
-     *
-     */
+    
     Table SQL_PACKAGES(Session session, PersistentStore store) {
 
         Table t = sysTables[SQL_PACKAGES];
@@ -6250,13 +4815,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The SQL_PARTS view lists the parts of the SQL Standard supported by
-     * HyperSQL.<p>
-     *
-     */
+    
     Table SQL_PARTS(Session session, PersistentStore store) {
 
         Table t = sysTables[SQL_PARTS];
@@ -6288,13 +4847,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The SQL_SIZING view has one row for the maximum size of each built in
-     * type supported by HyperSQL.<p>
-     *
-     */
+    
     Table SQL_SIZING(Session session, PersistentStore store) {
 
         Table t = sysTables[SQL_SIZING];
@@ -6325,12 +4878,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The SQL_SIZING_PROFILES is empty.<p>
-     *
-     */
+    
     Table SQL_SIZING_PROFILES(Session session, PersistentStore store) {
 
         Table t = sysTables[SQL_SIZING_PROFILES];
@@ -6357,119 +4905,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         Session sys = database.sessionManager.newSysSession(
             SqlInvariants.INFORMATION_SCHEMA_HSQLNAME, session.getUser());
 
-        /*
-                Result rs = sys.executeDirectStatement(
-                    "VALUES "
-                    + ";");
-
-                t.insertSys(session, store, rs);
-        */
+        
         return t;
     }
 
-    /**
-     * The TABLE_CONSTRAINTS table has one row for each table constraint
-     * associated with a table.  <p>
-     *
-     * It effectively contains a representation of the table constraint
-     * descriptors. <p>
-     *
-     * <b>Definition:</b> <p>
-     *
-     * <pre class="SqlCodeExample">
-     * CREATE TABLE SYSTEM_TABLE_CONSTRAINTS (
-     *      CONSTRAINT_CATALOG      VARCHAR NULL,
-     *      CONSTRAINT_SCHEMA       VARCHAR NULL,
-     *      CONSTRAINT_NAME         VARCHAR NOT NULL,
-     *      CONSTRAINT_TYPE         VARCHAR NOT NULL,
-     *      TABLE_CATALOG           VARCHAR NULL,
-     *      TABLE_SCHEMA            VARCHAR NULL,
-     *      TABLE_NAME              VARCHAR NOT NULL,
-     *      IS_DEFERRABLE           VARCHAR NOT NULL,
-     *      INITIALLY_DEFERRED      VARCHAR NOT NULL,
-     *
-     *      CHECK ( CONSTRAINT_TYPE IN
-     *                      ( 'UNIQUE', 'PRIMARY KEY',
-     *                        'FOREIGN KEY', 'CHECK' ) ),
-     *
-     *      CHECK ( ( IS_DEFERRABLE, INITIALLY_DEFERRED ) IN
-     *              ( VALUES ( 'NO',  'NO'  ),
-     *                       ( 'YES', 'NO'  ),
-     *                       ( 'YES', 'YES' ) ) )
-     * )
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA, and
-     *      CONSTRAINT_NAME are the catalog name, schema
-     *      name, and identifier, respectively, of the
-     *      constraint being described. If the &lt;table constraint
-     *      definition&gt; or &lt;add table constraint definition&gt;
-     *      that defined the constraint did not specify a
-     *      &lt;constraint name&gt;, then the values of CONSTRAINT_CATALOG,
-     *      CONSTRAINT_SCHEMA, and CONSTRAINT_NAME are
-     *      implementation-defined. <p>
-     *
-     * <li> The values of CONSTRAINT_TYPE have the following meanings: <p>
-     *  <table border cellpadding="3">
-     *  <tr>
-     *      <td nowrap>FOREIGN KEY</td>
-     *      <td nowrap>The constraint being described is a
-     *                 foreign key constraint.</td>
-     *  </tr>
-     *  <tr>
-     *      <td nowrap>UNIQUE</td>
-     *      <td nowrap>The constraint being described is a
-     *                 unique constraint.</td>
-     *  </tr>
-     *  <tr>
-     *      <td nowrap>PRIMARY KEY</td>
-     *      <td nowrap>The constraint being described is a
-     *                 primary key constraint.</td>
-     *  </tr>
-     *  <tr>
-     *      <td nowrap>CHECK</td>
-     *      <td nowrap>The constraint being described is a
-     *                 check constraint.</td>
-     *  </tr>
-     * </table> <p>
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, and TABLE_NAME are
-     *      the catalog name, the schema name, and the
-     *      name of the table to which the
-     *      table constraint being described applies. <p>
-     *
-     * <li> The values of IS_DEFERRABLE have the following meanings: <p>
-     *
-     *  <table>
-     *      <tr>
-     *          <td nowrap>YES</td>
-     *          <td nowrap>The table constraint is deferrable.</td>
-     *      </tr>
-     *      <tr>
-     *          <td nowrap>NO</td>
-     *          <td nowrap>The table constraint is not deferrable.</td>
-     *      </tr>
-     *  </table> <p>
-     *
-     * <li> The values of INITIALLY_DEFERRED have the following meanings: <p>
-     *
-     *  <table>
-     *      <tr>
-     *          <td nowrap>YES</td>
-     *          <td nowrap>The table constraint is initially deferred.</td>
-     *      </tr>
-     *      <tr>
-     *          <td nowrap>NO</td>
-     *          <td nowrap>The table constraint is initially immediate.</td>
-     *      </tr>
-     *  </table> <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table TABLE_CONSTRAINTS(Session session, PersistentStore store) {
 
         Table t = sysTables[TABLE_CONSTRAINTS];
@@ -6479,16 +4919,16 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "CONSTRAINT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "CONSTRAINT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    // not null
-            addColumn(t, "CONSTRAINT_TYPE", CHARACTER_DATA);    // not null
+            addColumn(t, "CONSTRAINT_NAME", SQL_IDENTIFIER);    
+            addColumn(t, "CONSTRAINT_TYPE", CHARACTER_DATA);    
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);         // not null
-            addColumn(t, "IS_DEFERRABLE", YES_OR_NO);           // not null
-            addColumn(t, "INITIALLY_DEFERRED", YES_OR_NO);      // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);         
+            addColumn(t, "IS_DEFERRABLE", YES_OR_NO);           
+            addColumn(t, "INITIALLY_DEFERRED", YES_OR_NO);      
 
-            // false PK, as CONSTRAINT_CATALOG, CONSTRAINT_SCHEMA,
-            // TABLE_CATALOG and/or TABLE_SCHEMA may be null
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[TABLE_CONSTRAINTS].name, false,
                 SchemaObject.INDEX);
@@ -6500,7 +4940,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Intermediate holders
+        
         Iterator     tables;
         Table        table;
         Constraint[] constraints;
@@ -6510,7 +4950,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         String       schem;
         Object[]     row;
 
-        // column number mappings
+        
         final int constraint_catalog = 0;
         final int constraint_schema  = 1;
         final int constraint_name    = 2;
@@ -6521,16 +4961,16 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int is_deferable       = 7;
         final int initially_deferred = 8;
 
-        // initialization
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
-        table = null;    // else compiler complains
+        table = null;    
 
-        // do it
+        
         while (tables.hasNext()) {
             table = (Table) tables.next();
 
-            /** requires any INSERT or UPDATE or DELETE or REFERENCES or TRIGGER, (not SELECT) right */
+            
             if (table.isView()
                     || !session.getGrantee().hasNonSelectTableRight(table)) {
                 continue;
@@ -6590,13 +5030,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The TRANSLATIONS view has one row for each translation between two
-     * character sets.<p>
-     *
-     */
+    
     Table TRANSLATIONS(Session session, PersistentStore store) {
 
         Table t = sysTables[TRANSLATIONS];
@@ -6631,42 +5065,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The TRIGGER_COLUMN_USAGE view has one row for each column
-     * referenced in the body of a trigger.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      TRIGGER_CATALOG     VARCHAR ,
-     *      TRIGGER_SCHEMA      VARCHAR ,
-     *      TRIGGER_NAME        VARCHAR ,
-     *      TABLE_CATALOG       VARCHAR ,
-     *      TABLE_SCHEMA        VARCHAR ,
-     *      TABLE_NAME          VARCHAR ,
-     *      COLUMN_NAME         VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of TRIGGER_CATALOG, TRIGGER_SCHEMA and
-     *      TRIGGER_NAME are the catalog name, schema name and
-     *      identifier, respectively, of the trigger. <p>
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, and
-     *      COLUMN_NAME are the catalog name, schema name,
-     *      identifier, and column name, respectively, of a column
-     *      reference in the trigger body.<>
-     *
-     * <1i> Columns are reported only if the user or one of its roles is
-     *      the authorization (owner) of the TRIGGER.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table TRIGGER_COLUMN_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[TRIGGER_COLUMN_USAGE];
@@ -6676,11 +5075,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TRIGGER_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TRIGGER_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);    
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);      // not null
-            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);     // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);      
+            addColumn(t, "COLUMN_NAME", SQL_IDENTIFIER);     
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[TRIGGER_COLUMN_USAGE].name, false,
@@ -6693,7 +5092,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int trigger_catalog = 0;
         final int trigger_schema  = 1;
         final int trigger_name    = 2;
@@ -6702,7 +5101,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int table_name      = 5;
         final int column_name     = 6;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -6732,7 +5131,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
                 row = t.getEmptyRowData();
 
-                //
+                
                 row[trigger_catalog] = database.getCatalogName().name;
                 row[trigger_schema]  = trigger.getSchemaName().name;
                 row[trigger_name]    = trigger.getName().name;
@@ -6747,45 +5146,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             }
         }
 
-        // Initialization
+        
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The TRIGGER_ROUTINE_USAGE view has one row for each routine
-     * referenced in the body of a trigger.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      TRIGGER_CATALOG     VARCHAR ,
-     *      TRIGGER_SCHEMA      VARCHAR ,
-     *      TRIGGER_NAME        VARCHAR ,
-     *      SPECIFIC_CATALOG    VARCHAR ,
-     *      SPECIFIC_SCHEMA     VARCHAR ,
-     *      SPECIFIC_NAME       VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of TRIGGER_CATALOG, TRIGGER_SCHEMA and TRIGGER_NAME
-     *      are the catalog name, schema name and
-     *      identifier, respectively, of the TRIGGER.<p>
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA and
-     *      SPECIFIC_NAME are the catalog name, schema name,
-     *      specific routine identifier, respectively, of the routine
-     *      that is referenced. <p>
-     *
-     * <1i> Referenced routines are reported only if the user or one of its roles is
-     *      the authorization (owner) of the TRIGGER.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table TRIGGER_ROUTINE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[TRIGGER_ROUTINE_USAGE];
@@ -6795,10 +5160,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TRIGGER_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TRIGGER_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);     // not null
+            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);     
             addColumn(t, "SPECIFIC_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "SPECIFIC_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "SPECIFIC_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "SPECIFIC_NAME", SQL_IDENTIFIER);    
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[TRIGGER_ROUTINE_USAGE].name, false,
@@ -6811,7 +5176,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int trigger_catalog  = 0;
         final int trigger_schema   = 1;
         final int trigger_name     = 2;
@@ -6819,7 +5184,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int specific_schema  = 4;
         final int specific_name    = 5;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -6860,41 +5225,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The TRIGGER_SEQUENCE_USAGE view has one row for each SEQUENCE
-     * referenced in the body of a trigger.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      TRIGGER_CATALOG     VARCHAR ,
-     *      TRIGGER_SCHEMA      VARCHAR ,
-     *      TRIGGER_NAME        VARCHAR ,
-     *      SEQUENCE_CATALOG    VARCHAR ,
-     *      SEQUENCE_SCHEMA     VARCHAR ,
-     *      SEQUENCE_NAME       VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of TRIGGER_CATALOG, TRIGGER_SCHEMA and TRIGGER_NAME
-     *      are the catalog name, schema name and
-     *      identifier, respectively, of the TRIGGER.<p>
-     * <li> The values of SEQUENCE_CATALOG, SEQUENCE_SCHEMA and
-     *      SEQUENCE_NAME are the catalog name, schema name and
-     *      identifier, respectively, of the SEQUENCE
-     *      that is referenced. <p>
-     *
-     * <1i> Referenced sequences are reported only if the user or one of its roles is
-     *      the authorization (owner) of the TRIGGER.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table TRIGGER_SEQUENCE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[TRIGGER_SEQUENCE_USAGE];
@@ -6904,10 +5235,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TRIGGER_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TRIGGER_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);     // not null
+            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);     
             addColumn(t, "SEQUENCE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "SEQUENCE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "SEQUENCE_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "SEQUENCE_NAME", SQL_IDENTIFIER);    
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[TRIGGER_SEQUENCE_USAGE].name, false,
@@ -6920,7 +5251,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int trigger_catalog  = 0;
         final int trigger_schema   = 1;
         final int trigger_name     = 2;
@@ -6928,7 +5259,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int sequence_schema  = 4;
         final int sequence_name    = 5;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -6966,45 +5297,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             }
         }
 
-        // Initialization
+        
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The TRIGGER_TABLE_USAGE view has one row for each TABLE
-     * referenced in the body of a trigger.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      TRIGGER_CATALOG     VARCHAR ,
-     *      TRIGGER_SCHEMA      VARCHAR ,
-     *      TRIGGER_NAME        VARCHAR ,
-     *      TABLE_CATALOG       VARCHAR ,
-     *      TABLE_SCHEMA        VARCHAR ,
-     *      TABLE_NAME          VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of TRIGGER_CATALOG, TRIGGER_SCHEMA and TRIGGER_NAME
-     *      are the catalog name, schema name and
-     *      identifier, respectively, of the TRIGGER.<p>
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA and
-     *      TABLE_NAME are the catalog name, schema name and
-     *      identifier, respectively, of the TABLE
-     *      that is referenced. <p>
-     *
-     * <1i> Referenced tables are reported only if the user or one of its roles is
-     *      the authorization (owner) of the TRIGGER.
-     *
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table TRIGGER_TABLE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[TRIGGER_TABLE_USAGE];
@@ -7014,10 +5311,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TRIGGER_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TRIGGER_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);    
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);      // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);      
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[TRIGGER_TABLE_USAGE].name, false,
@@ -7030,7 +5327,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int trigger_catalog = 0;
         final int trigger_schema  = 1;
         final int trigger_name    = 2;
@@ -7038,7 +5335,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int table_schema    = 4;
         final int table_name      = 5;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -7077,78 +5374,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             }
         }
 
-        // Initialization
+        
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The TRIGGERS view has one row for each TRIGGER.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      TRIGGER_CATALOG               VARCHAR ,
-     *      TRIGGER_SCHEMA                VARCHAR ,
-     *      TRIGGER_NAME                  VARCHAR ,
-     *      EVENT_MANIPULATION            VARCHAR ,
-     *      EVENT_OBJECT_CATALOG          VARCHAR ,
-     *      EVENT_OBJECT_SCHEMA           VARCHAR ,
-     *      EVENT_OBJECT_TABLE            VARCHAR ,
-     *      ACTION_ORDER                  VARCHAR ,
-     *      ACTION_CONDITION              VARCHAR ,
-     *      ACTION_STATEMENT              VARCHAR ,
-     *      ACTION_ORIENTATION            VARCHAR ,
-     *      ACTION_TIMING_                VARCHAR ,
-     *      ACTION_REFERENCE_OLD_TABLE    VARCHAR ,
-     *      ACTION_REFERENCE_NEW_TABLE    VARCHAR ,
-     *      ACTION_REFERENCE_OLD_ROW      VARCHAR ,
-     *      ACTION_REFERENCE_NEW_ROW      VARCHAR ,
-     *      CREATED                       VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of TRIGGER_CATALOG, TRIGGER_SCHEMA and TRIGGER_NAME
-     *      are the catalog name, schema name and
-     *      identifier, respectively, of the TRIGGER.<p>
-     * <li> The value of EVENT_MANUPULATION indicates for which action the
-     *      trigger is fired: 'INSERT', 'UPDATE' or 'DELETE'.
-     * <li> The values of EVENT_OBJECT_CATALOG, EVENT_OBJECT_SCHEMA and
-     *      EVENT_OBJECT_NAME are the catalog name, schema name and
-     *      identifier, respectively, of the trigger TABLE. <p>
-     * <li> The value of ACTION_ORDER indicates the ordinal position of the
-     *      trigger is firing event, among all the triggers of the same
-     *      ACTION_ORIENTATION and ACTION_TIMING.
-     * <li> The value of ACTION_CONDITION is the text of the SQL expression in
-     *     t he optional WHEN condition.
-     * <li> The value of ACTION_STATEMENT is the text of the SQL statement(s)
-     *      executed by the trigger.
-     * <li> The value of ACTION_ORIENTATION indicates whether the trigger is
-     *      fired once per each 'STATEMENT' or per each 'ROW'.
-     * <li> The value of ACTION_TIMING indicates when the trigger is
-     *      trigger is fired: 'BEFORE', 'AFTER' or 'INSTEAD OF'.
-     * <li> The value of ACTION_REFERENCING_OLD_TABLE contains the name of the
-     *      OLD TABLE transition table.
-     * <li> The value of ACTION_REFERENCING_NEW_TABLE contains the name of the
-     *      NEW TABLE transition table.
-     * <li> The value of ACTION_REFERENCING_OLD_ROW contains the name of the
-     *      OLD ROW.
-     * <li> The value of ACTION_REFERENCING_NEW_ROW contains the name of the
-     *      NEW ROW.
-     * <li> The value of CREATED contains the timestamp of the creation of the
-     *      trigger. Currently NULL.
-     * <1i> Triggers are reported only if the user or one of its roles has
-     *      some privilege on at least one column of the trigger table.
-     * <li> The ACTION_CONDITION and ACTION_STATEMENT columns show the SQL only
-     *      if the user or one of its roles is the authorization (owner) of the
-     *      trigger table.
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table TRIGGERS(Session session, PersistentStore store) {
 
         Table t = sysTables[TRIGGERS];
@@ -7184,7 +5414,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int trigger_catalog            = 0;
         final int trigger_schema             = 1;
         final int trigger_name               = 2;
@@ -7203,7 +5433,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int action_reference_new_row   = 15;
         final int created                    = 16;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -7251,41 +5481,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             t.insertSys(session, store, row);
         }
 
-        // Initialization
+        
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The TRIGGERED_UPDATE_COLUMNS view has one row for each column
-     * referenced in the optional column list of a UPDATE trigger.<p>
-     *
-     * <b>Definition:</b><p>
-     *
-     *      TRIGGER_CATALOG            VARCHAR ,
-     *      TRIGGER_SCHEMA             VARCHAR ,
-     *      TRIGGER_NAME               VARCHAR ,
-     *      EVENT_OBJECT_CATALOG       VARCHAR ,
-     *      EVENT_OBJECT_SCHEMA        VARCHAR ,
-     *      EVENT_OBJECT_NAME          VARCHAR ,
-     *
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of TRIGGER_CATALOG, TRIGGER_SCHEMA and TRIGGER_NAME
-     *      are the catalog name, schema name and
-     *      identifier, respectively, of the TRIGGER.<p>
-     * <li> The values of EVENT_OBJECT_CATALOG, EVENT_OBJECT_SCHEMA and
-     *      EVENT_OBJECT_NAME are the catalog name, schema name and
-     *      identifier, respectively, of the COLUMN
-     *      that is referenced. <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table TRIGGERED_UPDATE_COLUMNS(Session session, PersistentStore store) {
 
         Table t = sysTables[TRIGGERED_UPDATE_COLUMNS];
@@ -7295,11 +5495,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TRIGGER_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TRIGGER_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);            // not null
-            addColumn(t, "EVENT_OBJECT_CATALOG", SQL_IDENTIFIER);    // not null
+            addColumn(t, "TRIGGER_NAME", SQL_IDENTIFIER);            
+            addColumn(t, "EVENT_OBJECT_CATALOG", SQL_IDENTIFIER);    
             addColumn(t, "EVENT_OBJECT_SCHEMA", SQL_IDENTIFIER);
             addColumn(t, "EVENT_OBJECT_TABLE", SQL_IDENTIFIER);
-            addColumn(t, "EVENT_OBJECT_COLUMN", SQL_IDENTIFIER);     // not null
+            addColumn(t, "EVENT_OBJECT_COLUMN", SQL_IDENTIFIER);     
 
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[TRIGGERED_UPDATE_COLUMNS].name, false,
@@ -7312,7 +5512,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // column number mappings
+        
         final int trigger_catalog      = 0;
         final int trigger_schema       = 1;
         final int trigger_name         = 2;
@@ -7321,7 +5521,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int event_object_table   = 5;
         final int event_object_column  = 6;
 
-        //
+        
         Iterator it;
         Object[] row;
 
@@ -7359,44 +5559,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             }
         }
 
-        // Initialization
+        
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The UDT_PRIVILEGES view has one row for each privilege granted on
-     * a DISTINCT TYPE.
-     *
-     * <pre class="SqlCodeExample">
-     *      GRANTOR               VARCHAR
-     *      GRANTEE               VARCHAR
-     *      UDT_CATALOG           VARCHAR
-     *      UDT_SCHEMA            VARCHAR
-     *      UDT_NAME              VARCHAR
-     *      PRIVILEGE_TYPE        VARCHAR
-     *      IS_GRANTABLE          VARCHAR
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of GRANTOR is the grantor of the privilege. The value of
-     *      GRANTEE is the name of the grantee.
-     *
-     * <li> The values of UDT_CATALOG, UDT_SCHEMA and
-     *      UDT_NAME are the catalog name, schema name
-     *      and identifier, respectively, of the user defined type
-     *      described. <p>
-     *
-     * <li> The value of PRIVILEGE_TYPE is the type of the privilege, including,
-     *      'USAGE'
-     *      The value IS_GRANTABLE is 'YES' if the privilege is grantable. <p>
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table UDT_PRIVILEGES(Session session, PersistentStore store) {
 
         Table t = sysTables[UDT_PRIVILEGES];
@@ -7431,7 +5598,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int privilege_type = 5;
         final int is_grantable   = 6;
 
-        //
+        
         Iterator objects =
             database.schemaManager.databaseObjectIterator(SchemaObject.TYPE);
         OrderedHashSet grantees =
@@ -7484,95 +5651,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The USAGE_PRIVILEGES view has one row for each usage privilege
-     * descriptor. <p>
-     *
-     * It effectively contains a representation of the usage privilege
-     * descriptors. <p>
-     *
-     * <b>Definition:</b> <p>
-     *
-     * <pre class="SqlCodeExample">
-     * CREATE TABLE SYSTEM_USAGE_PRIVILEGES (
-     *      GRANTOR         VARCHAR NOT NULL,
-     *      GRANTEE         VARCHAR NOT NULL,
-     *      OBJECT_CATALOG  VARCHAR NULL,
-     *      OBJECT_SCHEMA   VARCHAR NULL,
-     *      OBJECT_NAME     VARCHAR NOT NULL,
-     *      OBJECT_TYPE     VARCHAR NOT NULL
-     *      PRIVILEGE_TYPE  VARCHAR NOT NULL
-     *      IS_GRANTABLE    VARCHAR NOT NULL
-     * )
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> The value of GRANTOR is the &lt;authorization identifier&gt; of the
-     *      user or role who granted usage privileges on the object of the type
-     *      identified by OBJECT_TYPE that is identified by OBJECT_CATALOG,
-     *      OBJECT_SCHEMA, and OBJECT_NAME, to the user or role identified by the
-     *      value of GRANTEE forthe usage privilege being described. <p>
-     *
-     * <li> The value of GRANTEE is the &lt;authorization identifier&gt; of some
-     *      user or role, or PUBLIC to indicate all users, to whom the usage
-     *      privilege being described is granted. <p>
-     *
-     * <li> The values of OBJECT_CATALOG, OBJECT_SCHEMA, and OBJECT_NAME are the
-     *      catalog name, schema name, and identifier,
-     *      respectively, of the object to which the privilege applies. <p>
-     *
-     * <li> The values of OBJECT_TYPE have the following meanings: <p>
-     *
-     *      <table border cellpadding="3">
-     *          <tr>
-     *              <td nowrap>DOMAIN</td>
-     *              <td nowrap>The object to which the privilege applies is
-     *                         a domain.</td>
-     *          <tr>
-     *          <tr>
-     *              <td nowrap>CHARACTER SET</td>
-     *              <td nowrap>The object to which the privilege applies is a
-     *                         character set.</td>
-     *          <tr>
-     *          <tr>
-     *              <td nowrap>COLLATION</td>
-     *              <td nowrap>The object to which the privilege applies is a
-     *                         collation.</td>
-     *          <tr>
-     *          <tr>
-     *              <td nowrap>TRANSLATION</td>
-     *              <td nowrap>The object to which the privilege applies is a
-     *                         transliteration.</td>
-     *          <tr>
-     *          <tr>
-     *              <td nowrap>SEQUENCE</td>
-     *              <td nowrap>The object to which the privilege applies is a
-     *                         sequence generator.</td>
-     *          <tr>
-     *      </table> <p>
-     *
-     * <li> The values of IS_GRANTABLE have the following meanings: <p>
-     *
-     *      <table border cellpadding="3">
-     *          <tr>
-     *              <td nowrap>YES</td>
-     *              <td nowrap>The privilege being described was granted
-     *                         WITH GRANT OPTION and is thus grantable.</td>
-     *          <tr>
-     *          <tr>
-     *              <td nowrap>NO</td>
-     *              <td nowrap>The privilege being described was not granted
-     *                  WITH GRANT OPTION and is thus not grantable.</td>
-     *          <tr>
-     *      </table> <p>
-     * <ol>
-     *
-     * @return Table
-     */
+    
     Table USAGE_PRIVILEGES(Session session, PersistentStore store) {
 
         Table t = sysTables[USAGE_PRIVILEGES];
@@ -7580,18 +5659,18 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         if (t == null) {
             t = createBlankTable(sysTableHsqlNames[USAGE_PRIVILEGES]);
 
-            addColumn(t, "GRANTOR", SQL_IDENTIFIER);        // not null
-            addColumn(t, "GRANTEE", SQL_IDENTIFIER);        // not null
+            addColumn(t, "GRANTOR", SQL_IDENTIFIER);        
+            addColumn(t, "GRANTEE", SQL_IDENTIFIER);        
             addColumn(t, "OBJECT_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "OBJECT_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);    // not null
-            addColumn(t, "OBJECT_TYPE", CHARACTER_DATA);    // not null
+            addColumn(t, "OBJECT_NAME", SQL_IDENTIFIER);    
+            addColumn(t, "OBJECT_TYPE", CHARACTER_DATA);    
             addColumn(t, "PRIVILEGE_TYPE", CHARACTER_DATA);
-            addColumn(t, "IS_GRANTABLE", YES_OR_NO);        // not null
+            addColumn(t, "IS_GRANTABLE", YES_OR_NO);        
 
-            // order: COLUMN_NAME, PRIVILEGE
-            // for unique: GRANTEE, GRANTOR, TABLE_NAME, TABLE_SCHEM, TABLE_CAT
-            // false PK, as TABLE_SCHEM and/or TABLE_CAT may be null
+            
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[USAGE_PRIVILEGES].name, false,
                 SchemaObject.INDEX);
@@ -7603,10 +5682,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        //
+        
         Object[] row;
 
-        //
+        
         final int grantor        = 0;
         final int grantee        = 1;
         final int object_catalog = 2;
@@ -7616,7 +5695,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int privilege_type = 6;
         final int is_grantable   = 7;
 
-        //
+        
         Iterator objects =
             new WrapperIterator(database.schemaManager
                 .databaseObjectIterator(SchemaObject.SEQUENCE), database
@@ -7631,7 +5710,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             database.schemaManager.databaseObjectIterator(
                 SchemaObject.DOMAIN));
 
-        // TYPE objects are covered in separate UDT_PRIVILEGES view
+        
         OrderedHashSet grantees =
             session.getGrantee().getGranteeAndAllRolesWithPublic();
 
@@ -7679,42 +5758,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The USER_DEFINED_TYPES view has one row for each user defined type.
-     * Only DICTINCT TYPE user defined types are currently supported. <p>
-     *
-     * <b>Definition:</b> <p>
-     *
-     * <pre class="SqlCodeExample">
-     *      VIEW_CATALOG    VARCHAR NULL,
-     *      VIEW_SCHEMA     VARCHAR NULL,
-     *      VIEW_NAME       VARCHAR NOT NULL,
-     *      TABLE_CATALOG   VARCHAR NULL,
-     *      TABLE_SCHEMA    VARCHAR NULL,
-     *      TABLE_NAME      VARCHAR NOT NULL,
-     *      COLUMN_NAME     VARCHAR NOT NULL,
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of VIEW_CATALOG, VIEW_SCHEMA, and VIEW_NAME are the
-     *      catalog name, schema name, and identifier,
-     *      respectively, of the view being described. <p>
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, and
-     *      COLUMN_NAME are the catalog name, schema name,
-     *      table name, and column name, respectively, of a column
-     *      of a table that is explicitly or implicitly referenced in the
-     *      &lt;query expression&gt; of the view being described.
-     * <1i> Referenced routines are reported only if the user or one of its roles is
-     *      the authorization (owner) of the referenced ROUTINE
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table USER_DEFINED_TYPES(Session session, PersistentStore store) {
 
         Table t = sysTables[USER_DEFINED_TYPES];
@@ -7804,7 +5848,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int declared_numeric_scale     = 31;
         final int maximum_cardinality        = 32;
 
-        //
+        
         Iterator it =
             database.schemaManager.databaseObjectIterator(SchemaObject.TYPE);
 
@@ -7826,7 +5870,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             row[is_final]                   = "YES";
             row[ordering_form]              = "FULL";
 
-            // common type block
+            
             if (type.isCharacterType()) {
                 row[character_maximum_length] =
                     ValuePool.getLong(type.precision);
@@ -7881,7 +5925,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                 row[data_type] = "ARRAY";
             }
 
-            // end common block
+            
             row[source_dtd_identifier] = type.getDefinition();
             row[declared_data_type]    = row[data_type];
 
@@ -7891,43 +5935,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The VIEW_COLUMN_USAGE view has one row for each column of a
-     * table that is explicitly or implicitly referenced in the
-     * &lt;query expression&gt; of the view being described. <p>
-     *
-     * <b>Definition:</b> <p>
-     *
-     * <pre class="SqlCodeExample">
-     *      VIEW_CATALOG    VARCHAR NULL,
-     *      VIEW_SCHEMA     VARCHAR NULL,
-     *      VIEW_NAME       VARCHAR NOT NULL,
-     *      TABLE_CATALOG   VARCHAR NULL,
-     *      TABLE_SCHEMA    VARCHAR NULL,
-     *      TABLE_NAME      VARCHAR NOT NULL,
-     *      COLUMN_NAME     VARCHAR NOT NULL,
-     * </pre>
-     *
-     * <b>Description:</b> <p>
-     *
-     * <ol>
-     * <li> The values of VIEW_CATALOG, VIEW_SCHEMA, and VIEW_NAME are the
-     *      catalog name, schema name, and identifier,
-     *      respectively, of the view being described. <p>
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, and
-     *      COLUMN_NAME are the catalog name, schema name,
-     *      table name, and column name, respectively, of a column
-     *      of a table that is explicitly or implicitly referenced in the
-     *      &lt;query expression&gt; of the view being described.
-     * <1i> Referenced routines are reported only if the user or one of its roles is
-     *      the authorization (owner) of the referenced ROUTINE
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table VIEW_COLUMN_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[VIEW_COLUMN_USAGE];
@@ -7954,19 +5962,19 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Calculated column values
+        
         String viewCatalog;
         String viewSchema;
         String viewName;
 
-        // Intermediate holders
+        
         Iterator tables;
         View     view;
         Table    table;
         Object[] row;
         Iterator iterator;
 
-        // Column number mappings
+        
         final int view_catalog  = 0;
         final int view_schema   = 1;
         final int view_name     = 2;
@@ -7975,11 +5983,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int table_name    = 5;
         final int column_name   = 6;
 
-        // Initialization
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
 
-        // Do it.
+        
         while (tables.hasNext()) {
             table = (Table) tables.next();
 
@@ -7987,7 +5995,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
                     && session.getGrantee().isFullyAccessibleByRole(
                         table.getName())) {
 
-                // fall through
+                
             } else {
                 continue;
             }
@@ -8026,42 +6034,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The VIEW_ROUTINE_USAGE view has one row for each SQL-invoked
-     * routine identified as the subject routine of either a &lt;routine
-     * invocation&gt;, a &lt;method reference&gt;, a &lt;method invocation&gt;,
-     * or a &lt;static method invocation&gt; contained in a &lt;view
-     * definition&gt;. <p>
-     *
-     * <b>Definition</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      TABLE_CATALOG       VARCHAR NULL,
-     *      TABLE_SCHEMA        VARCHAR NULL,
-     *      TABLE_NAME          VARCHAR NOT NULL,
-     *      SPECIFIC_CATALOG    VARCHAR NULL,
-     *      SPECIFIC_SCHEMA     VARCHAR NULL,
-     *      SPECIFIC_NAME       VARCHAR NOT NULL,
-     * </pre>
-     *
-     * <b>Description</b><p>
-     *
-     * <ol>
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, and TABLE_NAME are the
-     *      catalog name, schema name, and identifier,
-     *      respectively, of the viewed table being described.
-     *
-     * <li> The values of SPECIFIC_CATALOG, SPECIFIC_SCHEMA, and SPECIFIC_NAME are
-     *      the catalog name, schema name, and identifier,
-     *      respectively, of the specific name of R.
-     * <1i> Referenced routines are reported only if the user or one of its roles is
-     *      the authorization (owner) of the referenced ROUTINE.
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table VIEW_ROUTINE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[VIEW_ROUTINE_USAGE];
@@ -8087,12 +6060,12 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Intermediate holders
+        
         Iterator tables;
         Table    table;
         Object[] row;
 
-        // Column number mappings
+        
         final int view_catalog     = 0;
         final int view_schema      = 1;
         final int view_name        = 2;
@@ -8100,11 +6073,11 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int specific_schema  = 4;
         final int specific_name    = 5;
 
-        // Initialization
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
 
-        // Do it.
+        
         while (tables.hasNext()) {
             table = (Table) tables.next();
 
@@ -8142,42 +6115,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The VIEW_TABLE_USAGE view has one row for each table identified
-     * by a &lt;table name&gt; simply contained in a &lt;table reference&gt;
-     * that is contained in the &lt;query expression&gt; of a view. <p>
-     *
-     * <b>Definition</b><p>
-     *
-     * <pre class="SqlCodeExample">
-     *      VIEW_CATALOG    VARCHAR NULL,
-     *      VIEW_SCHEMA     VARCHAR NULL,
-     *      VIEW_NAME       VARCHAR NULL,
-     *      TABLE_CATALOG   VARCHAR NULL,
-     *      TABLE_SCHEMA    VARCHAR NULL,
-     *      TABLE_NAME      VARCHAR NULL,
-     * </pre>
-     *
-     * <b>Description:</b><p>
-     *
-     * <ol>
-     * <li> The values of VIEW_CATALOG, VIEW_SCHEMA, and VIEW_NAME are the
-     *      catalog name, schema name, and identifier,
-     *      respectively, of the view being described. <p>
-     *
-     * <li> The values of TABLE_CATALOG, TABLE_SCHEMA, and TABLE_NAME are the
-     *      catalog name, schema name, and identifier,
-     *      respectively, of a table identified by a &lt;table name&gt;
-     *      simply contained in a &lt;table reference&gt; that is contained in
-     *      the &lt;query expression&gt; of the view being described.
-     * <1i> Referenced tables are reported only if the user or one of its roles is
-     *      the authorization (owner) of the referenced TABLE
-     * </ol>
-     *
-     * @return Table
-     */
+    
     Table VIEW_TABLE_USAGE(Session session, PersistentStore store) {
 
         Table t = sysTables[VIEW_TABLE_USAGE];
@@ -8187,13 +6125,13 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "VIEW_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "VIEW_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "VIEW_NAME", SQL_IDENTIFIER);     // not null
+            addColumn(t, "VIEW_NAME", SQL_IDENTIFIER);     
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);    // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);    
 
-            // false PK, as VIEW_CATALOG, VIEW_SCHEMA, TABLE_CATALOG, and/or
-            // TABLE_SCHEMA may be NULL
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[VIEW_TABLE_USAGE].name, false,
                 SchemaObject.INDEX);
@@ -8205,7 +6143,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Column number mappings
+        
         final int view_catalog  = 0;
         final int view_schema   = 1;
         final int view_name     = 2;
@@ -8213,16 +6151,16 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         final int table_schema  = 4;
         final int table_name    = 5;
 
-        //
+        
         Iterator tables;
         Table    table;
         Object[] row;
 
-        // Initialization
+        
         tables =
             database.schemaManager.databaseObjectIterator(SchemaObject.TABLE);
 
-        // Do it.
+        
         while (tables.hasNext()) {
             table = (Table) tables.next();
 
@@ -8261,33 +6199,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * The VIEWS view contains one row for each VIEW definition. <p>
-     *
-     * Each row is a description of the query expression that defines its view,
-     * with the following columns:
-     *
-     * <pre class="SqlCodeExample">
-     *      TABLE_CATALOG    VARCHAR     name of view's defining catalog.
-     *      TABLE_SCHEMA     VARCHAR     name of view's defining schema.
-     *      TABLE_NAME       VARCHAR     the simple name of the view.
-     *      VIEW_DEFINITION  VARCHAR     the character representation of the
-     *                                   &lt;query expression&gt; contained in the
-     *                                   corresponding &lt;view descriptor&gt;.
-     *      CHECK_OPTION     VARCHAR     {"CASCADED" | "LOCAL" | "NONE"}
-     *      IS_UPDATABLE     VARCHAR     {"YES" | "NO"}
-     *      INSERTABLE_INTO VARCHAR      {"YES" | "NO"}
-     *      IS_TRIGGER_UPDATABLE        VARCHAR  {"YES" | "NO"}
-     *      IS_TRIGGER_DELETEABLE       VARCHAR  {"YES" | "NO"}
-     *      IS_TRIGGER_INSERTABLE_INTO  VARCHAR  {"YES" | "NO"}
-     * </pre> <p>
-     *
-     * @return a tabular description of the text source of all
-     *        <code>View</code> objects accessible to
-     *        the user.
-     */
+    
     Table VIEWS(Session session, PersistentStore store) {
 
         Table t = sysTables[VIEWS];
@@ -8297,18 +6209,18 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
 
             addColumn(t, "TABLE_CATALOG", SQL_IDENTIFIER);
             addColumn(t, "TABLE_SCHEMA", SQL_IDENTIFIER);
-            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);               // not null
-            addColumn(t, "VIEW_DEFINITION", CHARACTER_DATA);          // not null
-            addColumn(t, "CHECK_OPTION", CHARACTER_DATA);             // not null
-            addColumn(t, "IS_UPDATABLE", YES_OR_NO);                  // not null
-            addColumn(t, "INSERTABLE_INTO", YES_OR_NO);               // not null
-            addColumn(t, "IS_TRIGGER_UPDATABLE", YES_OR_NO);          // not null
-            addColumn(t, "IS_TRIGGER_DELETABLE", YES_OR_NO);          // not null
-            addColumn(t, "IS_TRIGGER_INSERTABLE_INTO", YES_OR_NO);    // not null
+            addColumn(t, "TABLE_NAME", SQL_IDENTIFIER);               
+            addColumn(t, "VIEW_DEFINITION", CHARACTER_DATA);          
+            addColumn(t, "CHECK_OPTION", CHARACTER_DATA);             
+            addColumn(t, "IS_UPDATABLE", YES_OR_NO);                  
+            addColumn(t, "INSERTABLE_INTO", YES_OR_NO);               
+            addColumn(t, "IS_TRIGGER_UPDATABLE", YES_OR_NO);          
+            addColumn(t, "IS_TRIGGER_DELETABLE", YES_OR_NO);          
+            addColumn(t, "IS_TRIGGER_INSERTABLE_INTO", YES_OR_NO);    
 
-            // order TABLE_NAME
-            // added for unique: TABLE_SCHEMA, TABLE_CATALOG
-            // false PK, as TABLE_SCHEMA and/or TABLE_CATALOG may be null
+            
+            
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[VIEWS].name, false, SchemaObject.INDEX);
 
@@ -8397,58 +6309,10 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         return t;
     }
 
-//------------------------------------------------------------------------------
-// SQL SCHEMATA BASE TABLES
 
-    /**
-     * SQL:2008 VIEW<p>
-     *
-     * ROLE_AUTHORIZATION_DESCRIPTORS<p>
-     *
-     * Contains a representation of the role authorization descriptors.<p>
-     * <b>Definition</b>
-     *
-     * <pre class="SqlCodeExample">
-     *      ROLE_NAME     VARCHAR     name of view's defining catalog.
-     *      GRANTEE       VARCHAR     name of view's defining schema.
-     *      GRANTOR       VARCHAR     the simple name of the view.
-     *      IS_GRANTABLE  VARCHAR     the character representation of the
-     * </pre>
-     *
-     * <b>Description</b><p>
-     *
-     * <ol>
-     *      <li>The value of ROLE_NAME is the &lt;role name&gt; of some
-     *          &lt;role granted&gt; by the &lt;grant role statement&gt; or
-     *          the &lt;role name&gt; of a &lt;role definition&gt;. <p>
-     *
-     *      <li>The value of GRANTEE is an &lt;authorization identifier&gt;,
-     *          possibly PUBLIC, or &lt;role name&gt; specified as a
-     *          &lt;grantee&gt; contained in a &lt;grant role statement&gt;,
-     *          or the &lt;authorization identifier&gt; of the current
-     *          SQLsession when the &lt;role definition&gt; is executed. <p>
-     *
-     *      <li>The value of GRANTOR is the &lt;authorization identifier&gt;
-     *          of the user or role who granted the role identified by
-     *          ROLE_NAME to the user or role identified by the value of
-     *          GRANTEE. <p>
-     *
-     *      <li>The values of IS_GRANTABLE have the following meanings:<p>
-     *
-     *      <table border cellpadding="3">
-     *          <tr>
-     *              <td nowrap>YES</td>
-     *              <td nowrap>The described role is grantable.</td>
-     *          <tr>
-     *          <tr>
-     *              <td nowrap>NO</td>
-     *              <td nowrap>The described role is not grantable.</td>
-     *          <tr>
-     *      </table> <p>
-     * </ol>
-     *
-     * @return Table
-     */
+
+
+    
     Table ROLE_AUTHORIZATION_DESCRIPTORS(Session session,
                                          PersistentStore store) {
 
@@ -8458,12 +6322,12 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             t = createBlankTable(
                 sysTableHsqlNames[ROLE_AUTHORIZATION_DESCRIPTORS]);
 
-            addColumn(t, "ROLE_NAME", SQL_IDENTIFIER);    // not null
-            addColumn(t, "GRANTEE", SQL_IDENTIFIER);      // not null
-            addColumn(t, "GRANTOR", SQL_IDENTIFIER);      // not null
-            addColumn(t, "IS_GRANTABLE", YES_OR_NO);      // not null
+            addColumn(t, "ROLE_NAME", SQL_IDENTIFIER);    
+            addColumn(t, "GRANTEE", SQL_IDENTIFIER);      
+            addColumn(t, "GRANTOR", SQL_IDENTIFIER);      
+            addColumn(t, "IS_GRANTABLE", YES_OR_NO);      
 
-            // true PK
+            
             HsqlName name = HsqlNameManager.newInfoSchemaObjectName(
                 sysTableHsqlNames[ROLE_AUTHORIZATION_DESCRIPTORS].name, false,
                 SchemaObject.INDEX);
@@ -8475,7 +6339,7 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
             return t;
         }
 
-        // Intermediate holders
+        
         String   grantorName = SqlInvariants.SYSTEM_AUTHORIZATION_NAME;
         Iterator grantees;
         Grantee  granteeObject;
@@ -8484,16 +6348,16 @@ extends org.hsqldb.dbinfo.DatabaseInformationMain {
         String   isGrantable;
         Object[] row;
 
-        // Column number mappings
+        
         final int role_name    = 0;
         final int grantee      = 1;
         final int grantor      = 2;
         final int is_grantable = 3;
 
-        // Initialization
+        
         grantees = session.getGrantee().visibleGrantees().iterator();
 
-        //
+        
         while (grantees.hasNext()) {
             granteeObject = (Grantee) grantees.next();
             granteeName   = granteeObject.getName().getNameString();

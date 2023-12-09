@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -48,16 +20,10 @@ import org.hsqldb.types.NumberType;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Implementation of SQL standard function calls
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.1.1
- * @since 1.9.0
- */
+
 public class FunctionSQL extends Expression {
 
-    protected static final int FUNC_POSITION_CHAR                    = 1;     // numeric
+    protected static final int FUNC_POSITION_CHAR                    = 1;     
     private static final int   FUNC_POSITION_BINARY                  = 2;
     private static final int   FUNC_OCCURENCES_REGEX                 = 3;
     private static final int   FUNC_POSITION_REGEX                   = 4;
@@ -77,7 +43,7 @@ public class FunctionSQL extends Expression {
     private static final int   FUNC_FLOOR                            = 20;
     private static final int   FUNC_CEILING                          = 21;
     private static final int   FUNC_WIDTH_BUCKET                     = 22;
-    protected static final int FUNC_SUBSTRING_CHAR                   = 23;    // string
+    protected static final int FUNC_SUBSTRING_CHAR                   = 23;    
     private static final int   FUNC_SUBSTRING_REG_EXPR               = 24;
     private static final int   FUNC_SUBSTRING_REGEX                  = 25;
     protected static final int FUNC_FOLD_LOWER                       = 26;
@@ -91,12 +57,12 @@ public class FunctionSQL extends Expression {
     private static final int   FUNC_SUBSTRING_BINARY                 = 40;
     private static final int   FUNC_TRIM_BINARY                      = 41;
     private static final int   FUNC_OVERLAY_BINARY                   = 42;
-    protected static final int FUNC_CURRENT_DATE                     = 43;    // datetime
+    protected static final int FUNC_CURRENT_DATE                     = 43;    
     protected static final int FUNC_CURRENT_TIME                     = 44;
     protected static final int FUNC_CURRENT_TIMESTAMP                = 50;
     protected static final int FUNC_LOCALTIME                        = 51;
     protected static final int FUNC_LOCALTIMESTAMP                   = 52;
-    private static final int   FUNC_CURRENT_CATALOG                  = 53;    // general
+    private static final int   FUNC_CURRENT_CATALOG                  = 53;    
     private static final int   FUNC_CURRENT_DEFAULT_TRANSFORM_GROUP  = 54;
     private static final int   FUNC_CURRENT_PATH                     = 55;
     private static final int   FUNC_CURRENT_ROLE                     = 56;
@@ -108,7 +74,7 @@ public class FunctionSQL extends Expression {
     protected static final int FUNC_USER                             = 62;
     private static final int   FUNC_VALUE                            = 63;
 
-    //
+    
     static final short[] noParamList             = new short[]{};
     static final short[] emptyParamList          = new short[] {
         Tokens.OPENBRACKET, Tokens.CLOSEBRACKET
@@ -141,16 +107,14 @@ public class FunctionSQL extends Expression {
         Tokens.CLOSEBRACKET
     };
 
-    //
+    
     static IntValueHashMap   valueFuncMap            = new IntValueHashMap();
     static IntValueHashMap   regularFuncMap          = new IntValueHashMap();
     static OrderedIntHashSet nonDeterministicFuncSet = new OrderedIntHashSet();
 
     static {
         regularFuncMap.put(Tokens.T_POSITION, FUNC_POSITION_CHAR);
-        /*
-        regularFuncMap.put(Token.T_OCCURENCES_REGEX, FUNC_OCCURENCES_REGEX);
-        */
+        
         regularFuncMap.put(Tokens.T_POSITION_REGEX, FUNC_POSITION_REGEX);
         regularFuncMap.put(Tokens.T_EXTRACT, FUNC_EXTRACT);
         regularFuncMap.put(Tokens.T_BIT_LENGTH, FUNC_BIT_LENGTH);
@@ -171,24 +135,14 @@ public class FunctionSQL extends Expression {
         regularFuncMap.put(Tokens.T_CEIL, FUNC_CEILING);
         regularFuncMap.put(Tokens.T_WIDTH_BUCKET, FUNC_WIDTH_BUCKET);
         regularFuncMap.put(Tokens.T_SUBSTRING, FUNC_SUBSTRING_CHAR);
-        /*
-        regularFuncMap.put(Token.T_SUBSTRING_REG_EXPR,
-                           FUNC_SUBSTRING_REG_EXPR);
-        */
+        
         regularFuncMap.put(Tokens.T_SUBSTRING_REGEX, FUNC_SUBSTRING_REGEX);
         regularFuncMap.put(Tokens.T_LOWER, FUNC_FOLD_LOWER);
         regularFuncMap.put(Tokens.T_UPPER, FUNC_FOLD_UPPER);
-        /*
-        regularFuncMap.put(Token.T_TRANSCODING, FUNC_TRANSCODING);
-        regularFuncMap.put(Token.T_TRANSLITERATION, FUNC_TRANSLITERATION);
-        regularFuncMap.put(Token.T_TRASLATION,
-                           FUNC_REGEX_TRANSLITERATION);
-        */
+        
         regularFuncMap.put(Tokens.T_TRIM, FUNC_TRIM_CHAR);
         regularFuncMap.put(Tokens.T_OVERLAY, FUNC_OVERLAY_CHAR);
-        /*
-        regularFuncMap.put(Token.T_NORMALIZE, FUNC_CHAR_NORMALIZE);
-        */
+        
         regularFuncMap.put(Tokens.T_TRIM, FUNC_TRIM_BINARY);
     }
 
@@ -199,28 +153,22 @@ public class FunctionSQL extends Expression {
         valueFuncMap.put(Tokens.T_LOCALTIME, FUNC_LOCALTIME);
         valueFuncMap.put(Tokens.T_LOCALTIMESTAMP, FUNC_LOCALTIMESTAMP);
         valueFuncMap.put(Tokens.T_CURRENT_CATALOG, FUNC_CURRENT_CATALOG);
-        /*
-        valueFuncMap.put(Token.T_CURRENT_DEFAULT_TRANSFORM_GROUP,
-                FUNC_CURRENT_DEFAULT_TRANSFORM_GROUP);
-        */
+        
         valueFuncMap.put(Tokens.T_CURRENT_PATH, FUNC_CURRENT_PATH);
         valueFuncMap.put(Tokens.T_CURRENT_ROLE, FUNC_CURRENT_ROLE);
         valueFuncMap.put(Tokens.T_CURRENT_SCHEMA, FUNC_CURRENT_SCHEMA);
-        /*
-        valueFuncMap.put(Token.T_CURRENT_TRANSFORM_GROUP_FOR_TYPE,
-                FUNC_CURRENT_TRANSFORM_GROUP_FOR_TYPE);
-        */
+        
         valueFuncMap.put(Tokens.T_CURRENT_USER, FUNC_CURRENT_USER);
         valueFuncMap.put(Tokens.T_SESSION_USER, FUNC_SESSION_USER);
         valueFuncMap.put(Tokens.T_SYSTEM_USER, FUNC_SYSTEM_USER);
         valueFuncMap.put(Tokens.T_USER, FUNC_USER);
         valueFuncMap.put(Tokens.T_VALUE, FUNC_VALUE);
 
-        //
+        
         nonDeterministicFuncSet.addAll(valueFuncMap.values());
     }
 
-    //
+    
     int     funcType;
     boolean isDeterministic;
     String  name;
@@ -399,12 +347,7 @@ public class FunctionSQL extends Expression {
                 };
                 break;
 
-            /*
-            case FUNCTION_SUBSTRING_REG_EXPR :
-                break;
-            case FUNCTION_SUBSTRING_REGEX :
-                break;
-            */
+            
             case FUNC_FOLD_LOWER :
                 name      = Tokens.T_LOWER;
                 parseList = singleParamList;
@@ -415,31 +358,21 @@ public class FunctionSQL extends Expression {
                 parseList = singleParamList;
                 break;
 
-            /*
-            case FUNCTION_TRANSCODING :
-                break;
-            case FUNCTION_TRANSLITERATION :
-                break;
-            case FUNCTION_REGEX_TRANSLITERATION :
-                break;
-             */
+            
             case FUNC_TRIM_CHAR :
             case FUNC_TRIM_BINARY :
                 name      = Tokens.T_TRIM;
                 parseList = new short[] {
-                    Tokens.OPENBRACKET, Tokens.X_OPTION, 11,    //
-                    Tokens.X_OPTION, 5,                         //
+                    Tokens.OPENBRACKET, Tokens.X_OPTION, 11,    
+                    Tokens.X_OPTION, 5,                         
                     Tokens.X_KEYSET, 3, Tokens.LEADING, Tokens.TRAILING,
-                    Tokens.BOTH,                                //
-                    Tokens.X_OPTION, 1, Tokens.QUESTION,        //
+                    Tokens.BOTH,                                
+                    Tokens.X_OPTION, 1, Tokens.QUESTION,        
                     Tokens.FROM, Tokens.QUESTION, Tokens.CLOSEBRACKET
                 };
                 break;
 
-            /*
-            case FUNCTION_CHAR_NORMALIZE :
-                break;
-            */
+            
             case FUNC_OVERLAY_CHAR :
             case FUNC_OVERLAY_BINARY :
                 name      = Tokens.T_OVERLAY;
@@ -457,12 +390,7 @@ public class FunctionSQL extends Expression {
                 parseList = noParamList;
                 break;
 
-            /*
-            case FUNC_CURRENT_DEFAULT_TRANSFORM_GROUP :
-                break;
-            case FUNC_CURRENT_PATH :
-                break;
-            */
+            
             case FUNC_CURRENT_ROLE :
                 name      = Tokens.T_CURRENT_ROLE;
                 parseList = noParamList;
@@ -473,10 +401,7 @@ public class FunctionSQL extends Expression {
                 parseList = noParamList;
                 break;
 
-            /*
-            case FUNC_CURRENT_TRANSFORM_GROUP_FOR_TYPE :
-                break;
-            */
+            
             case FUNC_CURRENT_USER :
                 name      = Tokens.T_CURRENT_USER;
                 parseList = noParamList;
@@ -540,9 +465,7 @@ public class FunctionSQL extends Expression {
         return this;
     }
 
-    /**
-     * Evaluates and returns this Function in the context of the session.<p>
-     */
+    
     public Object getValue(Session session) {
 
         Object[] data = new Object[nodes.length];
@@ -610,10 +533,7 @@ public class FunctionSQL extends Expression {
 
                 return ValuePool.getLong(result);
             }
-            /*
-            case FUNC_OCCURENCES_REGEX :
-            case FUNC_POSITION_REGEX :
-            */
+            
             case FUNC_EXTRACT : {
                 if (data[1] == null) {
                     return null;
@@ -739,7 +659,7 @@ public class FunctionSQL extends Expression {
                     return null;
                 }
 
-                // result type is the same as nodes[1]
+                
                 Object value = ((NumberType) nodes[0].dataType).modulo(data[0],
                     data[1], nodes[0].dataType);
 
@@ -930,18 +850,13 @@ public class FunctionSQL extends Expression {
                         && ((Number) nodes[2].valueData).intValue()
                            == Tokens.OCTETS) {
 
-                    // not clear what the rules on USING OCTECTS are with UTF
+                    
                 }
 
                 return ((CharacterType) dataType).substring(session, data[0],
                         offset, length, nodes[2] != null, false);
             }
-            /*
-            case FUNCTION_SUBSTRING_REG_EXPR :
-                break;
-            case FUNCTION_SUBSTRING_REGEX :
-                break;
-            */
+            
             case FUNC_FOLD_LOWER :
                 if (data[0] == null) {
                     return null;
@@ -956,14 +871,7 @@ public class FunctionSQL extends Expression {
 
                 return ((CharacterType) dataType).upper(session, data[0]);
 
-            /*
-            case FUNCTION_TRANSCODING :
-                break;
-            case FUNCTION_TRANSLITERATION :
-                break;
-            case FUNCTION_REGEX_TRANSLITERATION :
-                break;
-             */
+            
             case FUNC_TRIM_CHAR : {
                 if (data[1] == null || data[2] == null) {
                     return null;
@@ -1029,10 +937,7 @@ public class FunctionSQL extends Expression {
                 return ((CharacterType) dataType).overlay(null, data[0],
                         data[1], offset, length, nodes[3] != null);
             }
-            /*
-            case FUNCTION_CHAR_NORMALIZE :
-                break;
-            */
+            
             case FUNC_SUBSTRING_BINARY : {
                 if (data[0] == null || data[1] == null) {
                     return null;
@@ -1132,10 +1037,7 @@ public class FunctionSQL extends Expression {
             case FUNC_CURRENT_CATALOG :
                 return session.database.getCatalogName().name;
 
-            /*
-            case FUNC_CURRENT_DEFAULT_TRANSFORM_GROUP :
-            case FUNC_CURRENT_PATH :
-            */
+            
             case FUNC_CURRENT_ROLE :
                 return session.getRole() == null ? null
                                                  : session.getRole().getName()
@@ -1144,9 +1046,7 @@ public class FunctionSQL extends Expression {
             case FUNC_CURRENT_SCHEMA :
                 return session.getCurrentSchemaHsqlName().name;
 
-            /*
-            case FUNC_CURRENT_TRANSFORM_GROUP_FOR_TYPE :
-            */
+            
             case FUNC_CURRENT_USER :
                 return session.getUser().getName().getNameString();
 
@@ -1249,10 +1149,7 @@ public class FunctionSQL extends Expression {
 
                 break;
             }
-            /*
-            case FUNC_OCCURENCES_REGEX :
-            case FUNC_POSITION_REGEX :
-            */
+            
             case FUNC_EXTRACT : {
                 if (nodes[1].dataType == null) {
                     throw Error.error(ErrorCode.X_42567);
@@ -1294,7 +1191,7 @@ public class FunctionSQL extends Expression {
                     throw Error.error(ErrorCode.X_42563);
                 }
 
-            // fall through
+            
             case FUNC_OCTET_LENGTH : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR;
@@ -1430,7 +1327,7 @@ public class FunctionSQL extends Expression {
                     break;
                 }
 
-            // fall through
+            
             case FUNC_FLOOR :
             case FUNC_CEILING : {
                 if (nodes[0].dataType == null) {
@@ -1488,8 +1385,8 @@ public class FunctionSQL extends Expression {
             case FUNC_SUBSTRING_BINARY : {
                 if (nodes[0].dataType == null) {
 
-                    // in 20.6 parameter not allowed as type cannot be determined as binary or char
-                    // throw Error.error(ErrorCode.X_42567);
+                    
+                    
                     nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
 
@@ -1532,17 +1429,12 @@ public class FunctionSQL extends Expression {
 
                 if (nodes.length > 3 && nodes[3] != null) {
 
-                    // always boolean constant if defined
+                    
                 }
 
                 break;
             }
-            /*
-            case FUNCTION_SUBSTRING_REG_EXPR :
-                break;
-            case FUNCTION_SUBSTRING_REGEX :
-                break;
-            */
+            
             case FUNC_FOLD_LOWER :
             case FUNC_FOLD_UPPER :
                 if (nodes[0].dataType == null) {
@@ -1556,14 +1448,7 @@ public class FunctionSQL extends Expression {
                 }
                 break;
 
-            /*
-            case FUNCTION_TRANSCODING :
-                break;
-            case FUNCTION_TRANSLITERATION :
-                break;
-            case FUNCTION_REGEX_TRANSLITERATION :
-                break;
-             */
+            
             case FUNC_TRIM_CHAR :
             case FUNC_TRIM_BINARY :
                 if (nodes[0] == null) {
@@ -1610,7 +1495,7 @@ public class FunctionSQL extends Expression {
                         nodes[0].dataType = nodes[1].dataType =
                             Type.SQL_VARCHAR_DEFAULT;
 
-                        // throw Error.error(ErrorCode.X_42567);
+                        
                     }
 
                     if (nodes[1].dataType.typeCode == Types.SQL_CLOB
@@ -1700,10 +1585,7 @@ public class FunctionSQL extends Expression {
 
                 break;
             }
-            /*
-            case FUNCTION_CHAR_NORMALIZE :
-                break;
-            */
+            
             case FUNC_CURRENT_CATALOG :
             case FUNC_CURRENT_DEFAULT_TRANSFORM_GROUP :
             case FUNC_CURRENT_PATH :
@@ -1786,9 +1668,9 @@ public class FunctionSQL extends Expression {
 
             case FUNC_POSITION_CHAR :
             case FUNC_POSITION_BINARY : {
-                sb.append(Tokens.T_POSITION).append('(')                 //
-                    .append(nodes[0].getSQL()).append(' ')               //
-                    .append(Tokens.T_IN).append(' ')                     //
+                sb.append(Tokens.T_POSITION).append('(')                 
+                    .append(nodes[0].getSQL()).append(' ')               
+                    .append(Tokens.T_IN).append(' ')                     
                     .append(nodes[1].getSQL());
 
                 if (nodes[2] != null
@@ -1814,117 +1696,117 @@ public class FunctionSQL extends Expression {
 
                 String token = DTIType.getFieldNameTokenForType(type);
 
-                sb.append(Tokens.T_EXTRACT).append('(').append(token)    //
-                    .append(' ').append(Tokens.T_FROM).append(' ')       //
+                sb.append(Tokens.T_EXTRACT).append('(').append(token)    
+                    .append(' ').append(Tokens.T_FROM).append(' ')       
                     .append(nodes[1].getSQL()).append(')');
 
                 break;
             }
             case FUNC_CHAR_LENGTH : {
-                sb.append(Tokens.T_CHAR_LENGTH).append('(')              //
+                sb.append(Tokens.T_CHAR_LENGTH).append('(')              
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_BIT_LENGTH : {
-                sb.append(Tokens.T_BIT_LENGTH).append('(')               //
+                sb.append(Tokens.T_BIT_LENGTH).append('(')               
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_OCTET_LENGTH : {
-                sb.append(Tokens.T_OCTET_LENGTH).append('(')             //
+                sb.append(Tokens.T_OCTET_LENGTH).append('(')             
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_CARDINALITY : {
-                sb.append(Tokens.T_CARDINALITY).append('(')              //
+                sb.append(Tokens.T_CARDINALITY).append('(')              
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_MAX_CARDINALITY : {
-                sb.append(Tokens.T_MAX_CARDINALITY).append('(')          //
+                sb.append(Tokens.T_MAX_CARDINALITY).append('(')          
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_TRIM_ARRAY : {
-                sb.append(Tokens.T_TRIM_ARRAY).append('(')               //
-                    .append(nodes[0].getSQL()).append(',')               //
-                    .append(nodes[1].getSQL()).append(')');              //
+                sb.append(Tokens.T_TRIM_ARRAY).append('(')               
+                    .append(nodes[0].getSQL()).append(',')               
+                    .append(nodes[1].getSQL()).append(')');              
 
                 break;
             }
             case FUNC_ABS : {
-                sb.append(Tokens.T_ABS).append('(')                      //
+                sb.append(Tokens.T_ABS).append('(')                      
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_MOD : {
-                sb.append(Tokens.T_MOD).append('(')                      //
-                    .append(nodes[0].getSQL()).append(',')               //
+                sb.append(Tokens.T_MOD).append('(')                      
+                    .append(nodes[0].getSQL()).append(',')               
                     .append(nodes[1].getSQL()).append(')');
 
                 break;
             }
             case FUNC_LN : {
-                sb.append(Tokens.T_LN).append('(')                       //
+                sb.append(Tokens.T_LN).append('(')                       
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_EXP : {
-                sb.append(Tokens.T_EXP).append('(')                      //
+                sb.append(Tokens.T_EXP).append('(')                      
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_POWER : {
-                sb.append(Tokens.T_POWER).append('(')                    //
-                    .append(nodes[0].getSQL()).append(',')               //
+                sb.append(Tokens.T_POWER).append('(')                    
+                    .append(nodes[0].getSQL()).append(',')               
                     .append(nodes[1].getSQL()).append(')');
 
                 break;
             }
             case FUNC_SQRT : {
-                sb.append(Tokens.T_SQRT).append('(')                     //
+                sb.append(Tokens.T_SQRT).append('(')                     
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_FLOOR : {
-                sb.append(Tokens.T_FLOOR).append('(')                    //
+                sb.append(Tokens.T_FLOOR).append('(')                    
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_CEILING : {
-                sb.append(Tokens.T_CEILING).append('(')                  //
+                sb.append(Tokens.T_CEILING).append('(')                  
                     .append(nodes[0].getSQL()).append(')');
 
                 break;
             }
             case FUNC_WIDTH_BUCKET : {
-                sb.append(Tokens.T_WIDTH_BUCKET).append('(')             //
-                    .append(nodes[0].getSQL()).append(',')               //
-                    .append(nodes[1].getSQL()).append(',')               //
-                    .append(nodes[2].getSQL()).append(',')               //
+                sb.append(Tokens.T_WIDTH_BUCKET).append('(')             
+                    .append(nodes[0].getSQL()).append(',')               
+                    .append(nodes[1].getSQL()).append(',')               
+                    .append(nodes[2].getSQL()).append(',')               
                     .append(nodes[3].getSQL()).append(')');
 
                 break;
             }
             case FUNC_SUBSTRING_CHAR :
             case FUNC_SUBSTRING_BINARY :
-                sb.append(Tokens.T_SUBSTRING).append('(')                //
-                    .append(nodes[0].getSQL()).append(' ')               //
-                    .append(Tokens.T_FROM).append(' ')                   //
+                sb.append(Tokens.T_SUBSTRING).append('(')                
+                    .append(nodes[0].getSQL()).append(' ')               
+                    .append(Tokens.T_FROM).append(' ')                   
                     .append(nodes[1].getSQL());
 
                 if (nodes[2] != null) {
-                    sb.append(' ').append(Tokens.T_FOR).append(' ')      //
+                    sb.append(' ').append(Tokens.T_FOR).append(' ')      
                         .append(nodes[2].getSQL());
                 }
 
@@ -1938,10 +1820,7 @@ public class FunctionSQL extends Expression {
                 sb.append(')');
                 break;
 
-            /*
-            case FUNCTION_SUBSTRING_REGEX :
-                break;
-            */
+            
             case FUNC_FOLD_LOWER :
                 sb.append(Tokens.T_LOWER).append('(').append(
                     nodes[0].getSQL()).append(')');
@@ -1952,21 +1831,14 @@ public class FunctionSQL extends Expression {
                     nodes[0].getSQL()).append(')');
                 break;
 
-            /*
-            case FUNCTION_TRANSCODING :
-                break;
-            case FUNCTION_TRANSLITERATION :
-                break;
-            case FUNCTION_REGEX_TRANSLITERATION :
-                break;
-             */
+            
             case FUNC_OVERLAY_CHAR :
             case FUNC_OVERLAY_BINARY :
-                sb.append(Tokens.T_OVERLAY).append('(')                  //
-                    .append(nodes[0].getSQL()).append(' ')               //
-                    .append(Tokens.T_PLACING).append(' ')                //
-                    .append(nodes[1].getSQL()).append(' ')               //
-                    .append(Tokens.T_FROM).append(' ')                   //
+                sb.append(Tokens.T_OVERLAY).append('(')                  
+                    .append(nodes[0].getSQL()).append(' ')               
+                    .append(Tokens.T_PLACING).append(' ')                
+                    .append(nodes[1].getSQL()).append(' ')               
+                    .append(Tokens.T_FROM).append(' ')                   
                     .append(nodes[2].getSQL());
 
                 if (nodes[3] != null) {
@@ -1984,10 +1856,7 @@ public class FunctionSQL extends Expression {
                 sb.append(')');
                 break;
 
-            /*
-            case FUNCTION_NORMALIZE :
-                break;
-            */
+            
             case FUNC_TRIM_CHAR :
             case FUNC_TRIM_BINARY :
                 String spec = null;
@@ -2007,10 +1876,10 @@ public class FunctionSQL extends Expression {
                         break;
                 }
 
-                sb.append(Tokens.T_TRIM).append('(')                     //
-                    .append(spec).append(' ')                            //
-                    .append(nodes[1].getSQL()).append(' ')               //
-                    .append(Tokens.T_FROM).append(' ')                   //
+                sb.append(Tokens.T_TRIM).append('(')                     
+                    .append(spec).append(' ')                            
+                    .append(nodes[1].getSQL()).append(' ')               
+                    .append(Tokens.T_FROM).append(' ')                   
                     .append(nodes[2].getSQL()).append(')');
                 break;
 
@@ -2084,9 +1953,7 @@ public class FunctionSQL extends Expression {
         return opType + funcType;
     }
 
-    /**
-     * Returns a String representation of this object. <p>
-     */
+    
     public String describe(Session session, int blanks) {
 
         StringBuffer sb = new StringBuffer();

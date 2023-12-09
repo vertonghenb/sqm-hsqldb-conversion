@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.jdbc;
@@ -54,26 +26,10 @@ import org.hsqldb.error.ErrorCode;
 import org.hsqldb.types.ClobDataID;
 import org.hsqldb.types.ClobInputStream;
 
-/**
- * A wrapper for HSQLDB ClobData objects.
- *
- * Instances of this class are returned by calls to ResultSet methods.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since  JDK 1.2, HSQLDB 1.9.0
- */
+
 public class JDBCClobClient implements Clob {
 
-    /**
-     * Retrieves the <code>CLOB</code> value designated by this
-     * <code>Clob</code> object as an ascii stream.
-     *
-     * @return a <code>java.io.InputStream</code> object containing the
-     *   <code>CLOB</code> data
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized InputStream getAsciiStream() throws SQLException {
 
         checkClosed();
@@ -83,7 +39,7 @@ public class JDBCClobClient implements Clob {
             private final byte[] oneChar = new byte[1];
             private boolean      m_closed;
 
-            // better size than 8192 for network connections.
+            
             private CharBuffer m_charBuffer =
                 (CharBuffer) CharBuffer.allocate(64 * 1024).flip();
             private ByteBuffer m_byteBuffer = ByteBuffer.allocate(1024);
@@ -116,7 +72,7 @@ public class JDBCClobClient implements Clob {
 
                 final CharBuffer cb = m_charBuffer;
 
-                //
+                
                 int charsRead;
                 int bytesRead;
 
@@ -140,9 +96,9 @@ public class JDBCClobClient implements Clob {
                                       ? ByteBuffer.allocate(len)
                                       : m_byteBuffer;
 
-                // Since ASCII is single-byte, retrict encoder character consumption
-                // to at most 'len' characters' to produce at most len ASCII
-                // characters
+                
+                
+                
                 int cbLimit     = cb.limit();
                 int cbPosistion = cb.position();
 
@@ -154,13 +110,13 @@ public class JDBCClobClient implements Clob {
 
                 if (bbPosition == bb.position() && result.isUnderflow()) {
 
-                    // surrogate character time
+                    
                     cb.limit(cb.limit() + 1);
                     m_encoder.encode(cb, bb, false);
                 }
 
-                // Restore the old limit so the buffer gets topped up
-                // when required.
+                
+                
                 cb.limit(cbLimit);
                 bb.flip();
 
@@ -227,16 +183,7 @@ public class JDBCClobClient implements Clob {
         };
     }
 
-    /**
-     * Retrieves the <code>CLOB</code> value designated by this
-     * <code>Clob</code> object as a <code>java.io.Reader</code> object (or
-     * as a stream of characters).
-     *
-     * @return a <code>java.io.Reader</code> object containing the
-     *   <code>CLOB</code> data
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized Reader getCharacterStream() throws SQLException {
 
         checkClosed();
@@ -244,18 +191,7 @@ public class JDBCClobClient implements Clob {
         return new ClobInputStream(session, clob, 0, length());
     }
 
-    /**
-     * Retrieves a copy of the specified substring in the <code>CLOB</code>
-     * value designated by this <code>Clob</code> object.
-     *
-     * @param pos the first character of the substring to be extracted. The
-     *   first character is at position 1.
-     * @param length the number of consecutive characters to be copied
-     * @return a <code>String</code> that is the specified substring in the
-     *   <code>CLOB</code> value designated by this <code>Clob</code> object
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized String getSubString(long pos,
             int length) throws SQLException {
 
@@ -272,14 +208,7 @@ public class JDBCClobClient implements Clob {
         }
     }
 
-    /**
-     * Retrieves the number of characters in the <code>CLOB</code> value
-     * designated by this <code>Clob</code> object.
-     *
-     * @return length of the <code>CLOB</code> in characters
-     * @throws SQLException if there is an error accessing the length of the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized long length() throws SQLException {
 
         checkClosed();
@@ -291,19 +220,7 @@ public class JDBCClobClient implements Clob {
         }
     }
 
-    /**
-     * Retrieves the character position at which the specified substring
-     * <code>searchstr</code> appears in the SQL <code>CLOB</code> value
-     * represented by this <code>Clob</code> object.
-     *
-     * @param searchstr the substring for which to search
-     * @param start the position at which to begin searching; the first
-     *   position is 1
-     * @return the position at which the substring appears or -1 if it is
-     *   not present; the first position is 1
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized long position(String searchstr,
                                       long start) throws SQLException {
 
@@ -319,19 +236,7 @@ public class JDBCClobClient implements Clob {
         }
     }
 
-    /**
-     * Retrieves the character position at which the specified
-     * <code>Clob</code> object <code>searchstr</code> appears in this
-     * <code>Clob</code> object.
-     *
-     * @param searchstr the <code>Clob</code> object for which to search
-     * @param start the position at which to begin searching; the first
-     *   position is 1
-     * @return the position at which the <code>Clob</code> object appears or
-     *   -1 if it is not present; the first position is 1
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized long position(Clob searchstr,
                                       long start) throws SQLException {
 
@@ -353,17 +258,7 @@ public class JDBCClobClient implements Clob {
                         start);
     }
 
-    /**
-     * Retrieves a stream to be used to write Ascii characters to the
-     * <code>CLOB</code> value that this <code>Clob</code> object represents,
-     * starting at position <code>pos</code>.
-     *
-     * @param pos the position at which to start writing to this
-     *   <code>CLOB</code> object
-     * @return the stream to which ASCII encoded characters can be written
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized OutputStream setAsciiStream(
             final long pos) throws SQLException {
 
@@ -475,17 +370,7 @@ public class JDBCClobClient implements Clob {
         };
     }
 
-    /**
-     * Retrieves a stream to be used to write a stream of Unicode characters
-     * to the <code>CLOB</code> value that this <code>Clob</code> object
-     * represents, at position <code>pos</code>.
-     *
-     * @param pos the position at which to start writing to the
-     *   <code>CLOB</code> value
-     * @return a stream to which Unicode encoded characters can be written
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized Writer setCharacterStream(
             final long pos) throws SQLException {
 
@@ -514,7 +399,7 @@ public class JDBCClobClient implements Clob {
             }
             public void flush() throws IOException {
 
-                // no-op
+                
             }
             @Override
             public void close() throws IOException {
@@ -529,41 +414,13 @@ public class JDBCClobClient implements Clob {
         };
     }
 
-    /**
-     * Writes the given Java <code>String</code> to the <code>CLOB</code>
-     * value that this <code>Clob</code> object designates at the position
-     * <code>pos</code>.
-     *
-     * @param pos the position at which to start writing to the
-     *   <code>CLOB</code> value that this <code>Clob</code> object
-     *   represents
-     * @param str the string to be written to the <code>CLOB</code> value
-     *   that this <code>Clob</code> designates
-     * @return the number of characters written
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized int setString(long pos,
                                       String str) throws SQLException {
         return setString(pos, str, 0, str.length());
     }
 
-    /**
-     * Writes <code>len</code> characters of <code>str</code>, starting at
-     * character <code>offset</code>, to the <code>CLOB</code> value that
-     * this <code>Clob</code> represents.
-     *
-     * @param pos the position at which to start writing to this
-     *   <code>CLOB</code> object
-     * @param str the string to be written to the <code>CLOB</code> value
-     *   that this <code>Clob</code> object represents
-     * @param offset the offset into <code>str</code> to start reading the
-     *   characters to be written
-     * @param len the number of characters to be written
-     * @return the number of characters written
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized int setString(long pos, String str, int offset,
                                       int len) throws SQLException {
 
@@ -592,15 +449,7 @@ public class JDBCClobClient implements Clob {
         }
     }
 
-    /**
-     * Truncates the <code>CLOB</code> value that this <code>Clob</code>
-     * designates to have a length of <code>len</code> characters.
-     *
-     * @param len the length, in bytes, to which the <code>CLOB</code> value
-     *   should be truncated
-     * @throws SQLException if there is an error accessing the
-     *   <code>CLOB</code> value
-     */
+    
     public synchronized void truncate(long len) throws SQLException {
 
         if (len < 0) {
@@ -615,25 +464,9 @@ public class JDBCClobClient implements Clob {
         }
     }
 
-    //------------------------- JDBC 4.0 -----------------------------------
+    
 
-    /**
-     * This method frees the <code>Clob</code> object and releases the resources the resources
-     * that it holds.  The object is invalid once the <code>free</code> method
-     * is called.
-     * <p>
-     * After <code>free</code> has been called, any attempt to invoke a
-     * method other than <code>free</code> will result in a <code>SQLException</code>
-     * being thrown.  If <code>free</code> is called multiple times, the subsequent
-     * calls to <code>free</code> are treated as a no-op.
-     * <p>
-     * @throws SQLException if an error occurs releasing
-     * the Clob's resources
-     *
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @since JDK 1.6, HSQLDB 2.0
-     */
+    
     public synchronized void free() throws SQLException {
 
         isClosed = true;
@@ -641,22 +474,7 @@ public class JDBCClobClient implements Clob {
         session  = null;
     }
 
-    /**
-     * Returns a <code>Reader</code> object that contains a partial <code>Clob</code> value, starting
-     * with the character specified by pos, which is length characters in length.
-     *
-     * @param pos the offset to the first character of the partial value to
-     * be retrieved.  The first character in the Clob is at position 1.
-     * @param length the length in characters of the partial value to be retrieved.
-     * @return <code>Reader</code> through which the partial <code>Clob</code> value can be read.
-     * @throws SQLException if pos is less than 1 or if pos is greater than the number of
-     * characters in the <code>Clob</code> or if pos + length is greater than the number of
-     * characters in the <code>Clob</code>
-     *
-     * @exception SQLFeatureNotSupportedException if the JDBC driver does not support
-     * this method
-     * @since JDK 1.6, HSQLDB 2.0
-     */
+    
     public synchronized Reader getCharacterStream(long pos,
             long length) throws SQLException {
 
@@ -677,7 +495,7 @@ public class JDBCClobClient implements Clob {
         }
     }
 
-    //
+    
     ClobDataID       originalClob;
     ClobDataID       clob;
     SessionInterface session;

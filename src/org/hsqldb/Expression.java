@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -53,14 +25,7 @@ import org.hsqldb.types.NullType;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Expression class.
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class Expression implements Cloneable {
 
     public static final int LEFT    = 0;
@@ -69,15 +34,15 @@ public class Expression implements Cloneable {
     public static final int BINARY  = 2;
     public static final int TERNARY = 3;
 
-    //
-    //
+    
+    
     static final Expression[] emptyArray = new Expression[]{};
 
-    //
+    
     static final Expression EXPR_TRUE  = new ExpressionLogical(true);
     static final Expression EXPR_FALSE = new ExpressionLogical(false);
 
-    //
+    
     static final OrderedIntHashSet aggregateFunctionSet =
         new OrderedIntHashSet();
 
@@ -134,7 +99,7 @@ public class Expression implements Cloneable {
         subqueryAggregateExpressionSet.add(OpTypes.MEDIAN);
         subqueryAggregateExpressionSet.add(OpTypes.USER_AGGREGATE);
 
-        //
+        
         subqueryAggregateExpressionSet.add(OpTypes.TABLE_SUBQUERY);
         subqueryAggregateExpressionSet.add(OpTypes.ROW_SUBQUERY);
     }
@@ -150,51 +115,51 @@ public class Expression implements Cloneable {
     static final OrderedIntHashSet emptyExpressionSet =
         new OrderedIntHashSet();
 
-    // type
+    
     protected int opType;
 
-    // type qualifier
+    
     protected int exprSubType;
 
-    //
+    
     SimpleName alias;
 
-    // aggregate
+    
     private boolean isAggregate;
 
-    // VALUE
+    
     protected Object       valueData;
     protected Expression[] nodes;
     Type[]                 nodeDataTypes;
 
-    // QUERY - in single value selects, IN, EXISTS etc.
+    
     SubQuery subQuery;
 
-    // for query and value lists, etc
+    
     boolean isCorrelated;
 
-    // for COLUMN
+    
     int columnIndex = -1;
 
-    // data type
+    
     protected Type dataType;
 
-    //
-    int queryTableColumnIndex = -1;    // >= 0 when it is used for order by
+    
+    int queryTableColumnIndex = -1;    
 
-    // index of a session-dependent field
+    
     int parameterIndex = -1;
 
-    //
+    
     int rangePosition = -1;
 
-    //
+    
     boolean isColumnEqual;
 
-    //
+    
     boolean isSingleColumnCondition;
 
-    //
+    
     Collation collation;
 
     Expression(int type) {
@@ -202,11 +167,9 @@ public class Expression implements Cloneable {
         nodes  = emptyArray;
     }
 
-    // IN condition optimisation
+    
 
-    /**
-     * Creates a SUBQUERY expression.
-     */
+    
     Expression(int type, SubQuery sq) {
 
         switch (type) {
@@ -236,9 +199,7 @@ public class Expression implements Cloneable {
         subQuery = sq;
     }
 
-    /**
-     * ROW, ARRAY etc.
-     */
+    
     Expression(int type, Expression[] list) {
 
         this(type);
@@ -274,23 +235,7 @@ public class Expression implements Cloneable {
         return ddl;
     }
 
-    /**
-     * For use with CHECK constraints. Under development.
-     *
-     * Currently supports a subset of expressions and is suitable for CHECK
-     * search conditions that refer only to the inserted/updated row.
-     *
-     * For full DDL reporting of VIEW select queries and CHECK search
-     * conditions, future improvements here are dependent upon improvements to
-     * SELECT query parsing, so that it is performed in a number of passes.
-     * An early pass should result in the query turned into an Expression tree
-     * that contains the information in the original SQL without any
-     * alterations, and with tables and columns all resolved. This Expression
-     * can then be preserved for future use. Table and column names that
-     * are not user-defined aliases should be kept as the HsqlName structures
-     * so that table or column renaming is reflected in the precompiled
-     * query.
-     */
+    
     public String getSQL() {
 
         StringBuffer sb = new StringBuffer(64);
@@ -319,7 +264,7 @@ public class Expression implements Cloneable {
 
                 return sb.toString();
 
-            //
+            
             case OpTypes.VALUELIST :
                 for (int i = 0; i < nodes.length; i++) {
                     if (i > 0) {
@@ -350,7 +295,7 @@ public class Expression implements Cloneable {
 
             case OpTypes.ARRAY_SUBQUERY :
 
-            //
+            
             case OpTypes.ROW_SUBQUERY :
             case OpTypes.TABLE_SUBQUERY :
                 sb.append('(');
@@ -392,7 +337,7 @@ public class Expression implements Cloneable {
 
                 return sb.toString();
 
-            //
+            
             case OpTypes.ROW_SUBQUERY :
             case OpTypes.TABLE_SUBQUERY :
                 sb.append("QUERY ");
@@ -422,9 +367,7 @@ public class Expression implements Cloneable {
         return sb.toString();
     }
 
-    /**
-     * Set the data type
-     */
+    
     void setDataType(Session session, Type type) {
 
         if (opType == OpTypes.VALUE) {
@@ -459,7 +402,7 @@ public class Expression implements Cloneable {
 
             case OpTypes.ARRAY :
 
-            //
+            
             case OpTypes.ARRAY_SUBQUERY :
             case OpTypes.ROW_SUBQUERY :
             case OpTypes.TABLE_SUBQUERY :
@@ -534,9 +477,7 @@ public class Expression implements Cloneable {
         return true;
     }
 
-    /**
-     * For GROUP only.
-     */
+    
     boolean isComposedOf(Expression exprList[], int start, int end,
                          OrderedIntHashSet excludeSet) {
 
@@ -570,7 +511,7 @@ public class Expression implements Cloneable {
             case OpTypes.TABLE_SUBQUERY :
             case OpTypes.ROW_SUBQUERY :
 
-            //
+            
             case OpTypes.COUNT :
             case OpTypes.SUM :
             case OpTypes.MIN :
@@ -600,9 +541,7 @@ public class Expression implements Cloneable {
         return result;
     }
 
-    /**
-     * For HAVING only.
-     */
+    
     boolean isComposedOf(OrderedHashSet expressions,
                          OrderedIntHashSet excludeSet) {
 
@@ -637,22 +576,7 @@ public class Expression implements Cloneable {
                 return false;
         }
 
-/*
-        case OpCodes.LIKE :
-        case OpCodes.ALL :
-        case OpCodes.ANY :
-        case OpCodes.IN :
-        case OpCodes.MATCH_SIMPLE :
-        case OpCodes.MATCH_PARTIAL :
-        case OpCodes.MATCH_FULL :
-        case OpCodes.MATCH_UNIQUE_SIMPLE :
-        case OpCodes.MATCH_UNIQUE_PARTIAL :
-        case OpCodes.MATCH_UNIQUE_FULL :
-        case OpCodes.UNIQUE :
-        case OpCodes.EXISTS :
-        case OpCodes.TABLE_SUBQUERY :
-        case OpCodes.ROW_SUBQUERY :
-*/
+
         if (nodes.length == 0) {
             return false;
         }
@@ -757,16 +681,12 @@ public class Expression implements Cloneable {
         return false;
     }
 
-    /**
-     * Set the column alias
-     */
+    
     void setAlias(SimpleName name) {
         alias = name;
     }
 
-    /**
-     * Get the column alias
-     */
+    
     String getAlias() {
 
         if (alias != null) {
@@ -785,24 +705,18 @@ public class Expression implements Cloneable {
         return null;
     }
 
-    /**
-     * Returns the type of expression
-     */
+    
     public int getType() {
         return opType;
     }
 
-    /**
-     * Returns the left node
-     */
+    
     Expression getLeftNode() {
         return nodes.length > 0 ? nodes[LEFT]
                                 : null;
     }
 
-    /**
-     * Returns the right node
-     */
+    
     Expression getRightNode() {
         return nodes.length > 1 ? nodes[RIGHT]
                                 : null;
@@ -820,16 +734,12 @@ public class Expression implements Cloneable {
         exprSubType = subType;
     }
 
-    /**
-     * Returns the range variable for a COLUMN expression
-     */
+    
     RangeVariable getRangeVariable() {
         return null;
     }
 
-    /**
-     * return the expression for an alias used in an ORDER BY clause
-     */
+    
     Expression replaceAliasInOrderBy(Expression[] columns, int length) {
 
         for (int i = 0; i < nodes.length; i++) {
@@ -843,16 +753,12 @@ public class Expression implements Cloneable {
         return this;
     }
 
-    /**
-     * Find a range variable with the given table alias
-     */
+    
     int findMatchingRangeVariableIndex(RangeVariable[] rangeVarArray) {
         return -1;
     }
 
-    /**
-     * collects all range variables in expression tree
-     */
+    
     void collectRangeVariables(RangeVariable[] rangeVariables, Set set) {
 
         for (int i = 0; i < nodes.length; i++) {
@@ -875,9 +781,7 @@ public class Expression implements Cloneable {
         }
     }
 
-    /**
-     * collects all schema objects
-     */
+    
     void collectObjectNames(Set set) {
 
         for (int i = 0; i < nodes.length; i++) {
@@ -893,9 +797,7 @@ public class Expression implements Cloneable {
         }
     }
 
-    /**
-     * return true if given RangeVariable is used in expression tree
-     */
+    
     boolean hasReference(RangeVariable range) {
 
         for (int i = 0; i < nodes.length; i++) {
@@ -915,9 +817,7 @@ public class Expression implements Cloneable {
         return false;
     }
 
-    /**
-     * resolve tables and collect unresolved column expressions
-     */
+    
     public HsqlList resolveColumnReferences(Session session,
             RangeVariable[] rangeVarArray, HsqlList unresolvedSet) {
 
@@ -990,7 +890,7 @@ public class Expression implements Cloneable {
 
                     subQuery.setCorrelated();
 
-                    // take to enclosing context
+                    
                     if (unresolvedSet == null) {
                         unresolvedSet = new ArrayListIdentity();
                     }
@@ -1055,7 +955,7 @@ public class Expression implements Cloneable {
 
             case OpTypes.VALUELIST :
 
-                /** @todo - should it fall through */
+                
                 break;
 
             case OpTypes.ROW :
@@ -1225,33 +1125,12 @@ public class Expression implements Cloneable {
                     && !((CharacterType) nodeDataTypes[j])
                         .isEqualIdentical()) {
 
-                // collation issues
+                
             }
         }
     }
 
-    /**
-     * Details of IN condition optimisation for 1.9.0
-     * Predicates with SELECT are QUERY expressions
-     *
-     * Predicates with IN list
-     *
-     * Parser adds a SubQuery to the list for each predicate
-     * At type resolution IN lists that are entirely fixed constant or parameter
-     * values are selected for possible optimisation. The flags:
-     *
-     * IN expression right side isCorrelated == true if there are non-constant,
-     * non-param expressions in the list (Expressions may have to be resolved
-     * against the full set of columns of the query, so must be re-evaluated
-     * for each row and evaluated after all the joins have been made)
-     *
-     * VALUELIST expression isFixedConstantValueList == true when all
-     * expressions are fixed constant and none is a param. With this flag,
-     * a single-column VALUELIST can be accessed as a HashMap.
-     *
-     * Predicates may be optimised as joins if isCorrelated == false
-     *
-     */
+    
     void insertValuesIntoSubqueryTable(Session session,
                                        PersistentStore store) {
 
@@ -1271,11 +1150,7 @@ public class Expression implements Cloneable {
         }
     }
 
-    /**
-     * Returns the name of a column as string
-     *
-     * @return column name
-     */
+    
     String getColumnName() {
         return getAlias();
     }
@@ -1284,16 +1159,12 @@ public class Expression implements Cloneable {
         return null;
     }
 
-    /**
-     * Returns the column index in the table
-     */
+    
     int getColumnIndex() {
         return columnIndex;
     }
 
-    /**
-     * Returns the data type
-     */
+    
     Type getDataType() {
         return dataType;
     }
@@ -1541,10 +1412,7 @@ public class Expression implements Cloneable {
         }
     }
 
-    /**
-     * Returns a Select object that can be used for checking the contents
-     * of an existing table against the given CHECK search condition.
-     */
+    
     static QuerySpecification getCheckSelect(Session session, Table t,
             Expression e) {
 
@@ -1650,8 +1518,8 @@ public class Expression implements Cloneable {
                         break;
                     }
 
-                    // both sides are actually consistent regarding timeZone
-                    // e.dataType.isDateTimeTypeWithZone();
+                    
+                    
                     if (e1 instanceof ExpressionArithmetic) {
                         if (opType == OpTypes.ADD) {
                             if (e1.getRightNode()
@@ -1803,10 +1671,7 @@ public class Expression implements Cloneable {
         return type.getJDBCClassName();
     }
 
-    /**
-     * collect all expressions of a set of expression types appearing anywhere
-     * in a select statement and its subselects, etc.
-     */
+    
     OrderedHashSet collectAllExpressions(OrderedHashSet set,
                                          OrderedIntHashSet typeSet,
                                          OrderedIntHashSet stopAtTypeSet) {
@@ -1868,9 +1733,7 @@ public class Expression implements Cloneable {
         return set;
     }
 
-    /**
-     * isCorrelated
-     */
+    
     public boolean isCorrelated() {
 
         if (subQuery == null) {
@@ -1880,9 +1743,7 @@ public class Expression implements Cloneable {
         return subQuery.isCorrelated();
     }
 
-    /**
-     * checkValidCheckConstraint
-     */
+    
     public void checkValidCheckConstraint() {
 
         OrderedHashSet set = null;

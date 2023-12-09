@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -79,39 +51,28 @@ import org.hsqldb.scriptio.ScriptWriterText;
 import org.hsqldb.types.RowType;
 import org.hsqldb.types.Type;
 
-// boucherb@users 20030510 - patch 1.7.2 - added cooperative file locking
 
-/**
- *  The public interface of persistence and logging classes.<p>
- *
- *  Implements a storage manager wrapper that provides a consistent,
- *  always available interface to storage management for the Database
- *  class, despite the fact not all Database objects actually use file
- *  storage.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.8
- * @since 1.7.0
- */
+
+
 public class Logger {
 
     public SimpleLog appLog;
     public SimpleLog sqlLog;
 
-    //
+    
     FrameworkLogger fwLogger;
     FrameworkLogger sqlLogger;
 
-    //
+    
     private Database database;
     public boolean   checkpointRequired;
     public boolean   checkpointDue;
     public boolean   checkpointDisabled;
-    private boolean  logsStatements;    // false indicates Log is being opened
+    private boolean  logsStatements;    
     private boolean  loggingEnabled;
     private boolean  syncFile = false;
 
-    //
+    
     boolean propIsFileDatabase;
     boolean propFilesReadOnly;
     boolean propDatabaseReadOnly;
@@ -136,7 +97,7 @@ public class Logger {
     int     propLobBlockSize = 32 * 1024;
     int     propScriptFormat = 0;
 
-    //
+    
     Log               log;
     private LockFile  lockFile;
     private Crypto    crypto;
@@ -145,22 +106,22 @@ public class Logger {
     public boolean    isStoredFileAccess;
     String            tempDirectoryPath;
 
-    //
+    
     private HashMap textCacheList = new HashMap();
 
-    //
+    
     public boolean isNewDatabase;
 
-    //
+    
     public boolean isSingleFile;
 
-    //
+    
     AtomicInteger    backupState     = new AtomicInteger();
     static final int stateNormal     = 0;
     static final int stateBackup     = 1;
     static final int stateCheckpoint = 2;
 
-    //
+    
     public static final String oldFileExtension        = ".old";
     public static final String newFileExtension        = ".new";
     public static final String appLogFileExtension     = ".app.log";
@@ -177,20 +138,10 @@ public class Logger {
         this.database = database;
     }
 
-    /**
-     *  Opens the specified Database object's database files and starts up
-     *  the logging process. <p>
-     *
-     *  If the specified Database object is a new database, its database
-     *  files are first created.
-     *
-     * @param  db the Database
-     * @throws  HsqlException if there is a problem, such as the case when
-     *      the specified files are in use by another process
-     */
+    
     public void openPersistence() {
 
-        // oj@openoffice.org - changed to file access api
+        
         String fileaccess_class_name =
             (String) database.getURLProperties().getProperty(
                 HsqlDatabaseProperties.url_fileaccess_class_name);
@@ -286,7 +237,7 @@ public class Logger {
                     HsqlDatabaseProperties.FILES_MODIFIED);
             }
 
-            // properties that also apply to existing database only if they exist
+            
             if (database.urlProperties.isPropertyTrue(
                     HsqlDatabaseProperties.hsqldb_files_readonly)) {
                 database.databaseProperties.setProperty(
@@ -299,7 +250,7 @@ public class Logger {
                     HsqlDatabaseProperties.hsqldb_readonly, true);
             }
 
-            // hsqldb.lock_file=false is applied
+            
             if (!database.urlProperties.isPropertyTrue(
                     HsqlDatabaseProperties.hsqldb_lock_file, true)) {
                 database.databaseProperties.setProperty(
@@ -420,7 +371,7 @@ public class Logger {
             database.setFilesReadOnly();
         }
 
-        // handle invalid paths as well as access issues
+        
         if (!database.isFilesReadOnly()) {
             if (database.getType() == DatabaseURL.S_MEM
                     || isStoredFileAccess) {
@@ -594,29 +545,9 @@ public class Logger {
             HsqlDatabaseProperties.sql_ref_integrity);
     }
 
-// fredt@users 20020130 - patch 495484 by boucherb@users
 
-    /**
-     *  Shuts down the logging process using the specified mode. <p>
-     *
-     * @param  closemode The mode in which to shut down the logging
-     *      process
-     *      <OL>
-     *        <LI> closemode -1 performs SHUTDOWN IMMEDIATELY, equivalent
-     *        to  a poweroff or crash.
-     *        <LI> closemode 0 performs a normal SHUTDOWN that
-     *        checkpoints the database normally.
-     *        <LI> closemode 1 performs a shutdown compact that scripts
-     *        out the contents of any CACHED tables to the log then
-     *        deletes the existing *.data file that contains the data
-     *        for all CACHED table before the normal checkpoint process
-     *        which in turn creates a new, compact *.data file.
-     *        <LI> closemode 2 performs a SHUTDOWN SCRIPT.
-     *      </OL>
-     *
-     * @return  true if closed with no problems or false if a problem was
-     *        encountered.
-     */
+
+    
     public boolean closePersistence(int closemode) {
 
         if (log == null) {
@@ -675,11 +606,7 @@ public class Logger {
         return name;
     }
 
-    /*
-     * Must return correct mode prior to initialisation
-     * @return  true if this object encapsulates a non-null Log instance,
-     *      else false
-     */
+    
     public boolean isLogged() {
         return propIsFileDatabase && !database.isFilesReadOnly();
     }
@@ -688,23 +615,7 @@ public class Logger {
         return this.propTextAllowFullPath;
     }
 
-    /**
-     * All usage of FrameworkLogger should call this method before using an
-     * instance.
-     *
-     * It ensures and requires that no logging should take place before a new
-     * database unique name has been created for a new database or read from the
-     * .script file for an old database.<p>
-     *
-     * An instance is returned when:
-     * - database unique name has been created
-     * - FrameworkLogger would use log4j
-     *
-     * Otherwise null is returned.
-     *
-     * This tactic avoids usage of file-based jdk logging for the time being.
-     *
-     */
+    
     private void getEventLogger() {
 
         if (fwLogger != null) {
@@ -715,21 +626,17 @@ public class Logger {
 
         if (name == null) {
 
-            // The database unique name is set up at different times
-            // depending on upgraded / exiting / new databases.
-            // Therefore FrameworkLogger is not used until the unique
-            // name is known.
+            
+            
+            
+            
             return;
         }
 
         fwLogger = FrameworkLogger.getLog(SimpleLog.logTypeNameEngine,
                                           "hsqldb.db."
                                           + database.getUniqueName());
-        /*
-        sqlLogger = FrameworkLogger.getLog(SimpleLog.logTypeNameEngine,
-                                           "hsqldb.sql."
-                                           + database.getUniqueName());
-        */
+        
     }
 
     public void setEventLogLevel(int level, boolean sqlLog) {
@@ -836,9 +743,7 @@ public class Logger {
         return propSqlLogLevel;
     }
 
-    /**
-     * Returns the Cache object or null if one doesn't exist.
-     */
+    
     private DataFileCache getCache() {
 
         if (log == null) {
@@ -848,9 +753,7 @@ public class Logger {
         }
     }
 
-    /**
-     * Returns true if Cache object exists.
-     */
+    
     private boolean hasCache() {
 
         if (log == null) {
@@ -860,10 +763,7 @@ public class Logger {
         }
     }
 
-    /**
-     * Records a Log entry representing start of a session or a new connection
-     * action on the specified Session object.
-     */
+    
     public synchronized void writeStartSession(Session session) {
 
         if (loggingEnabled) {
@@ -872,10 +772,7 @@ public class Logger {
         }
     }
 
-    /**
-     * Records a Log entry for the specified SQL statement, on behalf of
-     * the specified Session object.
-     */
+    
     public synchronized void writeOtherStatement(Session session,
             String statement) {
 
@@ -884,9 +781,7 @@ public class Logger {
         }
     }
 
-    /**
-     * Used exclusively by PersistentStore objects
-     */
+    
     public synchronized void writeInsertStatement(Session session, Row row,
             Table table) {
 
@@ -895,9 +790,7 @@ public class Logger {
         }
     }
 
-    /**
-     * Used exclusively by PersistentStore objects
-     */
+    
     public synchronized void writeDeleteStatement(Session session, Table t,
             Object[] row) {
 
@@ -906,9 +799,7 @@ public class Logger {
         }
     }
 
-    /**
-     * Used at transaction commit
-     */
+    
     public synchronized void writeSequenceStatement(Session session,
             NumberSequence s) {
 
@@ -917,9 +808,7 @@ public class Logger {
         }
     }
 
-    /**
-     * Used at transaction commit
-     */
+    
     public synchronized void writeCommitStatement(Session session) {
 
         if (loggingEnabled) {
@@ -927,9 +816,7 @@ public class Logger {
         }
     }
 
-    /**
-     * Used at transaction commit
-     */
+    
     public synchronized void writeRollbackStatement(Session session) {
 
         if (loggingEnabled) {
@@ -937,20 +824,7 @@ public class Logger {
         }
     }
 
-    /**
-     *  Checkpoints the database. <p>
-     *
-     *  The most important effect of calling this method is to cause the
-     *  log file to be rewritten in the most efficient form to
-     *  reflect the current state of the database, i.e. only the DDL and
-     *  insert DML required to recreate the database in its present state.
-     *  Other house-keeping duties are performed w.r.t. other database
-     *  files, in order to ensure as much as possible the ACID properites
-     *  of the database.
-     *
-     * @throws  HsqlException if there is a problem checkpointing the
-     *      database
-     */
+    
     public synchronized void checkpoint(boolean mode) {
 
         if (!backupState.compareAndSet(stateNormal, stateCheckpoint)) {
@@ -981,12 +855,7 @@ public class Logger {
         checkpointDue      = false;
     }
 
-    /**
-     *  Sets the maximum size to which the log file can grow
-     *  before being automatically checkpointed.
-     *
-     * @param  megas size in MB
-     */
+    
     public synchronized void setLogSize(int megas) {
 
         propLogSize = megas;
@@ -996,11 +865,7 @@ public class Logger {
         }
     }
 
-    /**
-     *  Sets logging on or off.
-     *
-     * @param  megas size in MB
-     */
+    
     public synchronized void setLogData(boolean mode) {
 
         propLogData    = mode;
@@ -1008,12 +873,7 @@ public class Logger {
         loggingEnabled &= logsStatements;
     }
 
-    /**
-     *  Sets the type of script file, currently 0 for text (default)
-     *  3 for compressed
-     *
-     * @param  i The type
-     */
+    
     public synchronized void setScriptType(int format) {
 
         if (format == propScriptFormat) {
@@ -1024,19 +884,7 @@ public class Logger {
         checkpointRequired = true;
     }
 
-    /**
-     *  Sets the log write delay mode to number of seconds. By default
-     *  executed commands written to the log are committed fully at most
-     *  1 second after they are executed. This improves performance for
-     *  applications that execute a large number
-     *  of short running statements in a short period of time, but risks
-     *  failing to log some possibly large number of statements in the
-     *  event of a crash. A small value improves recovery.
-     *  A value of 0 will severly slow down logging when autocommit is on,
-     *  or many short transactions are committed.
-     *
-     * @param  delay in milliseconds
-     */
+    
     public synchronized void setWriteDelay(int delay) {
 
         propWriteDelay = delay;
@@ -1514,51 +1362,7 @@ public class Logger {
             return String.valueOf(database.sqlLongvarIsLob);
         }
 
-/*
-        if (HsqlDatabaseProperties.sql_identity_is_pk.equals(name)) {
-            return null;
-        }
 
-        if (HsqlDatabaseProperties.textdb_cache_scale.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_cache_size_scale.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_all_quoted.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_allow_full_path.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_encoding.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_ignore_first.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_quoted.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_fs.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_vs.equals(name)) {
-            return null;
-        }
-
-        if (HsqlDatabaseProperties.textdb_lvs.equals(name)) {
-            return null;
-        }
-*/
         return null;
     }
 
@@ -1859,15 +1663,7 @@ public class Logger {
         list.add(sb.toString());
         sb.setLength(0);
 
-        /*
-        if (propTempDirectoryPath != null) {
-            sb.append("SET FILES ").append(Tokens.T_TEMP).append(' ');
-            sb.append(Tokens.T_PATH).append(' ');
-            sb.append(propTempDirectoryPath);
-            list.add(sb.toString());
-            sb.setLength(0);
-        }
-        */
+        
         String[] array = new String[list.size()];
 
         list.toArray(array);
@@ -1900,9 +1696,7 @@ public class Logger {
 
         String scriptName = null;
         String dbPath     = database.getPath();
-        /* If want to add db Id also, will need to pass either Database
-         * instead of dbPath, or pass dbPath + Id from StatementCommand.
-         */
+        
         String instanceName = new File(dbPath).getName();
         char   lastChar     = destPath.charAt(destPath.length() - 1);
         boolean generateName = (lastChar == '/'
@@ -1943,9 +1737,9 @@ public class Logger {
             database.logger.logInfoEvent("Initiating backup of instance '"
                                          + instanceName + "'");
 
-            // By default, DbBackup will throw if archiveFile (or
-            // corresponding work file) already exist.  That's just what we
-            // want here.
+            
+            
+            
             if (script) {
                 String path = getTempDirectoryPath();
 
@@ -1995,7 +1789,7 @@ public class Logger {
                         }
                     }
 
-                    // log
+                    
                     file = new File(log.getLogFileName());
                     isw  = new InputStreamWrapper(new FileInputStream(file));
 
@@ -2024,11 +1818,7 @@ public class Logger {
         }
     }
 
-    /**
-     *  Returns a secure path or null for a user-defined path when
-     *  hsqldb.allow_full_path is false. Returns the path otherwise.
-     *
-     */
+    
     public String getSecurePath(String path) {
 
         if (database.getType() == DatabaseURL.S_RES) {
@@ -2054,11 +1844,9 @@ public class Logger {
         return path;
     }
 
-    // fredt@users 20020221 - patch 513005 by sqlbob@users (RMP) - text tables
+    
 
-    /**
-     *  Opens the TextCache object.
-     */
+    
     public DataFileCache openTextFilePersistence(Table table, String source,
             boolean readOnlyData, boolean reversed) {
 
@@ -2078,9 +1866,7 @@ public class Logger {
         return c;
     }
 
-    /**
-     *  Closes the TextCache object.
-     */
+    
     public void closeTextCache(Table table) {
 
         TextCache c = (TextCache) textCacheList.remove(table.getName());
@@ -2099,7 +1885,7 @@ public class Logger {
         while (it.hasNext()) {
             TextCache textCache = ((TextCache) it.next());
 
-            // use textCache.table to cover both cache and table readonly
+            
             if (script && !textCache.table.isDataReadOnly()) {
                 textCache.purge();
             } else {

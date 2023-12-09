@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -45,25 +17,15 @@ import org.hsqldb.types.BinaryData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Parser for SQL stored procedures and functions - PSM
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class ParserRoutine extends ParserDML {
 
     ParserRoutine(Session session, Scanner t) {
         super(session, t);
     }
 
-    /**
-     *  Reads a DEFAULT clause expression.
-     */
-    /*
-     for datetime, the default must have the same fields
-     */
+    
+    
     Expression readDefaultClause(Type dataType) {
 
         Expression e     = null;
@@ -86,7 +48,7 @@ public class ParserRoutine extends ParserDML {
 
                     if (e.dataType.typeCode != dataType.typeCode) {
 
-                        // error message
+                        
                         throw unexpectedToken();
                     }
 
@@ -339,7 +301,7 @@ public class ParserRoutine extends ParserDML {
             if (variables[i].getColumn().getParameterMode()
                     == SchemaObject.ParameterModes.PARAM_IN) {
 
-                // todo - use more specific error message
+                
                 throw Error.error(ErrorCode.X_0U000);
             }
 
@@ -359,9 +321,7 @@ public class ParserRoutine extends ParserDML {
         return statement;
     }
 
-    /**
-     * Creates GET DIAGNOSTICS.
-     */
+    
     Statement compileGetStatement(RangeVariable rangeVars[]) {
 
         read();
@@ -401,7 +361,7 @@ public class ParserRoutine extends ParserDML {
             if (targets[i].getColumn().getParameterMode()
                     == SchemaObject.ParameterModes.PARAM_IN) {
 
-                // todo - use more specific error message
+                
                 throw Error.error(ErrorCode.X_0U000);
             }
 
@@ -417,9 +377,7 @@ public class ParserRoutine extends ParserDML {
         return cs;
     }
 
-    /**
-     * Creates SET Statement for PSM or session variables from this parse context.
-     */
+    
     Statement compileSetStatement(RangeVariable rangeVars[]) {
 
         read();
@@ -458,7 +416,7 @@ public class ParserRoutine extends ParserDML {
             if (targets[i].getColumn().getParameterMode()
                     == SchemaObject.ParameterModes.PARAM_IN) {
 
-                // todo - use more specific error message
+                
                 throw Error.error(ErrorCode.X_0U000);
             }
 
@@ -474,9 +432,7 @@ public class ParserRoutine extends ParserDML {
         return cs;
     }
 
-    /**
-     * Creates SET Statement for a trigger row from this parse context.
-     */
+    
     StatementDMQL compileTriggerSetStatement(Table table,
             RangeVariable[] rangeVars) {
 
@@ -562,7 +518,7 @@ public class ParserRoutine extends ParserDML {
         return cs;
     }
 
-    // SQL-invoked routine
+    
     StatementSchema compileCreateProcedureOrFunction() {
 
         int     routineType;
@@ -949,7 +905,7 @@ public class ParserRoutine extends ParserDML {
 
                     throw super.unsupportedFeature(Tokens.T_OLD);
 
-                    // break;
+                    
                 }
                 default :
                     end = true;
@@ -994,24 +950,7 @@ public class ParserRoutine extends ParserDML {
         }
     }
 
-    /*
-        <SQL control statement> ::=
-        <call statement>
-        | <return statement>
-
-        <compound statement>
-        <case statement>
-        <if statement>
-        <iterate statement>
-        <leave statement>
-        <loop statement>
-        <while statement>
-        <repeat statement>
-       <for statement>
-       <assignment statement> SET (,,,) = (,,,) or SET a = b
-
-
-     */
+    
     private Object[] readLocalDeclarationList(Routine routine,
             StatementCompound context) {
 
@@ -1126,7 +1065,7 @@ public class ParserRoutine extends ParserDML {
             type = readTypeDefinition(false, true);
         } catch (HsqlException e) {
 
-            // may be cursor
+            
             rewind(position);
 
             return null;
@@ -1210,19 +1149,19 @@ public class ParserRoutine extends ParserDML {
                 case Tokens.SQLSTATE :
                     conditionType = StatementHandler.SQL_STATE;
 
-                // fall through
+                
                 case Tokens.SQLEXCEPTION :
                     if (conditionType == StatementHandler.NONE) {
                         conditionType = StatementHandler.SQL_EXCEPTION;
                     }
 
-                // fall through
+                
                 case Tokens.SQLWARNING :
                     if (conditionType == StatementHandler.NONE) {
                         conditionType = StatementHandler.SQL_WARNING;
                     }
 
-                // fall through
+                
                 case Tokens.NOT :
                     if (conditionType == StatementHandler.NONE) {
                         conditionType = StatementHandler.SQL_NOT_FOUND;
@@ -1377,7 +1316,7 @@ public class ParserRoutine extends ParserDML {
         if (!routine.isTrigger() && isSimpleName() && !isReservedKey()) {
             label = readNewSchemaObjectName(SchemaObject.LABEL, false);
 
-            // todo - improved error message
+            
             if (token.tokenType != Tokens.COLON) {
                 throw unexpectedToken(label.getNameString());
             }
@@ -1394,7 +1333,7 @@ public class ParserRoutine extends ParserDML {
         try {
             switch (token.tokenType) {
 
-                // data
+                
                 case Tokens.OPEN : {
                     if (routine.dataImpact == Routine.CONTAINS_SQL) {
                         throw Error.error(ErrorCode.X_42602,
@@ -1419,7 +1358,7 @@ public class ParserRoutine extends ParserDML {
                     break;
                 }
 
-                // data change
+                
                 case Tokens.INSERT :
                     if (label != null) {
                         throw unexpectedToken();
@@ -1502,7 +1441,7 @@ public class ParserRoutine extends ParserDML {
                     cs = this.compileGetStatement(rangeVariables);
                     break;
 
-                // control
+                
                 case Tokens.CALL : {
                     if (label != null) {
                         throw unexpectedToken();

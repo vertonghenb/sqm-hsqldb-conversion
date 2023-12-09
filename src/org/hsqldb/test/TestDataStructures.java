@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.test;
@@ -43,19 +15,14 @@ import org.hsqldb.lib.StopWatch;
 
 import junit.framework.TestCase;
 
-/**
- * Randomly excutes methods on the HsqlList data structures and compares the
- * results with equivalent calls on the java vector class.
- *
- * @author dnordahl@users
- */
+
 public class TestDataStructures extends TestCase {
 
     private static final int NUMBER_OF_TEST_RUNS          = 100000;
     private static final int NUMBER_OF_ITERATIONS_PER_RUN = 80;
     private Random           randomGenerator;
 
-    //Commands
+    
     private static final int ADD        = 1;
     private static final int ADD_AT     = 2;
     private static final int GET        = 3;
@@ -65,7 +32,7 @@ public class TestDataStructures extends TestCase {
     private static final int REMOVE_ALL = 7;
     private Vector           listCommandsCalled;
 
-    /** Creates a new instance of TestDataStructures */
+    
     public TestDataStructures(String s) {
 
         super(s);
@@ -74,7 +41,7 @@ public class TestDataStructures extends TestCase {
         listCommandsCalled = new Vector(NUMBER_OF_ITERATIONS_PER_RUN);
     }
 
-    /** Runs a test on the hsqldb lists */
+    
     public void testLists() {
 
         HsqlArrayList arrayList   = new HsqlArrayList();
@@ -91,7 +58,7 @@ public class TestDataStructures extends TestCase {
         Object        linkedListObject   = null;
         Object        vectorObject       = null;
 
-        for (int i = 0; i < getRandomInt(3, 12); i++) {    // prime the contents with a couple items
+        for (int i = 0; i < getRandomInt(3, 12); i++) {    
             tempInt = getRandomInteger();
 
             arrayList.add(tempInt);
@@ -103,7 +70,7 @@ public class TestDataStructures extends TestCase {
         compareLists(arrayList, deque, vector);
 
         for (int j = 0; j < NUMBER_OF_ITERATIONS_PER_RUN; j++) {
-            tempCommandCode = getRandomInt(0, 15);    // 0 and 8 are ignored or used for a special op
+            tempCommandCode = getRandomInt(0, 15);    
 
             switch (tempCommandCode) {
 
@@ -223,7 +190,7 @@ public class TestDataStructures extends TestCase {
                     break;
 
                 case REMOVE_ALL :
-                    if (getRandomInt(0, 5) == 4) {    // to limit the frequency of this call
+                    if (getRandomInt(0, 5) == 4) {    
                         listCommandsCalled.addElement("Remove all");
 
                         if (vector.size() == 0) {
@@ -244,7 +211,7 @@ public class TestDataStructures extends TestCase {
 
             if (arrayListException || dequeException || vectorException) {
 
-                // if an exception is thrown in vector but not one of the lists or vice versa
+                
                 if (!(arrayListException && dequeException
                         && vectorException)) {
                     if (!(arrayListException && vectorException)) {
@@ -260,7 +227,7 @@ public class TestDataStructures extends TestCase {
                     this.printListCommandsCalled(listCommandsCalled);
                     fail("test failed");
 
-                    //System.exit(0);
+                    
                 }
 
                 return;
@@ -272,17 +239,14 @@ public class TestDataStructures extends TestCase {
                 this.printListCommandsCalled(listCommandsCalled);
                 fail("test failed");
 
-                //System.exit(0);
+                
             }
 
             compareLists(arrayList, deque, vector);
         }
     }
 
-    /**
-     * Compare contents of lists to the vector.  Print out stuff if they are
-     * inconsistent and exit.
-     */
+    
     public void compareLists(HsqlArrayList arrayList, HsqlDeque linkedList,
                              Vector vector) {
 
@@ -308,7 +272,7 @@ public class TestDataStructures extends TestCase {
         }
     }
 
-    /** Prints the list of commands called so far */
+    
     public void printListCommandsCalled(Vector commands) {
 
         int commandCode = 0;
@@ -320,7 +284,7 @@ public class TestDataStructures extends TestCase {
         System.out.flush();
     }
 
-    /** Returns whether three objects are equal */
+    
     private boolean objectEquals(Object lObject, Object aObject,
                                  Object vObject) {
 
@@ -345,7 +309,7 @@ public class TestDataStructures extends TestCase {
         }
     }
 
-    /** Returns a random integer in the range of the lowBound and highBound */
+    
     private int getRandomInt(int lowBound, int highBound) {
 
         double random = randomGenerator.nextDouble();
@@ -353,15 +317,12 @@ public class TestDataStructures extends TestCase {
         return ((int) (((highBound - lowBound) * random) + .5)) + lowBound;
     }
 
-    /**
-     * Returns an Integer object with a value between Integer.MIN_VALUE and
-     * Integer.MAX_VALUE
-     */
+    
     private Integer getRandomInteger() {
         return new Integer(getRandomInt(0, (int) (Integer.MAX_VALUE / 100.0)));
     }
 
-    /** Tells whether the given list contains the same data as the vector */
+    
     private boolean equalsVector(HsqlList list, Vector vector) {
 
         if (list.size() != vector.size()) {
@@ -418,7 +379,7 @@ public class TestDataStructures extends TestCase {
             assertEquals(i, value.intValue());
         }
 
-        //-
+        
         assertEquals(12, d.size());
     }
 

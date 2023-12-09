@@ -1,71 +1,4 @@
-/*
- * For work developed by the HSQL Development Group:
- *
- * Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- *
- * For work originally developed by the Hypersonic SQL Group:
- *
- * Copyright (c) 1995-2000, The Hypersonic SQL Group.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the Hypersonic SQL Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * on behalf of the Hypersonic SQL Group.
- */
+
 
 
 package org.hsqldb.util;
@@ -84,56 +17,48 @@ import java.awt.Panel;
 import java.awt.Scrollbar;
 import java.awt.SystemColor;
 
-// sqlbob@users 20020401 - patch 1.7.0 by sqlbob (RMP) - enhancements
 
-/**
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
- * @version 1.8.0
- * @since Hypersonic SQL
- */
+
+
 class Grid extends Panel {
 
-    // drawing
+    
     private Dimension dMinimum;
 
-// boucherb@users changed access for databasemanager2
+
     protected Font fFont;
 
-// --------------------------------------------------
+
     private FontMetrics fMetrics;
     private Graphics    gImage;
     private Image       iImage;
 
-    // height / width
+    
     private int iWidth, iHeight;
     private int iRowHeight, iFirstRow;
     private int iGridWidth, iGridHeight;
     private int iX, iY;
 
-    // data
-// boucherb@users changed access for databasemanager2
+    
+
     protected String[] sColHead = new String[0];
     protected Vector   vData    = new Vector();
 
-// --------------------------------------------------
+
     private int[] iColWidth;
     private int   iColCount;
 
-// boucherb@users changed access for databasemanager2
+
     protected int iRowCount;
 
-// --------------------------------------------------
-    // scrolling
+
+    
     private Scrollbar sbHoriz, sbVert;
     private int       iSbWidth, iSbHeight;
     private boolean   bDrag;
     private int       iXDrag, iColDrag;
 
-    /**
-     * Constructor declaration
-     *
-     */
+    
     public Grid() {
 
         super();
@@ -151,42 +76,25 @@ class Grid extends Panel {
         add(sbVert);
     }
 
-    /**
-     * Method declaration
-     */
+    
     String[] getHead() {
         return sColHead;
     }
 
-    /**
-     * Method declaration
-     */
+    
     Vector getData() {
         return vData;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param d
-     */
+    
     public void setMinimumSize(Dimension d) {
         dMinimum = d;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param x
-     * @param y
-     * @param w
-     * @param h
-     */
+    
     public void setBounds(int x, int y, int w, int h) {
 
-        // fredt@users 20011210 - patch 450412 by elise@users
+        
         super.setBounds(x, y, w, h);
 
         iSbHeight = sbHoriz.getPreferredSize().height;
@@ -203,12 +111,7 @@ class Grid extends Panel {
         repaint();
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param head
-     */
+    
     public void setHead(String[] head) {
 
         iColCount = head.length;
@@ -225,12 +128,7 @@ class Grid extends Panel {
         vData      = new Vector();
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param data
-     */
+    
     public void addRow(String[] data) {
 
         if (data.length != iColCount) {
@@ -252,19 +150,13 @@ class Grid extends Panel {
         iRowCount++;
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     public void update() {
         adjustScroll();
         repaint();
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     void adjustScroll() {
 
         if (iRowHeight == 0) {
@@ -291,18 +183,13 @@ class Grid extends Panel {
         iY = iRowHeight * sbVert.getValue();
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
 
-    // fredt@users 20020130 - comment by fredt
-    // to remove this deprecated method we need to rewrite the Grid class as a
-    // ScrollPane component
-    // sqlbob:  I believe that changing to the JDK1.1 event handler
-    // would require browsers to use the Java plugin.
+    
+    
+    
+    
+    
     public boolean handleEvent(Event e) {
 
         switch (e.id) {
@@ -323,12 +210,7 @@ class Grid extends Panel {
         return super.handleEvent(e);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param g
-     */
+    
     public void paint(Graphics g) {
 
         if (g == null) {
@@ -436,24 +318,12 @@ class Grid extends Panel {
         g.drawImage(iImage, 0, 0, this);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param g
-     */
+    
     public void update(Graphics g) {
         paint(g);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     * @param x
-     * @param y
-     */
+    
     public boolean mouseMove(Event e, int x, int y) {
 
         if (y <= iRowHeight) {
@@ -487,14 +357,7 @@ class Grid extends Panel {
         return mouseExit(e, x, y);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     * @param x
-     * @param y
-     */
+    
     public boolean mouseDrag(Event e, int x, int y) {
 
         if (bDrag && x < iWidth) {
@@ -513,14 +376,7 @@ class Grid extends Panel {
         return true;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     * @param x
-     * @param y
-     */
+    
     public boolean mouseExit(Event e, int x, int y) {
 
         if (bDrag) {
@@ -532,40 +388,27 @@ class Grid extends Panel {
         return true;
     }
 
-    /**
-     * Method declaration
-     */
+    
     public Dimension preferredSize() {
         return dMinimum;
     }
 
-    /**
-     * Method declaration
-     */
+    
     public Dimension getPreferredSize() {
         return dMinimum;
     }
 
-    /**
-     * Method declaration
-     */
+    
     public Dimension getMinimumSize() {
         return dMinimum;
     }
 
-    /**
-     * Method declaration
-     */
+    
     public Dimension minimumSize() {
         return dMinimum;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param i
-     */
+    
     private void calcAutoWidth(int i) {
 
         int w = 10;
@@ -581,34 +424,17 @@ class Grid extends Panel {
         iColWidth[i] = w + 6;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param x
-     * @param y
-     */
+    
     private String getDisplay(int x, int y) {
         return (((String[]) (vData.elementAt(y)))[x]);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param x
-     * @param y
-     */
+    
     private String get(int x, int y) {
         return (((String[]) (vData.elementAt(y)))[x]);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param f
-     */
+    
     private static int getMaxHeight(FontMetrics f) {
         return f.getHeight() + 4;
     }

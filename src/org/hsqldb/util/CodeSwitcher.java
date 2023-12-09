@@ -1,71 +1,4 @@
-/*
- * For work developed by the HSQL Development Group:
- *
- * Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- *
- * For work originally developed by the Hypersonic SQL Group:
- *
- * Copyright (c) 1995-2000, The Hypersonic SQL Group.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the Hypersonic SQL Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * on behalf of the Hypersonic SQL Group.
- */
+
 
 
 package org.hsqldb.util;
@@ -78,41 +11,17 @@ import java.io.IOException;
 import java.io.LineNumberReader;
 import java.util.Vector;
 
-// fredt@users 20020315 - patch 1.7.0 - minor fixes
-// changed line separator to System based value
-// moved the Profile class to org.hsqldb.test package
-// fredt@users 20021020 - patch 1.7.1 - formatting fix
-// avoid moving blank lines which would be interpreted as code change by CVS
-// fredt@users 20021118 - patch 1.7.2 - no-change, no-save fix
-// if the file contents do not change, do not save a new version of file
-// fredt@users 20040322 - removed unused profiling code
-// fredt@users 20080315 - added ifndef switch
 
-/**
- * Modifies the source code to support different JDK or profile settings. <p>
- * <pre>
- * Usage: java CodeSwitcher paths|{--pathlist=listfile} [{+|-}label...] [+][-]
- * If no labels are specified then all used
- * labels in the source code are shown.
- * Use +MODE to switch on the things labeld MODE
- * Use -MODE to switch off the things labeld MODE
- * Path: Any number of path or files may be
- * specified. Use . for the current directory
- * (including sub-directories).
- * Example: java CodeSwitcher +JAVA2 .
- * This example switches on code labeled JAVA2
- * in all *.java files in the current directory
- * and all subdirectories.
- * java CodeSwitcher + .
- * Adds test code to the code.
- * java CodeSwitcher - .
- * Removes test code from the code
- * </pre>
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
- * @version 1.7.0
- * @since Hypersonic SQL
- */
+
+
+
+
+
+
+
+
+
+
 public class CodeSwitcher {
 
     private static final String ls = System.getProperty("line.separator",
@@ -123,12 +32,7 @@ public class CodeSwitcher {
     private Vector           vSwitches;
     private static final int MAX_LINELENGTH = 82;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param a
-     */
+    
     public static void main(String[] a) {
 
         CodeSwitcher s = new CodeSwitcher();
@@ -223,10 +127,7 @@ public class CodeSwitcher {
                                : vList.size();
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     static void showUsage() {
 
         System.out.print("Usage: java CodeSwitcher paths|{--pathlist=listfile} "
@@ -244,10 +145,7 @@ public class CodeSwitcher {
                          + "and all subdirectories.\n");
     }
 
-    /**
-     * Constructor declaration
-     *
-     */
+    
     CodeSwitcher() {
 
         vList      = new Vector();
@@ -256,10 +154,7 @@ public class CodeSwitcher {
         vSwitches  = new Vector();
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     void process() {
 
         int len = vList.size();
@@ -277,10 +172,7 @@ public class CodeSwitcher {
         System.out.println("");
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     void printSwitches() {
 
         System.out.println("Used labels:");
@@ -290,11 +182,7 @@ public class CodeSwitcher {
         }
     }
 
-    /**
-     * Wrapper
-     *
-     * @param path
-     */
+    
     void addDir(String path) {
         addDir(new File(path));
     }
@@ -312,17 +200,12 @@ public class CodeSwitcher {
         }
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param name
-     */
+    
     boolean processFile(String name) {
 
         File    f         = new File(name);
         File    fnew      = new File(name + ".new");
-        int     state     = 0;    // 0=normal 1=inside_if 2=inside_else
+        int     state     = 0;    
         boolean switchoff = false;
         boolean working   = false;
 
@@ -523,12 +406,7 @@ public class CodeSwitcher {
         write.close();
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param error
-     */
+    
     static void printError(String error) {
         System.out.println("");
         System.out.println("ERROR: " + error);

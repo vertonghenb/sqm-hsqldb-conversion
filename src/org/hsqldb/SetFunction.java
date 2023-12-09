@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -50,33 +22,23 @@ import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Implementation of SQL set functions (currently only aggregate functions).
- * This reduces temporary Object creation by SUM and AVG functions for
- * INTEGER and narrower types.
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.7.2
- *
- */
+
 public class SetFunction implements Serializable {
 
     private HashSet distinctValues;
     private boolean isDistinct;
 
-    //
+    
     private int       setType;
     private int       typeCode;
     private Type      type;
     private ArrayType arrayType;
     private Type      returnType;
 
-    //
+    
     private long count;
 
-    //
+    
     private boolean    hasNull;
     private boolean    every = true;
     private boolean    some  = false;
@@ -437,12 +399,7 @@ public class SetFunction implements Serializable {
         }
     }
 
-    /**
-     * During parsing and before an instance of SetFunction is created,
-     * getType is called with type parameter set to correct type when main
-     * SELECT statements contain aggregates.
-     *
-     */
+    
     static Type getType(Session session, int setType, Type type) {
 
         if (setType == OpTypes.COUNT) {
@@ -552,16 +509,13 @@ public class SetFunction implements Serializable {
         throw Error.error(ErrorCode.X_42563);
     }
 
-    // long sum - originally a separate class
+    
 
-    /**
-     * Maintain the sum of multiple long values without creating a new
-     * BigInteger object for each addition.
-     */
+    
     static final BigInteger multiplier =
         BigInteger.valueOf(0x0000000100000000L);
 
-//        BigInteger bigint = BigInteger.ZERO;
+
     long hi;
     long lo;
 
@@ -582,7 +536,7 @@ public class SetFunction implements Serializable {
             }
         }
 
-//            bigint = bigint.add(BigInteger.valueOf(value));
+
     }
 
     BigInteger getLongSum() {
@@ -591,24 +545,20 @@ public class SetFunction implements Serializable {
         BigInteger bighi  = BigInteger.valueOf(hi);
         BigInteger result = (bighi.multiply(multiplier)).add(biglo);
 
-/*
-            if ( result.compareTo(bigint) != 0 ){
-                 throw Trace.error(Trace.GENERAL_ERROR, "longSum mismatch");
-            }
-*/
+
         return result;
     }
 
-    // end long sum
-    // statistics support - written by Campbell
-    // this section was orginally an independent class
+    
+    
+    
     private double  sk;
     private double  vk;
     private long    n;
     private boolean initialized;
     private boolean sample;
 
-    private void addDataPoint(Number x) {    // optimized
+    private void addDataPoint(Number x) {    
 
         double xi;
         double xsi;
@@ -643,7 +593,7 @@ public class SetFunction implements Serializable {
             return null;
         }
 
-        return sample ? (n == 1) ? null    // NULL (not NaN) is correct in this case
+        return sample ? (n == 1) ? null    
                                  : new Double(vk / (double) (n - 1))
                       : new Double(vk / (double) (n));
     }
@@ -654,10 +604,10 @@ public class SetFunction implements Serializable {
             return null;
         }
 
-        return sample ? (n == 1) ? null    // NULL (not NaN) is correct in this case
+        return sample ? (n == 1) ? null    
                                  : new Double(Math.sqrt(vk / (double) (n - 1)))
                       : new Double(Math.sqrt(vk / (double) (n)));
     }
 
-    // end statistics support
+    
 }

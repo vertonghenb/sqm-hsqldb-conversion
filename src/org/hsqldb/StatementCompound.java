@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -42,13 +14,7 @@ import org.hsqldb.result.Result;
 import org.hsqldb.result.ResultConstants;
 import org.hsqldb.types.Type;
 
-/**
- * Implementation of Statement for PSM compound statements.
 
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
 public class StatementCompound extends Statement {
 
     final boolean       isLoop;
@@ -60,7 +26,7 @@ public class StatementCompound extends Statement {
     StatementExpression condition;
     boolean             isAtomic;
 
-    //
+    
     ColumnSchema[]    variables = ColumnSchema.emptyArray;
     StatementCursor[] cursors   = StatementCursor.emptyArray;
     HashMappedList    scopeVariables;
@@ -68,7 +34,7 @@ public class StatementCompound extends Statement {
     Table[]           tables         = Table.emptyArray;
     HashMappedList    scopeTables;
 
-    //
+    
     public static final StatementCompound[] emptyStatementArray =
         new StatementCompound[]{};
 
@@ -101,100 +67,7 @@ public class StatementCompound extends Statement {
 
     public String getSQL() {
 
-/*
-        StringBuffer sb = new StringBuffer();
 
-        if (label != null) {
-            sb.append(label.getStatementName()).append(':').append(' ');
-        }
-
-        switch (type) {
-            case StatementTypes.FOR :
-                // todo
-                break;
-
-            case StatementTypes.LOOP :
-                sb.append(Tokens.T_LOOP).append(' ');
-
-                for (int i = 0; i < statements.length; i++) {
-                    sb.append(statements[i].getSQL()).append(';');
-                }
-
-                sb.append(Tokens.T_END).append(' ').append(Tokens.T_LOOP);
-                break;
-
-            case StatementTypes.WHILE :
-                sb.append(Tokens.T_WHILE).append(' ');
-                sb.append(condition.getSQL()).append(' ').append(Tokens.T_DO);
-                sb.append(' ');
-
-                for (int i = 0; i < statements.length; i++) {
-                    sb.append(statements[i].getSQL()).append(';');
-                }
-
-                sb.append(Tokens.T_END).append(' ').append(Tokens.T_WHILE);
-                break;
-
-            case StatementTypes.REPEAT :
-                sb.append(Tokens.T_REPEAT).append(' ');
-
-                for (int i = 0; i < statements.length; i++) {
-                    sb.append(statements[i].getSQL()).append(';');
-                }
-
-                sb.append(Tokens.T_UNTIL).append(' ');
-                sb.append(condition.getSQL()).append(' ');
-                sb.append(Tokens.T_END).append(' ').append(Tokens.T_REPEAT);
-                break;
-
-            case StatementTypes.BEGIN_END :
-                sb.append(Tokens.T_BEGIN).append(' ').append(Tokens.T_ATOMIC);
-                sb.append(' ');
-
-                for (int i = 0; i < handlers.length; i++) {
-                    sb.append(handlers[i].getSQL()).append(';');
-                }
-
-                for (int i = 0; i < variables.length; i++) {
-                    sb.append(Tokens.T_DECLARE).append(' ');
-                    sb.append(variables[i].getSQL());
-
-                    if (variables[i].hasDefault()) {
-                        sb.append(' ').append(Tokens.T_DEFAULT).append(' ');
-                        sb.append(variables[i].getDefaultSQL());
-                    }
-
-                    sb.append(';');
-                }
-
-                for (int i = 0; i < statements.length; i++) {
-                    sb.append(statements[i].getSQL()).append(';');
-                }
-
-                sb.append(Tokens.T_END);
-                break;
-
-            case StatementTypes.IF :
-                for (int i = 0; i < statements.length; i++) {
-                    if (statements[i].type == StatementTypes.CONDITION) {
-                        if (i != 0) {
-                            sb.append(Tokens.T_ELSE).append(' ');
-                        }
-
-                        sb.append(Tokens.T_IF).append(' ');
-                        sb.append(statements[i].getSQL()).append(' ');
-                        sb.append(Tokens.T_THEN).append(' ');
-                    } else {
-                        sb.append(statements[i].getSQL()).append(';');
-                    }
-                }
-
-                sb.append(Tokens.T_END).append(' ').append(Tokens.T_IF);
-                break;
-        }
-
-        return sb.toString();
-*/
         return sql;
     }
 
@@ -422,12 +295,7 @@ public class StatementCompound extends Statement {
 
                 session.clearWarnings();
 
-                /**
-                 * @todo - if condition is "transaction rollback" promote to
-                 * top call level without any further action
-                 * if condition is system related promote to top level
-                 * schema manipulation conditions are never handled
-                 */
+                
                 if (handler.handlesCondition(sqlState)) {
                     session.resetSchema();
 
@@ -467,7 +335,7 @@ public class StatementCompound extends Statement {
 
             if (parent != null) {
 
-                // unhandled exception condition
+                
                 return parent.handleCondition(session, result);
             }
         }
@@ -531,7 +399,7 @@ public class StatementCompound extends Statement {
                     break;
                 }
 
-                // return
+                
                 break;
             }
 
@@ -611,7 +479,7 @@ public class StatementCompound extends Statement {
                     break;
                 }
 
-                // return
+                
                 break;
             }
 
@@ -751,15 +619,7 @@ public class StatementCompound extends Statement {
     public void setRoot(Routine routine) {
 
         root = routine;
-/*
-        if (condition != null) {
-            condition.setRoot(routine);
-        }
 
-        for (int i = 0; i < statements.length; i++) {
-            statements[i].setRoot(routine);
-        }
-*/
     }
 
     public String describe(Session session) {
@@ -774,7 +634,7 @@ public class StatementCompound extends Statement {
         this.isAtomic = atomic;
     }
 
-    //
+    
     private void setVariables() {
 
         HashMappedList list = new HashMappedList();

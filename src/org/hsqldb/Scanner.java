@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -58,36 +30,11 @@ import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- * Scans for SQL tokens.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.1.1
- * @since 1.9.0
- */
+
 public class Scanner {
 
-    /*
-    <delimiter token> ::=
-    <character string literal>
-    | <date string>
-    | <time string>
-    | <timestamp string>
-    | <interval string>
-    | <delimited identifier>
-    | <SQL special character>
-    | <not equals operator>
-    | <greater than or equals operator>
-    | <less than or equals operator>
-    | <concatenation operator>
-    | <right arrow>
-    | <left bracket trigraph>
-    | <right bracket trigraph>
-    | <double colon>
-    | <double period>
-
-    */
-    //J-
+    
+    
     static final char[] specials = new char[] {
         '"',
         '%',
@@ -132,7 +79,7 @@ public class Scanner {
     };
 
     static final char[] whitespace = {
-        // SQL extras
+        
         0x9,
         0xA,
         0xB,
@@ -140,7 +87,7 @@ public class Scanner {
         0xD,
         0x20,
         0x85,
-        // U Zs
+        
         0x0020,
         0x00A0,
         0x1680,
@@ -159,13 +106,13 @@ public class Scanner {
         0x202F,
         0x205F,
         0x3000,
-        // U Zl
+        
         0x2028,
-        // U Zp
+        
         0x2029,
     };
 
-//J+
+
     static final OrderedIntHashSet whiteSpaceSet = new OrderedIntHashSet(32);
 
     static {
@@ -174,7 +121,7 @@ public class Scanner {
         }
     }
 
-    // single token types
+    
     String  sqlString;
     int     currentPosition;
     int     tokenPosition;
@@ -182,21 +129,21 @@ public class Scanner {
     Token   token = new Token();
     boolean nullAndBooleanAsValue;
 
-    //
+    
     private boolean hasNonSpaceSeparator;
     private int     eolPosition;
     private int     lineNumber;
     private int     eolCode;
 
-    //
+    
     private static final int maxPooledStringLength =
         ValuePool.getMaxStringLength();
 
-    //
+    
     char[]          charBuffer = new char[256];
     CharArrayWriter charWriter = new CharArrayWriter(charBuffer);
 
-    //
+    
     byte[] byteBuffer = new byte[256];
     HsqlByteArrayOutputStream byteOutputStream =
         new HsqlByteArrayOutputStream(byteBuffer);
@@ -245,7 +192,7 @@ public class Scanner {
 
         if (scanSeparator()) {
 
-//            token.isDelimiter = true;
+
         }
 
         if (currentPosition == limit) {
@@ -262,7 +209,7 @@ public class Scanner {
 
         if (needsDelimiter && !token.isDelimiter) {
 
-//            token.tokenType = Token.X_UNKNOWN_TOKEN;
+
         }
 
         if (token.isMalformed) {
@@ -352,9 +299,7 @@ public class Scanner {
         byteOutputStream.reset(byteBuffer);
     }
 
-    /**
-     * returns hex value of a hex character, or 16 if not a hex character
-     */
+    
     static int getHexValue(int c) {
 
         if (c >= '0' && c <= '9') {
@@ -416,7 +361,7 @@ public class Scanner {
 
             if (c == -1) {
 
-                // bad character
+                
                 token.tokenType   = Tokens.X_MALFORMED_BINARY_STRING;
                 token.isMalformed = true;
 
@@ -437,7 +382,7 @@ public class Scanner {
 
         if (!hi) {
 
-            // odd nibbles
+            
             token.tokenType   = Tokens.X_MALFORMED_BINARY_STRING;
             token.isMalformed = true;
 
@@ -446,7 +391,7 @@ public class Scanner {
 
         if (!complete) {
 
-            // no end quote
+            
             token.tokenType   = Tokens.X_MALFORMED_BINARY_STRING;
             token.isMalformed = true;
 
@@ -625,9 +570,7 @@ public class Scanner {
         }
     }
 
-    /**
-     * Only for identifiers that are part of known token sequences
-     */
+    
     public boolean scanSpecialIdentifier(String identifier) {
 
         int length = identifier.length();
@@ -804,7 +747,7 @@ public class Scanner {
                     }
                 }
 
-            // fall through
+            
             default :
                 boolean result = scanUndelimitedIdentifier();
 
@@ -1064,8 +1007,8 @@ public class Scanner {
 
             case Types.SQL_INTEGER :
 
-                // fredt -  -Integer.MIN_VALUE or -Long.MIN_VALUE are promoted
-                // to a wider type.
+                
+                
                 if (token.tokenString.length() < 11) {
                     try {
                         token.tokenValue = ValuePool.getInt(
@@ -1087,7 +1030,7 @@ public class Scanner {
 
                 token.dataType = Type.SQL_NUMERIC;
 
-            // fall through
+            
             case Types.SQL_NUMERIC :
                 try {
                     BigDecimal decimal = new BigDecimal(token.tokenString);
@@ -1140,7 +1083,7 @@ public class Scanner {
             break;
         }
 
-//        token.isDelimiter |= result;
+
         return result;
     }
 
@@ -1218,7 +1161,7 @@ public class Scanner {
             if (currentPosition == eolPosition + 1) {
                 if (c == '\n' && eolCode != c) {
 
-                    //
+                    
                 } else {
                     lineNumber++;
                 }
@@ -1291,9 +1234,7 @@ public class Scanner {
         }
     }
 
-    /**
-     * token [separator]  , nondelimiter {delimiter | separator}
-     */
+    
     void scanToken() {
 
         int character = charAt(currentPosition);
@@ -1304,15 +1245,7 @@ public class Scanner {
 
         switch (character) {
 
-/*
-            case '%' :
-            case '^' :
-            case '&' :
-            case ':' :
-            case '{' :
-            case '}' :
-                break;
-*/
+
             case '[' :
                 token.tokenString = Tokens.T_LEFTBRACKET;
                 token.tokenType   = Tokens.LEFTBRACKET;
@@ -1709,11 +1642,7 @@ public class Scanner {
 
             case '_' :
 
-                /**
-                 * @todo 1.9.0 - review following
-                 * identifier chain must not have catalog identifier
-                 * character set specification to be included in the token.dataType
-                 */
+                
                 currentPosition++;
 
                 scanIdentifierChain();
@@ -1725,7 +1654,7 @@ public class Scanner {
                 if (token.tokenType != Tokens.X_IDENTIFIER
                         || token.namePrePrefix != null) {
 
-                    /** @todo 1.9.0 - review message malformed character set identifier */
+                    
                     token.tokenType   = Tokens.X_MALFORMED_STRING;
                     token.isMalformed = true;
 
@@ -1802,7 +1731,7 @@ public class Scanner {
         return false;
     }
 
-    //
+    
     private void scanNext(int error) {
 
         scanNext();
@@ -1812,9 +1741,7 @@ public class Scanner {
         }
     }
 
-    /**
-     * Reads the type part of the INTERVAL
-     */
+    
     IntervalType scanIntervalType() {
 
         int       precision = -1;
@@ -1927,12 +1854,7 @@ public class Scanner {
         return new TimestampData(seconds);
     }
 
-    /**
-     * @todo 1.9.0 - review the following
-     *      - misses nano fractions
-     *      - misses displacement
-     *      - doesn't allow single digit components
-     */
+    
     public TimestampData newTimestamp(String s) {
 
         long    zoneSeconds = 0;
@@ -2009,7 +1931,7 @@ public class Scanner {
                     endOfPart = true;
                 } else {
 
-                    // parts missing
+                    
                     throw Error.error(ErrorCode.X_22007);
                 }
             } else {
@@ -2301,10 +2223,7 @@ public class Scanner {
         }
     }
 
-    /*
-     * synchronized methods for use with shared Scanner objects used for type
-     *  conversion
-     */
+    
     public synchronized Number convertToNumber(String s,
             NumberType numberType) {
 
@@ -2365,7 +2284,7 @@ public class Scanner {
 
             if (c == -1) {
 
-                // bad character
+                
                 token.tokenType   = Tokens.X_MALFORMED_BINARY_STRING;
                 token.isMalformed = true;
 
@@ -2383,7 +2302,7 @@ public class Scanner {
 
         if (!hi) {
 
-            // odd nibbles
+            
             token.tokenType   = Tokens.X_MALFORMED_BINARY_STRING;
             token.isMalformed = true;
         }
@@ -2431,7 +2350,7 @@ public class Scanner {
         return BinaryData.getBitData(map.getBytes(), map.size());
     }
 
-    // should perform range checks etc.
+    
     public synchronized Object convertToDatetimeInterval(
             SessionInterface session, String s, DTIType type) {
 
@@ -2459,7 +2378,7 @@ public class Scanner {
                 if (token.tokenType != Tokens.X_VALUE
                         || token.dataType.typeCode != Types.SQL_CHAR) {
 
-                    // error datetime bad literal
+                    
                     throw Error.error(errorCode);
                 }
 
@@ -2475,7 +2394,7 @@ public class Scanner {
                     throw Error.error(errorCode);
                 }
 
-            // fall through
+            
             default :
         }
 

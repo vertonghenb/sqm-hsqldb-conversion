@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -34,8 +6,8 @@ package org.hsqldb;
 public interface OpTypes {
 
     int NONE                 = 0,
-        VALUE                = 1,     // constant value
-        COLUMN               = 2,     // references
+        VALUE                = 1,     
+        COLUMN               = 2,     
         COALESCE             = 3,
         DEFAULT              = 4,
         SIMPLE_COLUMN        = 5,
@@ -50,37 +22,37 @@ public interface OpTypes {
         ROWNUM               = 14,
         ARRAY                = 19,
         MULTISET             = 20,
-        SCALAR_SUBQUERY      = 21,    // query based row or table
+        SCALAR_SUBQUERY      = 21,    
         ROW_SUBQUERY         = 22,
         TABLE_SUBQUERY       = 23,
         RECURSIVE_SUBQUERY   = 24,
-        ROW                  = 25,    // rows
+        ROW                  = 25,    
         VALUELIST            = 26,
         FUNCTION             = 27,
         SQL_FUNCTION         = 28,
         ROUTINE_FUNCTION     = 29,
         TABLE                = 30,
-        NEGATE               = 31,    // arithmetic operations
+        NEGATE               = 31,    
         ADD                  = 32,
         SUBTRACT             = 33,
         MULTIPLY             = 34,
         DIVIDE               = 35,
-        CONCAT               = 36,    // concatenation
+        CONCAT               = 36,    
         LIKE_ARG             = 37,
         CASEWHEN_COALESCE    = 38,
-        EQUAL                = 41,    // logical - comparison
+        EQUAL                = 41,    
         GREATER_EQUAL        = 42,
         GREATER              = 43,
         SMALLER              = 44,
         SMALLER_EQUAL        = 45,
         NOT_EQUAL            = 46,
         IS_NULL              = 47,
-        NOT                  = 48,    // logical operations
+        NOT                  = 48,    
         AND                  = 49,
         OR                   = 50,
-        ALL_QUANTIFIED       = 51,    // logical - quantified comparison
+        ALL_QUANTIFIED       = 51,    
         ANY_QUANTIFIED       = 52,
-        LIKE                 = 53,    // logical - predicates
+        LIKE                 = 53,    
         IN                   = 54,
         EXISTS               = 55,
         OVERLAPS             = 56,
@@ -93,7 +65,7 @@ public interface OpTypes {
         MATCH_UNIQUE_PARTIAL = 63,
         MATCH_UNIQUE_FULL    = 64,
         CONTAINS             = 65,
-        COUNT                = 71,    // aggregate functions
+        COUNT                = 71,    
         SUM                  = 72,
         MIN                  = 73,
         MAX                  = 74,
@@ -108,7 +80,7 @@ public interface OpTypes {
         GROUP_CONCAT         = 83,
         PREFIX               = 84,
         MEDIAN               = 85,
-        CAST                 = 91,    // other operations
+        CAST                 = 91,    
         ZONE_MODIFIER        = 92,
         CASEWHEN             = 93,
         ORDER_BY             = 94,

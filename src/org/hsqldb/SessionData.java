@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -63,30 +35,24 @@ import org.hsqldb.types.ClobData;
 import org.hsqldb.types.ClobDataID;
 import org.hsqldb.types.LobData;
 
-/*
- * Session semi-persistent data structures
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class SessionData {
 
     private final Database                  database;
     private final Session                   session;
     public PersistentStoreCollectionSession persistentStoreCollection;
 
-    // large results
+    
     LongKeyHashMap resultMap;
 
-    // VALUE
+    
     Object currentValue;
 
-    // SEQUENCE
+    
     HashMap sequenceMap;
     HashMap sequenceUpdateMap;
 
-    // LOBS
+    
     LongDeque newLobIDs;
 
     public SessionData(Database database, Session session) {
@@ -123,7 +89,7 @@ public class SessionData {
         throw Error.runtimeError(ErrorCode.U_S0500, "SessionData");
     }
 
-    // result
+    
     void setResultSetProperties(Result command, Result result) {
 
         int required = command.rsProperties;
@@ -175,7 +141,7 @@ public class SessionData {
                     returned = ResultProperties.addHoldable(returned,
                             ResultProperties.isHoldable(required));
 
-                    // add warning for concurrency conflict
+                    
                 } else {
                     if (session.isAutoCommit()) {
                         returned = ResultProperties.addHoldable(returned,
@@ -299,7 +265,7 @@ public class SessionData {
         }
     }
 
-    // lob creation
+    
     public void registerNewLob(long lobID) {
 
         if (newLobIDs == null) {
@@ -322,10 +288,10 @@ public class SessionData {
         }
     }
 
-    // lobs in results
+    
     LongKeyLongValueHashMap resultLobs = new LongKeyLongValueHashMap();
 
-    // lobs in transaction
+    
     boolean hasLobOps;
 
     public void adjustLobUsageCount(Object value, int adjust) {
@@ -377,9 +343,7 @@ public class SessionData {
         }
     }
 
-    /**
-     * allocate storage for a new LOB
-     */
+    
     public void allocateLobForResult(ResultLob result,
                                      InputStream inputStream) {
 
@@ -394,7 +358,7 @@ public class SessionData {
 
                     if (blobLength < 0) {
 
-                        // embedded session + unknown lob length
+                        
                         allocateBlobSegments(result, result.getInputStream());
 
                         break;
@@ -402,12 +366,12 @@ public class SessionData {
 
                     if (inputStream == null) {
 
-                        // embedded session + known lob length
+                        
                         blobId      = result.getLobID();
                         inputStream = result.getInputStream();
                     } else {
 
-                        // server session + known or unknown lob length
+                        
                         BlobData blob = session.createBlob(blobLength);
 
                         blobId = blob.getId();
@@ -429,7 +393,7 @@ public class SessionData {
 
                     if (clobLength < 0) {
 
-                        // embedded session + unknown lob length
+                        
                         allocateClobSegments(result, result.getReader());
 
                         break;
@@ -438,7 +402,7 @@ public class SessionData {
                     if (inputStream == null) {
                         clobId = result.getLobID();
 
-                        // embedded session + known lob length
+                        
                         if (result.getReader() != null) {
                             inputStream =
                                 new ReaderInputStream(result.getReader());
@@ -447,7 +411,7 @@ public class SessionData {
                         }
                     } else {
 
-                        // server session + known or unknown lob length
+                        
                         ClobData clob = session.createClob(clobLength);
 
                         clobId = clob.getId();
@@ -465,7 +429,7 @@ public class SessionData {
                 }
                 case ResultLob.LobResultTypes.REQUEST_SET_BYTES : {
 
-                    // server session + unknown lob length
+                    
                     long   blobId     = resultLobs.get(result.getLobID());
                     long   dataLength = result.getBlockLength();
                     byte[] byteArray  = result.getByteArray();
@@ -476,7 +440,7 @@ public class SessionData {
                 }
                 case ResultLob.LobResultTypes.REQUEST_SET_CHARS : {
 
-                    // server session + unknown lob length
+                    
                     long   clobId     = resultLobs.get(result.getLobID());
                     long   dataLength = result.getBlockLength();
                     char[] charArray  = result.getCharArray();
@@ -496,7 +460,7 @@ public class SessionData {
     private void allocateBlobSegments(ResultLob result,
                                       InputStream stream) throws IOException {
 
-        //
+        
         long currentOffset = result.getOffset();
         int  bufferLength  = session.getStreamBlockSize();
         HsqlByteArrayOutputStream byteArrayOS =
@@ -580,7 +544,7 @@ public class SessionData {
 
                 data[i] = database.lobManager.getBlob(id);
 
-                // handle invalid id;
+                
             } else if (data[i] instanceof ClobDataID) {
                 ClobData clob = (ClobDataID) data[i];
                 long     id   = clob.getId();
@@ -591,7 +555,7 @@ public class SessionData {
 
                 data[i] = database.lobManager.getClob(id);
 
-                // handle invalid id;
+                
             }
         }
     }
@@ -676,7 +640,7 @@ public class SessionData {
         }
     }
 
-    // sequences
+    
     public void startRowProcessing() {
 
         if (sequenceMap != null) {

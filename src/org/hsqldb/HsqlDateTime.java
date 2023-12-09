@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -45,29 +17,10 @@ import org.hsqldb.lib.StringUtil;
 import org.hsqldb.types.DTIType;
 import org.hsqldb.types.Types;
 
-/**
- * collection of static methods to convert Date and Timestamp strings
- * into corresponding Java objects and perform other Calendar related
- * operation.<p>
- *
- * Was reviewed for 1.7.2 resulting in centralising all DATETIME related
- * operstions.<p>
- *
- * From version 2.0.0, HSQLDB supports TIME ZONE with datetime types. The
- * values are stored internally as UTC seconds from 1970, regardless of the
- * time zone of the JVM, and converted as and when required, to the local
- * timezone.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.6
- * @since 1.7.0
- */
+
 public class HsqlDateTime {
 
-    /**
-     * A reusable static value for today's date. Should only be accessed
-     * by getToday()
-     */
+    
     private static Locale        defaultLocale = Locale.UK;
     private static long          currentDateMillis;
     public static final Calendar tempCalDefault = new GregorianCalendar();
@@ -229,51 +182,30 @@ public class HsqlDateTime {
         }
     }
 
-    /**
-     * Sets the time in the given Calendar using the given milliseconds value; wrapper method to
-     * allow use of more efficient JDK1.4 method on JDK1.4 (was protected in earlier versions).
-     *
-     * @param       cal                             the Calendar
-     * @param       millis                  the time value in milliseconds
-     */
+    
     public static void setTimeInMillis(Calendar cal, long millis) {
 
-//#ifdef JAVA4
-        // Use method directly
+
+        
         cal.setTimeInMillis(millis);
 
-//#else
-/*
-        // Have to go indirect
-        synchronized (tempDate) {
-            tempDate.setTime(millis);
-            cal.setTime(tempDate);
-        }
-*/
 
-//#endif JAVA4
+
+
+
     }
 
-    /**
-     * Gets the time from the given Calendar as a milliseconds value; wrapper method to
-     * allow use of more efficient JDK1.4 method on JDK1.4 (was protected in earlier versions).
-     *
-     * @param       cal                             the Calendar
-     * @return      the time value in milliseconds
-     */
+    
     public static long getTimeInMillis(Calendar cal) {
 
-//#ifdef JAVA4
-        // Use method directly
+
+        
         return cal.getTimeInMillis();
 
-//#else
-/*
-        // Have to go indirect
-        return cal.getTime().getTime();
-*/
 
-//#endif JAVA4
+
+
+
     }
 
     public static long convertToNormalisedTime(long t) {
@@ -351,26 +283,17 @@ public class HsqlDateTime {
 
     public static int getZoneMillis(Calendar cal, long millis) {
 
-//#ifdef JAVA4
-        // get zone for the specific date
+
+        
         return cal.getTimeZone().getOffset(millis);
 
-//#else
-/*
-        // get zone for the specific date
-        setTimeInMillis(cal, millis);
-        return (cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET) );
-*/
 
-//#endif JAVA4
+
+
+
     }
 
-    /**
-     * Returns the indicated part of the given millisecond date object.
-     * @param m the millisecond time value from which to extract the indicated part
-     * @param part an integer code corresponding to the desired date part
-     * @return the indicated part of the given <code>java.util.Date</code> object
-     */
+    
     public static int getDateTimePart(long m, int part) {
 
         synchronized (tempCalGMT) {
@@ -380,9 +303,7 @@ public class HsqlDateTime {
         }
     }
 
-    /**
-     * truncates millisecond date object
-     */
+    
     public static long getTruncatedPart(long m, int part) {
 
         synchronized (tempCalGMT) {
@@ -411,9 +332,7 @@ public class HsqlDateTime {
         }
     }
 
-    /**
-     * rounded millisecond date object
-     */
+    
     public static long getRoundedPart(long m, int part) {
 
         synchronized (tempCalGMT) {
@@ -499,7 +418,7 @@ public class HsqlDateTime {
         }
     }
 
-    //J-
+    
 
     private static final char[][] dateTokens     = {
         { 'R', 'R', 'R', 'R' }, { 'I', 'Y', 'Y', 'Y' }, { 'Y', 'Y', 'Y', 'Y' },
@@ -547,9 +466,9 @@ public class HsqlDateTime {
         -1
     };
 
-    //J+
+    
 
-    /** Indicates end-of-input */
+    
     private static final char e = 0xffff;
 
     public static Date toDate(String string, String pattern,
@@ -663,11 +582,7 @@ public class HsqlDateTime {
         return result;
     }
 
-    /**
-     * Converts the given format into a pattern accepted by <code>java.text.SimpleDataFormat</code>
-     *
-     * @param format
-     */
+    
     public static String toJavaDatePattern(String format) {
 
         int          len = format.length();
@@ -684,7 +599,7 @@ public class HsqlDateTime {
                     ch = '\'';
                 } else if (ch == '\'') {
 
-                    // double the single quote
+                    
                     sb.append(ch);
                 }
 
@@ -710,7 +625,7 @@ public class HsqlDateTime {
                         sb.append(ch);
                     } else if (ch == e) {
 
-                        //
+                        
                     } else {
                         throw Error.error(ErrorCode.X_22007,
                                           format.substring(i));
@@ -754,9 +669,7 @@ public class HsqlDateTime {
         return -1;
     }
 
-    /**
-     * This class can match 64 tokens at maximum.
-     */
+    
     static class Tokenizer {
 
         private int     lastMatched;
@@ -767,7 +680,7 @@ public class HsqlDateTime {
         private boolean isInQuotes;
         private boolean matched;
 
-        //
+        
         private final char    quoteChar;
         private final char[]  literalChars;
         private static char[] defaultLiterals = new char[] {
@@ -784,10 +697,7 @@ public class HsqlDateTime {
             reset();
         }
 
-        /**
-         * Resets for next reuse.
-         *
-         */
+        
         public void reset() {
 
             lastMatched = -1;
@@ -797,44 +707,32 @@ public class HsqlDateTime {
             matched     = false;
         }
 
-        /**
-         * Returns the length of a token to match.
-         */
+        
         public int length() {
             return offset;
         }
 
-        /**
-         * Returns an index of the last matched token.
-         */
+        
         public int getLastMatch() {
             return lastMatched;
         }
 
-        /**
-         * Indicates whether the last character has been consumed by the matcher.
-         */
+        
         public boolean isConsumed() {
             return consumed;
         }
 
-        /**
-         * Indicates whether the last character has been consumed by the matcher.
-         */
+        
         public boolean wasMatched() {
             return matched;
         }
 
-        /**
-         * Indicates if tokenizing a quoted string
-         */
+        
         public boolean isInQuotes() {
             return isInQuotes;
         }
 
-        /**
-         * returns true if character is the quote char and sets state
-         */
+        
         public boolean isQuoteChar(char ch) {
 
             if (quoteChar == ch) {
@@ -846,36 +744,22 @@ public class HsqlDateTime {
             return false;
         }
 
-        /**
-         * Returns true if ch is in the list of literals
-         */
+        
         public boolean isLiteral(char ch) {
             return ArrayUtil.isInSortedArray(ch, literalChars);
         }
 
-        /**
-         * Checks whether the specified bit is not set.
-         *
-         * @param bit
-         */
+        
         private boolean isZeroBit(int bit) {
             return (state & (1L << bit)) == 0;
         }
 
-        /**
-         * Sets the specified bit.
-         * @param bit
-         */
+        
         private void setBit(int bit) {
             state |= (1L << bit);
         }
 
-        /**
-         * Matches the specified character against tokens.
-         *
-         * @param ch
-         * @param tokens
-         */
+        
         public boolean next(char ch, int position) {
 
             int index = ++offset;

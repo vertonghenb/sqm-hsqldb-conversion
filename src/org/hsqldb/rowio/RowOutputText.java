@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.rowio;
@@ -50,13 +22,7 @@ import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
 
-/**
- *  Class for writing the data for a database row in text table format.
- *
- * @author Bob Preston (sqlbob@users dot sourceforge.net)
- * @version 2.0.1
- * @since 1.7.0
- */
+
 public class RowOutputText extends RowOutputBase {
 
     protected String  fieldSep;
@@ -84,7 +50,7 @@ public class RowOutputText extends RowOutputBase {
                                            boolean allQuoted,
                                            String encoding) {
 
-        //-- Newline indicates that field should match to end of line.
+        
         if (fieldSep.endsWith("\n")) {
             fieldSepEnd = true;
             fieldSep    = fieldSep.substring(0, fieldSep.length() - 1);
@@ -109,7 +75,7 @@ public class RowOutputText extends RowOutputBase {
 
     public void writeEnd() {
 
-        // terminate at the end of row
+        
         if (nextSepEnd) {
             writeBytes(nextSep);
         }
@@ -119,26 +85,26 @@ public class RowOutputText extends RowOutputBase {
 
     public void writeSize(int size) {
 
-        // initialise at the start of row
+        
         nextSep    = "";
         nextSepEnd = false;
     }
 
     public void writeType(int type) {
 
-        //--do Nothing
+        
     }
 
     public void writeString(String s) {
 
         s = checkConvertString(s, fieldSep);
 
-        // error
+        
         if (s == null) {
             return;
         }
 
-        // writeBytes(s);
+        
         byte[] bytes = getBytes(s);
 
         write(bytes, 0, bytes.length);
@@ -155,7 +121,7 @@ public class RowOutputText extends RowOutputBase {
             return;
         }
 
-        // writeBytes(s);
+        
         byte[] bytes = getBytes(s);
 
         write(bytes, 0, bytes.length);
@@ -172,7 +138,7 @@ public class RowOutputText extends RowOutputBase {
             return;
         }
 
-        // writeBytes(s);
+        
         byte[] bytes = getBytes(s);
 
         write(bytes, 0, bytes.length);
@@ -234,7 +200,7 @@ public class RowOutputText extends RowOutputBase {
         throw Error.runtimeError(ErrorCode.U_S0500, "RowOutputText");
     }
 
-// fredt@users - comment - methods used for writing each SQL type
+
     protected void writeFieldType(Type type) {
 
         writeBytes(nextSep);
@@ -366,7 +332,7 @@ public class RowOutputText extends RowOutputBase {
         } catch (Exception e) {
             reset();
 
-//            throw Error.error(ErrorCode.FILE_IO_ERROR, e.toString());
+
         }
 
         int rowsize = size();

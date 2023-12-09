@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -50,13 +22,7 @@ import org.hsqldb.navigator.RowIterator;
 import org.hsqldb.rowio.RowInputInterface;
 import org.hsqldb.types.Type;
 
-/*
- * Base implementation of PersistentStore for different table types.
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public abstract class RowStoreAVL implements PersistentStore {
 
     Session                   session;
@@ -67,11 +33,11 @@ public abstract class RowStoreAVL implements PersistentStore {
     TableBase                 table;
     int                       elementCount;
 
-    // for result tables
-    // for INFORMATION SCHEMA tables
+    
+    
     private long timestamp;
 
-    //
+    
     PersistentStore[] subStores = PersistentStore.emptyArray;
 
     public TableBase getTable() {
@@ -140,9 +106,7 @@ public abstract class RowStoreAVL implements PersistentStore {
         return accessorList[position];
     }
 
-    /**
-     * Basic delete with no logging or referential checks.
-     */
+    
     public void delete(Session session, Row row) {
 
         row = (Row) get(row, false);
@@ -177,7 +141,7 @@ public abstract class RowStoreAVL implements PersistentStore {
                 }
             } catch (HsqlException e) {
 
-                // unique index violation - rollback insert
+                
                 int count = j;
 
                 j = 0;
@@ -195,7 +159,7 @@ public abstract class RowStoreAVL implements PersistentStore {
 
             i = 0;
 
-            // unique index violation - rollback insert
+            
             for (; i < count; i++) {
                 indexList[i].delete(session, this, row);
             }
@@ -206,7 +170,7 @@ public abstract class RowStoreAVL implements PersistentStore {
         }
     }
 
-    //
+    
     public final void indexRows(Session session) {
 
         for (int i = 1; i < indexList.length; i++) {
@@ -256,7 +220,7 @@ public abstract class RowStoreAVL implements PersistentStore {
             return;
         }
 
-        // method might be called twice
+        
         if (indexList == keys) {
             return;
         }
@@ -366,11 +330,7 @@ public abstract class RowStoreAVL implements PersistentStore {
         elementCount = size;
     }
 
-    /**
-     * Moves the data from an old store to new after changes to table
-     * The colindex argument is the index of the column that was
-     * added or removed. The adjust argument is {-1 | 0 | +1}
-     */
+    
     public final void moveData(Session session, PersistentStore other,
                                int colindex, int adjust) {
 
@@ -416,7 +376,7 @@ public abstract class RowStoreAVL implements PersistentStore {
                 table.enforceTypeLimits(session, data);
                 table.enforceRowConstraints(session, data);
 
-                // get object without RowAction
+                
                 Row newrow = (Row) getNewCachedObject(session, data, false);
 
                 indexRow(session, newrow);
@@ -507,7 +467,7 @@ public abstract class RowStoreAVL implements PersistentStore {
 
                 ((RowAVL) row).insertNode(position);
 
-                // count before inserting
+                
                 rowCount++;
 
                 newIndex.insert(session, this, row);
@@ -520,8 +480,8 @@ public abstract class RowStoreAVL implements PersistentStore {
             error = e;
         }
 
-        // backtrack on error
-        // rowCount rows have been modified
+        
+        
         it = primaryIndex.firstRow(this);
 
         for (int i = 0; i < rowCount; i++) {

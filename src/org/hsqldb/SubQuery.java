@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -43,16 +15,7 @@ import org.hsqldb.navigator.RowSetNavigatorDataTable;
 import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.result.Result;
 
-/**
- * Represents an SQL view or anonymous subquery (inline virtual table
- * descriptor) nested within an SQL statement. <p>
- *
- * Implements {@link org.hsqldb.lib.ObjectComparator ObjectComparator} to
- * provide the correct order of materialization for nested views / subqueries.
- *
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- */
+
 class SubQuery implements Comparator {
 
     int                  level;
@@ -69,20 +32,20 @@ class SubQuery implements Comparator {
     View                 parentView;
     String               sql;
 
-    //
+    
     Expression dataExpression;
     boolean    isDataExpression;
 
-    //
+    
     SubQuery recursiveSubQuery;
 
-    //
+    
     SimpleName[] columnNames;
 
-    //
+    
     int parsePosition;
 
-    //
+    
     public static final SubQuery[] emptySubqueryArray = new SubQuery[]{};
 
     SubQuery(Database database, int level, QueryExpression queryExpression,
@@ -272,14 +235,12 @@ class SubQuery implements Comparator {
         }
     }
 
-    /**
-     * Fills the table with a result set
-     */
+    
     public void materialise(Session session) {
 
         PersistentStore store;
 
-        // table constructors
+        
         if (isDataExpression) {
             store = session.sessionData.getSubqueryRowStore(table);
 
@@ -352,18 +313,7 @@ class SubQuery implements Comparator {
         return navigator;
     }
 
-    /**
-     * This results in the following sort order:
-     *
-     * view subqueries, then other subqueries
-     *
-     *    view subqueries:
-     *        views sorted by creation order (earlier declaration first)
-     *
-     *    other subqueries:
-     *        subqueries sorted by depth within select query (deep == higher level)
-     *
-     */
+    
     public int compare(Object a, Object b) {
 
         SubQuery sqa = (SubQuery) a;

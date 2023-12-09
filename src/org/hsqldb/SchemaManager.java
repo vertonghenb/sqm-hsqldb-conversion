@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -49,13 +21,7 @@ import org.hsqldb.navigator.RowIterator;
 import org.hsqldb.rights.Grantee;
 import org.hsqldb.types.Type;
 
-/**
- * Manages all SCHEMA related database objects
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version  2.2.7
- * @since 1.8.0
- */
+
 public class SchemaManager {
 
     Database          database;
@@ -66,12 +32,12 @@ public class SchemaManager {
     long              schemaChangeTimestamp;
     HsqlName[]        catalogNameArray;
 
-    //
+    
     ReadWriteLock lock      = new ReentrantReadWriteLock();
     Lock          readLock  = lock.readLock();
     Lock          writeLock = lock.writeLock();
 
-    //
+    
     Table        dualTable;
     public Table dataChangeTable;
 
@@ -107,12 +73,12 @@ public class SchemaManager {
         return schemaChangeTimestamp;
     }
 
-    // pre-defined
+    
     public HsqlName getSQLJSchemaHsqlName() {
         return SqlInvariants.SQLJ_SCHEMA_HSQLNAME;
     }
 
-    // SCHEMA management
+    
     public void createPublicSchema() {
 
         writeLock.lock();
@@ -131,9 +97,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     * Creates a schema belonging to the given grantee.
-     */
+    
     public void createSchema(HsqlName name, Grantee owner) {
 
         writeLock.lock();
@@ -220,7 +184,7 @@ public class SchemaManager {
                 schemaMap.put(schema.getName().name, schema);
             }
 
-            // these are called last and in this particular order
+            
             database.getUserManager().removeSchemaReference(name);
             database.getSessionManager().removeSchemaReference(schema);
         } finally {
@@ -375,11 +339,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     * If schemaName is null, return the default schema name, else return
-     * the HsqlName object for the schema. If schemaName does not exist,
-     * throw.
-     */
+    
     public HsqlName getSchemaHsqlName(String name) {
 
         if (name == null) {
@@ -401,9 +361,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     * Same as above, but return string
-     */
+    
     public String getSchemaName(String name) {
         return getSchemaHsqlName(name).name;
     }
@@ -419,9 +377,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     * drop all schemas with the given authorisation
-     */
+    
     public void dropSchemas(Session session, Grantee grantee,
                             boolean cascade) {
 
@@ -484,11 +440,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     *  Returns an HsqlArrayList containing references to all non-system
-     *  tables and views. This includes all tables and views registered with
-     *  this Database.
-     */
+    
     public HsqlArrayList getAllTables(boolean withLobTables) {
 
         readLock.lock();
@@ -730,12 +682,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     *  Returns the specified user-defined table or view visible within the
-     *  context of the specified Session, or any system table of the given
-     *  name. It excludes any temp tables created in other Sessions.
-     *  Throws if the table does not exist in the context.
-     */
+    
     public Table getTable(Session session, String name, String schema) {
 
         readLock.lock();
@@ -791,12 +738,7 @@ public class SchemaManager {
         return getUserTable(session, name.name, name.schema.name);
     }
 
-    /**
-     *  Returns the specified user-defined table or view visible within the
-     *  context of the specified Session. It excludes system tables and
-     *  any temp tables created in different Sessions.
-     *  Throws if the table does not exist in the context.
-     */
+    
     public Table getUserTable(Session session, String name, String schema) {
 
         Table t = findUserTable(session, name, schema);
@@ -811,11 +753,7 @@ public class SchemaManager {
         return t;
     }
 
-    /**
-     *  Returns the specified user-defined table or view visible within the
-     *  context of the specified schema. It excludes system tables.
-     *  Returns null if the table does not exist in the context.
-     */
+    
     public Table findUserTable(Session session, String name,
                                String schemaName) {
 
@@ -840,39 +778,12 @@ public class SchemaManager {
         }
     }
 
-    /**
-     *  Returns the specified session context table.
-     *  Returns null if the table does not exist in the context.
-     */
+    
     public Table findSessionTable(Session session, String name) {
         return session.sessionContext.findSessionTable(name);
     }
 
-    /**
-     * Drops the specified user-defined view or table from this Database object.
-     *
-     * <p> The process of dropping a table or view includes:
-     * <OL>
-     * <LI> checking that the specified Session's currently connected User has
-     * the right to perform this operation and refusing to proceed if not by
-     * throwing.
-     * <LI> checking for referential constraints that conflict with this
-     * operation and refusing to proceed if they exist by throwing.</LI>
-     * <LI> removing the specified Table from this Database object.
-     * <LI> removing any exported foreign keys Constraint objects held by any
-     * tables referenced by the table to be dropped. This is especially
-     * important so that the dropped Table ceases to be referenced, eventually
-     * allowing its full garbage collection.
-     * <LI>
-     * </OL>
-     *
-     * <p>
-     *
-     * @param session the connected context in which to perform this operation
-     * @param table if true and if the Table to drop does not exist, fail
-     *   silently, else throw
-     * @param cascade true if the name argument refers to a View
-     */
+    
     public void dropTableOrView(Session session, Table table,
                                 boolean cascade) {
 
@@ -968,7 +879,7 @@ public class SchemaManager {
         tw.setNewTablesInSchema(tableSet);
         tw.updateConstraints(tableSet, constraintNameSet);
         removeSchemaObjects(externalReferences);
-        removeTableDependentReferences(table);    //
+        removeTableDependentReferences(table);    
         removeReferencesTo(uniqueConstraintNames);
         removeReferencesTo(table.getName());
         removeReferencesFrom(table);
@@ -1012,13 +923,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     *  Returns index of a table or view in the HashMappedList that
-     *  contains the table objects for this Database.
-     *
-     * @param  table the Table object
-     * @return  the index of the specified table or view, or -1 if not found
-     */
+    
     public int getTableIndex(Table table) {
 
         readLock.lock();
@@ -1086,10 +991,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     * After addition or removal of columns and indexes all views that
-     * reference the table should be recompiled.
-     */
+    
     public void recompileDependentObjects(Table table) {
 
         writeLock.lock();
@@ -1403,11 +1305,9 @@ public class SchemaManager {
         }
     }
 
-    // INDEX management
+    
 
-    /**
-     * Returns the table that has an index with the given name and schema.
-     */
+    
     Table findUserTableForIndex(Session session, String name,
                                 String schemaName) {
 
@@ -1427,9 +1327,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     * Drops the index with the specified name.
-     */
+    
     void dropIndex(Session session, HsqlName name) {
 
         writeLock.lock();
@@ -1445,9 +1343,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     * Drops the index with the specified name.
-     */
+    
     void dropConstraint(Session session, HsqlName name, boolean cascade) {
 
         writeLock.lock();
@@ -1478,24 +1374,14 @@ public class SchemaManager {
         }
     }
 
-    /**
-     *  Removes any foreign key Constraint objects (exported keys) held by any
-     *  tables referenced by the specified table. <p>
-     *
-     *  This method is called as the last step of a successful call to
-     *  dropTable() in order to ensure that the dropped Table ceases to be
-     *  referenced when enforcing referential integrity.
-     *
-     * @param  toDrop The table to which other tables may be holding keys.
-     *      This is a table that is in the process of being dropped.
-     */
+    
     void removeExportedKeys(Table toDrop) {
 
         writeLock.lock();
 
         try {
 
-            // toDrop.schema may be null because it is not registerd
+            
             Schema schema =
                 (Schema) schemaMap.get(toDrop.getSchemaName().name);
 
@@ -1578,7 +1464,7 @@ public class SchemaManager {
         }
     }
 
-    // references
+    
     private void addReferencesFrom(SchemaObject object) {
 
         OrderedHashSet set  = object.getReferences();
@@ -1718,7 +1604,7 @@ public class SchemaManager {
         }
     }
 
-    //
+    
     public void getCascadingReferencesTo(HsqlName object, OrderedHashSet set) {
 
         readLock.lock();
@@ -1794,7 +1680,7 @@ public class SchemaManager {
         return map;
     }
 
-    //
+    
     public HsqlName getSchemaObjectName(HsqlName schemaName, String name,
                                         int type, boolean raise) {
 
@@ -1950,7 +1836,7 @@ public class SchemaManager {
         for (int i = 0; i < set.size(); i++) {
             refName = (HsqlName) set.get(i);
 
-            // except columns of same table
+            
             if (refName.parent != name) {
                 break;
             }
@@ -2744,9 +2630,7 @@ public class SchemaManager {
         }
     }
 
-    /**
-     * called after the completion of defrag
-     */
+    
     public void setIndexRoots(long[][] roots) {
 
         readLock.lock();

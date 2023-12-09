@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb;
@@ -44,24 +16,17 @@ import org.hsqldb.types.DateTimeType;
 import org.hsqldb.types.NumberType;
 import org.hsqldb.types.Type;
 
-/**
- * @author Campbell Boucher-Burnet (boucherb@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.9.0
- */
+
 public class ExpressionLogical extends Expression {
 
     boolean noOptimisation;
     boolean isQuantified;
     boolean isTerminal;
 
-    //
+    
     RangeVariable[] rangeArray = RangeVariable.emptyArray;
 
-    /**
-     * For LIKE
-     */
+    
     ExpressionLogical(int type) {
 
         super(type);
@@ -69,9 +34,7 @@ public class ExpressionLogical extends Expression {
         dataType = Type.SQL_BOOLEAN;
     }
 
-    /**
-     * For boolean constants
-     */
+    
     ExpressionLogical(boolean b) {
 
         super(OpTypes.VALUE);
@@ -81,10 +44,7 @@ public class ExpressionLogical extends Expression {
                       : Boolean.FALSE;
     }
 
-    /*
-     * Create an equality expressions using existing columns and
-     * range variables. The expression is fully resolved in constructor.
-     */
+    
     ExpressionLogical(RangeVariable leftRangeVar, int colIndexLeft,
                       RangeVariable rightRangeVar, int colIndexRight) {
 
@@ -101,9 +61,7 @@ public class ExpressionLogical extends Expression {
         nodes[RIGHT] = rightExpression;
     }
 
-    /**
-     * Creates an equality expression
-     */
+    
     ExpressionLogical(Expression left, Expression right) {
 
         super(OpTypes.EQUAL);
@@ -117,9 +75,7 @@ public class ExpressionLogical extends Expression {
         dataType = Type.SQL_BOOLEAN;
     }
 
-    /**
-     * Creates a binary operation expression
-     */
+    
     ExpressionLogical(int type, Expression left, Expression right) {
 
         super(type);
@@ -137,7 +93,7 @@ public class ExpressionLogical extends Expression {
             case OpTypes.SMALLER_EQUAL :
                 setEqualityMode();
 
-            // fall through
+            
             case OpTypes.NOT_EQUAL :
             case OpTypes.OVERLAPS :
             case OpTypes.NOT_DISTINCT :
@@ -159,9 +115,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    /**
-     * Creates a modified LIKE comparison
-     */
+    
     ExpressionLogical(int type, Expression left, Expression right,
                       Expression end) {
 
@@ -173,9 +127,7 @@ public class ExpressionLogical extends Expression {
         nodes[2]     = end;
     }
 
-    /**
-     * Creates a unary operation expression
-     */
+    
     ExpressionLogical(int type, Expression e) {
 
         super(type);
@@ -198,9 +150,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    /**
-     * Creates a column not null expression for check constraints
-     */
+    
     ExpressionLogical(ColumnSchema column) {
 
         super(OpTypes.NOT);
@@ -245,7 +195,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    // logical ops
+    
     static Expression andExpressions(Expression e1, Expression e2) {
 
         if (e1 == null) {
@@ -585,7 +535,7 @@ public class ExpressionLogical extends Expression {
 
     public void resolveTypes(Session session, Expression parent) {
 
-        // parametric ALL / ANY
+        
         if (isQuantified) {
             if (nodes[RIGHT].opType == OpTypes.TABLE) {
                 if (nodes[RIGHT] instanceof ExpressionTable) {
@@ -806,7 +756,7 @@ public class ExpressionLogical extends Expression {
                 if (convertDateTimeLiteral(session, nodes[LEFT],
                                            nodes[RIGHT])) {
 
-                    // compatibility for BIT with number and BOOLEAN - convert bit to other type
+                    
                 } else if (nodes[LEFT].dataType.isBitType()
                            || nodes[LEFT].dataType.isBooleanType()) {
                     if (session.database.sqlEnforceTypes) {
@@ -928,10 +878,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    /**
-     * for compatibility, convert a datetime character string to a datetime
-     * value for comparison
-     */
+    
     private boolean convertDateTimeLiteral(Session session, Expression a,
                                            Expression b) {
 
@@ -1028,7 +975,7 @@ public class ExpressionLogical extends Expression {
             }
         }
 
-        // encounterd in system generated MATCH predicates
+        
         if (nodes[RIGHT].nodeDataTypes == null) {
             nodes[RIGHT].prepareTable(session, nodes[LEFT], degree);
         }
@@ -1207,10 +1154,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    /**
-     * For MATCH SIMPLE and FULL expressions, nulls in left are handled
-     * prior to calling this method
-     */
+    
     private Boolean compareValues(Session session, Object left, Object right) {
 
         int result = 0;
@@ -1253,10 +1197,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    /**
-     * For MATCH SIMPLE and FULL expressions, nulls in left are handled
-     * prior to calling this method
-     */
+    
     private Boolean compareValues(Session session, Object[] left,
                                   Object[] right) {
 
@@ -1362,9 +1303,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    /**
-     * Returns the result of testing a VALUE_LIST expression
-     */
+    
     private Boolean testInCondition(Session session, Object[] data) {
 
         if (data == null) {
@@ -1683,9 +1622,7 @@ public class ExpressionLogical extends Expression {
         return null;
     }
 
-    /**
-     * Converts an OR containing an AND to an AND
-     */
+    
     void distributeOr() {
 
         if (opType != OpTypes.OR) {
@@ -1716,9 +1653,7 @@ public class ExpressionLogical extends Expression {
         ((ExpressionLogical) nodes[RIGHT]).distributeOr();
     }
 
-    /**
-     *
-     */
+    
     public boolean isIndexable(RangeVariable rangeVar) {
 
         boolean result;
@@ -1778,7 +1713,7 @@ public class ExpressionLogical extends Expression {
                     return null;
                 }
 
-            // fall through
+            
             case OpTypes.GREATER :
             case OpTypes.GREATER_EQUAL :
             case OpTypes.SMALLER :
@@ -1821,10 +1756,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    /**
-     * Called only on comparison expressions after reordering which have
-     * a COLUMN left leaf
-     */
+    
     boolean isSimpleBound() {
 
         if (opType == OpTypes.IS_NULL) {
@@ -1834,7 +1766,7 @@ public class ExpressionLogical extends Expression {
         if (nodes[RIGHT] != null) {
             if (nodes[RIGHT].opType == OpTypes.VALUE) {
 
-                // also true for all parameters
+                
                 return true;
             }
 
@@ -1867,9 +1799,7 @@ public class ExpressionLogical extends Expression {
         }
     }
 
-    /**
-     * Swap the condition with its complement
-     */
+    
     void swapCondition() {
 
         int i = OpTypes.EQUAL;
@@ -2076,7 +2006,7 @@ public class ExpressionLogical extends Expression {
                         }
                     }
 
-                    // fall through
+                    
                     case OpTypes.ALL_QUANTIFIED : {
                         PersistentStore store =
                             rangeVar.rangeTable.getRowStore(session);

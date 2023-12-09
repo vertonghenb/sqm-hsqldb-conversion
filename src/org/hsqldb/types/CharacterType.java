@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.types;
@@ -45,13 +17,7 @@ import org.hsqldb.lib.StringConverter;
 import org.hsqldb.lib.StringUtil;
 import org.hsqldb.lib.java.JavaSystem;
 
-/**
- * Type subclass for CHARACTER, VARCHAR, etc.<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.3
- * @since 1.9.0
- */
+
 public class CharacterType extends Type {
 
     static final int  defaultCharPrecision    = 256;
@@ -77,9 +43,7 @@ public class CharacterType extends Type {
         nameString = getNameStringPrivate();
     }
 
-    /**
-     * Always ASCII collation
-     */
+    
     public CharacterType(int type, long precision) {
 
         super(Types.SQL_VARCHAR, type, precision, 0);
@@ -191,7 +155,7 @@ public class CharacterType extends Type {
 
     public boolean hasCollation() {
 
-        // return collation != null && collation != Collation.defaultCollation;
+        
         return false;
     }
 
@@ -323,24 +287,13 @@ public class CharacterType extends Type {
                 throw Error.error(ErrorCode.X_42562);
             default :
 
-                /**
-                 * @todo - this seems to be allowed in SQL-92 (is in NIST)
-                 * but is disallowed in SQL:2003
-                 * need to make dependent on a database property
-                 */
-/*
-                int length = other.displaySize();
+                
 
-                return getCharacterType(Types.SQL_VARCHAR,
-                                        length).getAggregateType(this);
-*/
                 throw Error.error(ErrorCode.X_42562);
         }
     }
 
-    /**
-     * For concatenation
-     */
+    
     public Type getCombinedType(Session session, Type other, int operation) {
 
         if (operation != OpTypes.CONCAT) {
@@ -382,8 +335,8 @@ public class CharacterType extends Type {
         if (newPrecision > maxCharPrecision) {
             if (typeCode == Types.SQL_BINARY) {
 
-                // Standard disallows type length reduction
-                // throw Error.error(ErrorCode.X_42570);
+                
+                
                 newPrecision = maxCharPrecision;
             } else if (typeCode == Types.SQL_CHAR) {
                 newPrecision = maxCharPrecision;
@@ -494,7 +447,7 @@ public class CharacterType extends Type {
             }
             case Types.SQL_CLOB :
 
-                /** @todo implement */
+                
                 return a;
 
             default :
@@ -657,9 +610,7 @@ public class CharacterType extends Type {
         return convertToType(session, a, otherType);
     }
 
-    /**
-     * Relaxes SQL parameter type enforcement, allowing long strings.
-     */
+    
     public Object convertToDefaultType(SessionInterface session, Object a) {
 
         if (a == null) {
@@ -673,7 +624,7 @@ public class CharacterType extends Type {
         } else if (a instanceof BigDecimal) {
             s = JavaSystem.toString((BigDecimal) a);
         } else if (a instanceof Number) {
-            s = a.toString();    // use shortcut
+            s = a.toString();    
         } else if (a instanceof String) {
             s = (String) a;
         } else if (a instanceof java.sql.Date) {
@@ -690,7 +641,7 @@ public class CharacterType extends Type {
 
         return s;
 
-        // return convertToType(session, a, Type.SQL_VARCHAR);
+        
     }
 
     public Object convertJavaToSQL(SessionInterface session, Object a) {
@@ -871,7 +822,7 @@ public class CharacterType extends Type {
 
         if (offset > end || end < 0) {
 
-            // return zero length data
+            
             offset = 0;
             end    = 0;
         }
@@ -896,7 +847,7 @@ public class CharacterType extends Type {
                 throw Error.error(ErrorCode.X_22001);
             }
 
-            /** @todo - change to support long strings */
+            
             String result = ((ClobData) data).getSubString(session, offset,
                 (int) length);
 
@@ -908,9 +859,7 @@ public class CharacterType extends Type {
         }
     }
 
-    /**
-     * Memory limits apply to Upper and Lower implementations with Clob data
-     */
+    
     public Object upper(Session session, Object data) {
 
         if (data == null) {
@@ -993,7 +942,7 @@ public class CharacterType extends Type {
             }
         }
 
-        /** @todo - change to support long strings */
+        
         if (startindex == 0 && endindex == s.length()) {}
         else {
             s = s.substring(startindex, endindex);
@@ -1077,11 +1026,7 @@ public class CharacterType extends Type {
         return ((String) data).length();
     }
 
-    /**
-     * Matches the string against array containing part strings. Null element
-     * in array indicates skip one character. Empty string in array indicates
-     * skip any number of characters.
-     */
+    
     public Boolean match(Session session, String string, String[] array) {
 
         if (string == null || array == null) {
@@ -1095,13 +1040,13 @@ public class CharacterType extends Type {
         for (int i = 0; i < array.length; i++) {
             if (array[i] == null) {
 
-                // single char skip
+                
                 offset++;
 
                 match = true;
             } else if (array[i].length() == 0) {
 
-                // string skip
+                
                 match = false;
             }
 

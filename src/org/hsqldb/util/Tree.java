@@ -1,71 +1,4 @@
-/*
- * For work developed by the HSQL Development Group:
- *
- * Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- *
- * For work originally developed by the Hypersonic SQL Group:
- *
- * Copyright (c) 1995-2000, The Hypersonic SQL Group.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the Hypersonic SQL Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE HYPERSONIC SQL GROUP,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This software consists of voluntary contributions made by many individuals
- * on behalf of the Hypersonic SQL Group.
- */
+
 
 
 package org.hsqldb.util;
@@ -84,37 +17,32 @@ import java.awt.Scrollbar;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
 
-/**
- *
- * @author Thomas Mueller (Hypersonic SQL Group)
- * @version 1.7.0
- * @since Hypersonic SQL
- */
+
 class Tree extends Panel {
 
-    // static
+    
     private static Font        fFont;
     private static FontMetrics fMetrics;
     private static int         iRowHeight;
     private static int         iIndentWidth;
     private int                iMaxTextLength;
 
-    // drawing
+    
     private Dimension dMinimum;
     private Graphics  gImage;
     private Image     iImage;
 
-    // height / width
+    
     private int iWidth, iHeight;
     private int iFirstRow;
     private int iTreeWidth, iTreeHeight;
     private int iX, iY;
 
-    // data
+    
     private Vector vData;
     private int    iRowCount;
 
-    // scrolling
+    
     private Scrollbar sbHoriz, sbVert;
     private int       iSbWidth, iSbHeight;
 
@@ -125,10 +53,7 @@ class Tree extends Panel {
         iIndentWidth = 12;
     }
 
-    /**
-     * Constructor declaration
-     *
-     */
+    
     Tree() {
 
         super();
@@ -146,28 +71,15 @@ class Tree extends Panel {
         add(sbVert);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param d
-     */
+    
     public void setMinimumSize(Dimension d) {
         dMinimum = d;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param x
-     * @param y
-     * @param w
-     * @param h
-     */
+    
 
-// fredt@users 20011210 - patch 450412 by elise@users
-// with additional replacement of deprecated methods
+
+
     public void setBounds(int x, int y, int w, int h) {
 
         super.setBounds(x, y, w, h);
@@ -186,10 +98,7 @@ class Tree extends Panel {
         repaint();
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     public void removeAll() {
 
         vData     = new Vector();
@@ -202,15 +111,7 @@ class Tree extends Panel {
         repaint();
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param key
-     * @param value
-     * @param state
-     * @param color
-     */
+    
     public void addRow(String key, String value, String state, int color) {
 
         String[] row = new String[4];
@@ -221,7 +122,7 @@ class Tree extends Panel {
 
         row[0] = key;
         row[1] = value;
-        row[2] = state;    // null / "-" / "+"
+        row[2] = state;    
         row[3] = String.valueOf(color);
 
         vData.addElement(row);
@@ -235,35 +136,23 @@ class Tree extends Panel {
         iRowCount++;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param key
-     * @param value
-     */
+    
     public void addRow(String key, String value) {
         addRow(key, value, null, 0);
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     public void update() {
         adjustScroll();
         repaint();
     }
 
-    /**
-     * Method declaration
-     *
-     */
+    
     void adjustScroll() {
 
         iTreeHeight = iRowHeight * (iRowCount + 1);
 
-        // correct would be iMaxTextLength + iMaxIndent*iIndentWidth
+        
         iTreeWidth = iMaxTextLength * 2;
 
         sbHoriz.setValues(iX, iWidth, 0, iTreeWidth);
@@ -277,16 +166,11 @@ class Tree extends Panel {
         iY = iRowHeight * sbVert.getValue();
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     */
+    
 
-// fredt@users 20020130 - comment by fredt
-// to remove this deprecated method we need to rewrite the Tree class as a
-// ScrollPane component
+
+
+
     public boolean handleEvent(Event e) {
 
         switch (e.id) {
@@ -307,12 +191,7 @@ class Tree extends Panel {
         return super.handleEvent(e);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param g
-     */
+    
     public void paint(Graphics g) {
 
         if (g == null || iWidth <= 0 || iHeight <= 0) {
@@ -410,52 +289,32 @@ class Tree extends Panel {
         g.drawImage(iImage, 0, 0, this);
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param g
-     */
+    
     public void update(Graphics g) {
         paint(g);
     }
 
-    /**
-     * Method declaration
-     */
+    
     public Dimension preferredSize() {
         return dMinimum;
     }
 
-    /**
-     * Method declaration
-     */
+    
     public Dimension getPreferredSize() {
         return dMinimum;
     }
 
-    /**
-     * Method declaration
-     */
+    
     public Dimension getMinimumSize() {
         return dMinimum;
     }
 
-    /**
-     * Method declaration
-     */
+    
     public Dimension minimumSize() {
         return dMinimum;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param e
-     * @param x
-     * @param y
-     */
+    
     public boolean mouseDown(Event e, int x, int y) {
 
         if (iRowHeight == 0 || x > iWidth || y > iHeight) {
@@ -524,12 +383,7 @@ class Tree extends Panel {
         return true;
     }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param f
-     */
+    
     private static int getMaxHeight(FontMetrics f) {
         return f.getHeight() + 2;
     }

@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.types;
@@ -41,22 +13,7 @@ import org.hsqldb.lib.ArrayUtil;
 import org.hsqldb.lib.StringConverter;
 import org.hsqldb.store.BitMap;
 
-/**
- *
- * Operations allowed on BIT strings are CONCAT, SUBSTRING, POSITION,
- * BIT_LENGTH and OCTECT_LENGTH.<p>
- *
- * BIT values can be cast to BINARY and vice-versa. In casts, BIT values are
- * converted to their counterpart BINARY values by treating each set of 8 bits
- * or less as a signle byte. The first bit of a BIT string is treated as the most
- * significan bit of the resutling byte value. Binary values are converted by
- * treating the bits in the sequence of bytes as sequence of bits in the BIT
- * string<p>
- *
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.1
- * @since 1.9.0
- */
+
 public final class BitType extends BinaryType {
 
     static final long maxBitPrecision = 1024;
@@ -155,9 +112,7 @@ public final class BitType extends BinaryType {
         }
     }
 
-    /**
-     * Returns type for concat
-     */
+    
     public Type getCombinedType(Session session, Type other, int operation) {
 
         if (operation != OpTypes.CONCAT) {
@@ -192,7 +147,7 @@ public final class BitType extends BinaryType {
         if (newPrecision > maxBitPrecision) {
             if (typeCode == Types.SQL_BIT) {
 
-                // Standard disallows type length reduction
+                
                 throw Error.error(ErrorCode.X_42570);
             }
 
@@ -295,7 +250,7 @@ public final class BitType extends BinaryType {
                 throw Error.error(ErrorCode.X_22501);
         }
 
-        // no special 0 bit consideration
+        
         if (b.bitLength(session) > precision) {
             if (!cast) {
                 throw Error.error(ErrorCode.X_22001);
@@ -418,7 +373,7 @@ public final class BitType extends BinaryType {
                        .isBooleanType()) || otherType.isCharacterType());
     }
 
-    /** @todo - implement */
+    
     public long position(SessionInterface session, BlobData data,
                          BlobData otherData, Type otherType, long offset) {
 
@@ -454,7 +409,7 @@ public final class BitType extends BinaryType {
 
         if (offset > end || end < 0) {
 
-            // return zero length data
+            
             offset = 0;
             end    = 0;
         }

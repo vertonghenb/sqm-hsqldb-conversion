@@ -1,32 +1,4 @@
-/* Copyright (c) 2001-2011, The HSQL Development Group
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the HSQL Development Group nor the names of its
- * contributors may be used to endorse or promote products derived from this
- * software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL HSQL DEVELOPMENT GROUP, HSQLDB.ORG,
- * OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+
 
 
 package org.hsqldb.persist;
@@ -49,49 +21,26 @@ import org.hsqldb.rowio.RowOutputText;
 import org.hsqldb.rowio.RowOutputTextQuoted;
 import org.hsqldb.scriptio.ScriptWriterText;
 
-// Ito Kazumitsu 20030328 - patch 1.7.2 - character encoding support
-// Dimitri Maziuk - patch for NL in string support
-// sqlbob@users - updated for 1.8.0 to allow new-lines in fields
-// fredt@users - updated for 1.8.0 to allow correct behaviour with transactions
 
-/**
- * Acts as a buffer manager for a single TEXT table and its Row data.<p>
- *
- * Handles read/write operations on the table's text format data file using a
- * compatible pair of org.hsqldb.rowio input/output class instances.
- *
- *
- * fredt - This used to write rows as soon as they are inserted
- * but now this is subject to transaction management.
- * A memory buffer contains the rows not yet committed.
- * Refactored for version 2.2.6.
- *
- * @author Bob Preston (sqlbob@users dot sourceforge.net)
- * @author Fred Toussi (fredt@users dot sourceforge.net)
- * @version 2.2.7
- * @since 1.7.0
- */
+
+
+
+
+
 public class TextCache extends DataFileCache {
 
-    //
+    
     TextFileSettings textFileSettings;
 
-    //state of Cache
+    
     protected String          header;
     protected Table           table;
     private IntKeyHashMap     uncommittedCache;
     HsqlByteArrayOutputStream buffer = new HsqlByteArrayOutputStream(128);
 
-    //
+    
 
-    /**
-     *  The source string for a cached table is evaluated and the parameters
-     *  are used to open the source file.<p>
-     *
-     *  Settings are used in this order: (1) settings specified in the
-     *  source string for the table (2) global database settings in
-     *  *.properties file (3) program defaults
-     */
+    
     TextCache(Table table, String name) {
 
         super(table.database, name);
@@ -115,7 +64,7 @@ public class TextCache extends DataFileCache {
         maxCacheRows  = textFileSettings.getMaxCacheRows();
         maxCacheBytes = textFileSettings.getMaxCacheBytes();
 
-        //-- Get size and scale
+        
         maxDataFileSize  = Integer.MAX_VALUE;
         cachedRowPadding = 1;
         cacheFileScale   = 1;
@@ -143,9 +92,7 @@ public class TextCache extends DataFileCache {
         }
     }
 
-    /**
-     *  Opens a data source file.
-     */
+    
     public void open(boolean readonly) {
 
         fileFreePosition = 0;
@@ -181,11 +128,7 @@ public class TextCache extends DataFileCache {
         open(cacheReadonly);
     }
 
-    /**
-     *  Writes newly created rows to disk. In the current implentation,
-     *  such rows have already been saved, so this method just removes a
-     *  source file that has no rows.
-     */
+    
     public void close(boolean write) {
 
         if (dataFile == null) {
@@ -221,9 +164,7 @@ public class TextCache extends DataFileCache {
         }
     }
 
-    /**
-     * Closes the source file and deletes it if it is not read-only.
-     */
+    
     void purge() {
 
         writeLock.lock();
@@ -253,9 +194,7 @@ public class TextCache extends DataFileCache {
         }
     }
 
-    /**
-     * Does not extend the end of file.
-     */
+    
     int setFilePos(CachedObject r) {
 
         int  rowSize         = r.getStorageSize();
@@ -278,9 +217,7 @@ public class TextCache extends DataFileCache {
         return i;
     }
 
-    /**
-     *
-     */
+    
     public void remove(int pos, PersistentStore store) {
 
         writeLock.lock();
@@ -351,7 +288,7 @@ public class TextCache extends DataFileCache {
         }
     }
 
-    /** cannot use isInMemory() for text cached object */
+    
     public CachedObject get(CachedObject object, PersistentStore store,
                             boolean keep) {
 
@@ -396,13 +333,10 @@ public class TextCache extends DataFileCache {
     }
 
     protected void saveRows(CachedObject[] rows, int offset, int count) {
-        // no-op
+        
     }
 
-    /**
-     * The row is always in uncommittedCache.
-     * Saves the row as normal and removes it
-     */
+    
     public void saveRow(CachedObject row) {
 
         writeLock.lock();
