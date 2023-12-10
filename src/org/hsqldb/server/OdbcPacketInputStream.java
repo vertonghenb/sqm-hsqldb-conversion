@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.server;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -11,34 +7,25 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-
 import org.hsqldb.HsqlException;
 import org.hsqldb.types.BinaryData;
-
-
 class OdbcPacketInputStream extends DataInputStream {
     char packetType;
     private InputStream bufferStream;
-
-    
     static OdbcPacketInputStream newOdbcPacketInputStream(
     char cType, InputStream streamSource, int sizeInt) throws IOException {
         return newOdbcPacketInputStream(
             cType, streamSource, new Integer(sizeInt));
     }
-
-    
     static OdbcPacketInputStream newOdbcPacketInputStream(
     char cType, InputStream streamSource) throws IOException {
         return newOdbcPacketInputStream(cType, streamSource, null);
     }
-
     static private OdbcPacketInputStream newOdbcPacketInputStream(
     char cType, InputStream streamSource, Integer packetSizeObj)
     throws IOException {
         int bytesRead, i;
         int packetSize = 0;
-
         if (packetSizeObj == null) {
             byte[] fourBytes = new byte[4];
             bytesRead = 0;
@@ -52,7 +39,6 @@ class OdbcPacketInputStream extends DataInputStream {
             packetSize =
                 ((fourBytes[0] & 0xff) << 24) + ((fourBytes[1] & 0xff) <<16)
                 + ((fourBytes[2] & 0xff) << 8) + (fourBytes[3] & 0xff) - 4;
-            
         } else {
             packetSize = packetSizeObj.intValue();
         }
@@ -69,13 +55,10 @@ class OdbcPacketInputStream extends DataInputStream {
         return new OdbcPacketInputStream(
             cType, new ByteArrayInputStream(xferBuffer));
     }
-
     private OdbcPacketInputStream(char packetType, InputStream bufferStream) {
         super(bufferStream);
         this.packetType = packetType;
     }
-
-    
     Map readStringPairs() throws IOException {
         String key;
         Map map = new HashMap();
@@ -88,35 +71,24 @@ class OdbcPacketInputStream extends DataInputStream {
         }
         return map;
     }
-
-    
     String readString() throws IOException {
-        
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write((byte) 'X');
         baos.write((byte) 'X');
-        
-
         int i;
         while ((i = readByte()) > 0) {
             baos.write((byte) i);
         }
         byte[] ba = baos.toByteArray();
         baos.close();
-
         int len = ba.length - 2;
         ba[0] = (byte) (len >>> 8);
         ba[1] = (byte) len;
-
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(ba));
         String s = dis.readUTF();
-        
-        
-        
         dis.close();
         return s;
     }
-
     BinaryData readSizedBinaryData() throws IOException {
         int len = readInt();
         try {
@@ -125,15 +97,11 @@ class OdbcPacketInputStream extends DataInputStream {
             throw new IOException(he.getMessage());
         }
     }
-
     String readSizedString() throws IOException {
         int len = readInt();
         return (len < 0) ? null : readString(len);
     }
-
-    
     String readString(int len) throws IOException {
-        
         int bytesRead = 0;
         int i;
         byte[] ba = new byte[len + 2];
@@ -152,16 +120,11 @@ class OdbcPacketInputStream extends DataInputStream {
                         "Null internal to String at offset " + (i - 2));
             }
         }
-
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(ba));
         String s = dis.readUTF();
-        
-        
-        
         dis.close();
         return s;
     }
-
     public char readByteChar() throws IOException {
         return (char) readByte();
     }

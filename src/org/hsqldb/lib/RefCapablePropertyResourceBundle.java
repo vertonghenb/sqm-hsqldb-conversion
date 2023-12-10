@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.lib;
-
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.PropertyResourceBundle;
@@ -17,11 +13,6 @@ import java.util.regex.Matcher;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
-
-
-
-
 public class RefCapablePropertyResourceBundle {
     private PropertyResourceBundle wrappedBundle;
     private String baseName;
@@ -35,15 +26,12 @@ public class RefCapablePropertyResourceBundle {
     private Pattern posPattern = Pattern.compile(
             "(?s)\\Q%{\\E(\\d)(?:\\Q:+\\E([^}]+))?\\Q}");
     private ClassLoader loader;  
-
     public static final int THROW_BEHAVIOR = 0;
     public static final int EMPTYSTRING_BEHAVIOR = 1;
     public static final int NOOP_BEHAVIOR = 2;
-
     public Enumeration<String> getKeys() {
         return wrappedBundle.getKeys();
     }
-
     private RefCapablePropertyResourceBundle(String baseName,
             PropertyResourceBundle wrappedBundle, ClassLoader loader) {
         this.baseName = baseName;
@@ -57,8 +45,6 @@ public class RefCapablePropertyResourceBundle {
         if (country.length() < 1) country = null;
         if (variant.length() < 1) variant = null;
     }
-
-    
     public String getExpandedString(String key, int behavior) {
         String s = getString(key);
         Matcher matcher = sysPropVarPattern.matcher(s);
@@ -71,8 +57,6 @@ public class RefCapablePropertyResourceBundle {
             condlVal = ((matcher.groupCount() > 1) ? matcher.group(2) : null);
             varValue = System.getProperty(varName);
             if (condlVal != null) {
-                
-                
                 varValue = ((varValue == null)
                         ? ""
                         : condlVal.replaceAll("\\Q$" + varName + "\\E\\b",
@@ -100,8 +84,6 @@ public class RefCapablePropertyResourceBundle {
         return (previousEnd < 1) ? s
                                  : (sb.toString() + s.substring(previousEnd));
     }
-
-    
     public String posSubst(String s, String[] subs, int behavior) {
         Matcher matcher = posPattern.matcher(s);
         int previousEnd = 0;
@@ -114,14 +96,11 @@ public class RefCapablePropertyResourceBundle {
             condlVal = ((matcher.groupCount() > 1) ? matcher.group(2) : null);
             varValue = ((varIndex < subs.length) ? subs[varIndex] : null);
             if (condlVal != null) {
-                
-                
                 varValue = ((varValue == null)
                         ? ""
                         : condlVal.replaceAll("\\Q%" + (varIndex+1) + "\\E\\b",
                                 Matcher.quoteReplacement(varValue)));
             }
-            
             if (varValue == null) switch (behavior) {
                 case THROW_BEHAVIOR:
                     throw new RuntimeException(
@@ -144,7 +123,6 @@ public class RefCapablePropertyResourceBundle {
         return (previousEnd < 1) ? s
                                  : (sb.toString() + s.substring(previousEnd));
     }
-
     public String getExpandedString(String key, String[] subs,
             int missingPropertyBehavior, int missingPosValueBehavior) {
         return posSubst(getExpandedString(key, missingPropertyBehavior), subs,
@@ -153,20 +131,14 @@ public class RefCapablePropertyResourceBundle {
     public String getString(String key, String[] subs, int behavior) {
         return posSubst(getString(key), subs, behavior);
     }
-
-    
     public String toString() {
         return baseName + " for " + language + " / " + country + " / "
             + variant;
     }
-
-    
     public String getString(String key) {
         String value = wrappedBundle.getString(key);
         if (value.length() < 1) {
             value = getStringFromFile(key);
-            
-            
             if (value.indexOf('\r') > -1)
                 value = value.replaceAll("\\Q\r\n", "\n")
                         .replaceAll("\\Q\r", "\n");
@@ -175,26 +147,19 @@ public class RefCapablePropertyResourceBundle {
         }
         return RefCapablePropertyResourceBundle.toNativeLs(value);
     }
-
-    
     public static String toNativeLs(String inString) {
         return LS.equals("\n") ? inString : inString.replaceAll("\\Q\n", LS);
     }
-
-    
     public static RefCapablePropertyResourceBundle getBundle(String baseName,
             ClassLoader loader) {
         return getRef(baseName, ResourceBundle.getBundle(baseName,
                 Locale.getDefault(), loader), loader);
     }
-    
     public static RefCapablePropertyResourceBundle
             getBundle(String baseName, Locale locale, ClassLoader loader) {
         return getRef(baseName,
                 ResourceBundle.getBundle(baseName, locale, loader), loader);
     }
-
-    
     static private RefCapablePropertyResourceBundle getRef(String baseName,
             ResourceBundle rb, ClassLoader loader) {
         if (!(rb instanceof PropertyResourceBundle))
@@ -209,8 +174,6 @@ public class RefCapablePropertyResourceBundle {
         allBundles.put(rb, newPRAFP);
         return newPRAFP;
     }
-
-    
     private InputStream getMostSpecificStream(
             String key, String l, String c, String v) {
         final String filePath = baseName.replace('.', '/') + '/' + key
@@ -218,22 +181,17 @@ public class RefCapablePropertyResourceBundle {
                 + ((c == null) ? "" : ("_" + c))
                 + ((v == null) ? "" : ("_" + v))
                 + ".text";
-        
         InputStream is = (InputStream) AccessController.doPrivileged(
             new PrivilegedAction() {
-
             public InputStream run() {
                 return loader.getResourceAsStream(filePath);
             }
         });
-        
-        
         return (is == null && l != null)
             ? getMostSpecificStream(key, ((c == null) ? null : l),
                     ((v == null) ? null : c), null)
             : is;
     }
-
     private String getStringFromFile(String key) {
         byte[] ba = null;
         int bytesread = 0;

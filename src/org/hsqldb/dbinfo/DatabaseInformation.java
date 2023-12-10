@@ -1,26 +1,11 @@
-
-
-
 package org.hsqldb.dbinfo;
-
 import java.lang.reflect.Constructor;
-
 import org.hsqldb.Database;
 import org.hsqldb.Session;
 import org.hsqldb.Table;
 import org.hsqldb.lib.IntValueHashMap;
 import org.hsqldb.persist.PersistentStore;
-
-
-
-
-
-
-
-
 public class DatabaseInformation {
-
-    
     protected static final int SYSTEM_BESTROWIDENTIFIER = 0;
     protected static final int SYSTEM_COLUMNS           = 1;
     protected static final int SYSTEM_CROSSREFERENCE    = 2;
@@ -36,8 +21,6 @@ public class DatabaseInformation {
     protected static final int SYSTEM_USERS             = 12;    
     protected static final int SYSTEM_VERSIONCOLUMNS    = 13;    
     protected static final int SYSTEM_SEQUENCES = 14;            
-
-    
     protected static final int SYSTEM_CACHEINFO             = 15;
     protected static final int SYSTEM_COLUMN_SEQUENCE_USAGE = 16;
     protected static final int SYSTEM_COMMENTS              = 17;
@@ -46,8 +29,6 @@ public class DatabaseInformation {
     protected static final int SYSTEM_SESSIONINFO           = 20;
     protected static final int SYSTEM_SESSIONS              = 21;
     protected static final int SYSTEM_TEXTTABLES            = 22;
-
-    
     protected static final int ADMINISTRABLE_ROLE_AUTHORIZATIONS = 23;
     protected static final int APPLICABLE_ROLES                  = 24;
     protected static final int ASSERTIONS                        = 25;
@@ -119,8 +100,6 @@ public class DatabaseInformation {
     protected static final int VIEW_ROUTINE_USAGE                = 91;
     protected static final int VIEW_TABLE_USAGE                  = 92;
     protected static final int VIEWS                             = 93;
-
-    
     protected static final String[] sysTableNames = {
         "SYSTEM_BESTROWIDENTIFIER",                              
         "SYSTEM_COLUMNS",                                        
@@ -137,8 +116,6 @@ public class DatabaseInformation {
         "SYSTEM_USERS",                                          
         "SYSTEM_VERSIONCOLUMNS",                                 
         "SYSTEM_SEQUENCES",                                      
-
-        
         "SYSTEM_CACHEINFO",                                      
         "SYSTEM_COLUMN_SEQUENCE_USAGE",                          
         "SYSTEM_COMMENTS",                                       
@@ -147,8 +124,6 @@ public class DatabaseInformation {
         "SYSTEM_SESSIONINFO",                                    
         "SYSTEM_SESSIONS",                                       
         "SYSTEM_TEXTTABLES",                                     
-
-        
         "ADMINISTRABLE_ROLE_AUTHORIZATIONS",                     
         "APPLICABLE_ROLES",                                      
         "ASSERTIONS",                                            
@@ -221,36 +196,23 @@ public class DatabaseInformation {
         "VIEW_TABLE_USAGE",                                      
         "VIEWS",                                                 
     };
-
-    
     protected static final IntValueHashMap sysTableNamesMap;
-
     static {
         synchronized (DatabaseInformation.class) {
             sysTableNamesMap = new IntValueHashMap(97);
-
             for (int i = 0; i < sysTableNames.length; i++) {
                 sysTableNamesMap.put(sysTableNames[i], i);
             }
         }
     }
-
     static int getSysTableID(String token) {
         return sysTableNamesMap.get(token, -1);
     }
-
-    
     protected final Database database;
-
-    
     protected boolean withContent = false;
-
-    
     public static final DatabaseInformation newDatabaseInformation(
             Database db) {
-
         Class c = null;
-
         try {
             c = Class.forName("org.hsqldb.dbinfo.DatabaseInformationFull");
         } catch (Exception e) {
@@ -260,40 +222,27 @@ public class DatabaseInformation {
                 c = DatabaseInformation.class;
             }
         }
-
         try {
             Class[]     ctorParmTypes = new Class[]{ Database.class };
             Object[]    ctorParms     = new Object[]{ db };
             Constructor ctor = c.getDeclaredConstructor(ctorParmTypes);
-
             return (DatabaseInformation) ctor.newInstance(ctorParms);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return new DatabaseInformation(db);
     }
-
-    
     DatabaseInformation(Database db) {
         database = db;
     }
-
-    
     final boolean isSystemTable(String name) {
         return sysTableNamesMap.containsKey(name);
     }
-
-    
     public Table getSystemTable(Session session, String name) {
         return null;
     }
-
-    
     public void setStore(Session session, Table table,
                                       PersistentStore store) {}
-
-    
     public final void setWithContent(boolean withContent) {
         this.withContent = withContent;
     }

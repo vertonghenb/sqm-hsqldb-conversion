@@ -1,11 +1,5 @@
-
-
-
 package org.hsqldb;
-
-
 public class RowActionBase {
-
     public static final byte ACTION_NONE          = 0;
     public static final byte ACTION_INSERT        = 1;
     public static final byte ACTION_DELETE        = 2;
@@ -14,8 +8,6 @@ public class RowActionBase {
     public static final byte ACTION_REF           = 5;
     public static final byte ACTION_CHECK         = 6;
     public static final byte ACTION_DEBUG         = 7;
-
-    
     RowActionBase            next;
     Session                  session;
     long                     actionTimestamp;
@@ -25,19 +17,13 @@ public class RowActionBase {
     boolean                  rolledback;
     boolean                  prepared;
     int[]                    changeColumnMap;
-
     RowActionBase() {}
-
-    
     RowActionBase(Session session, byte type) {
-
         this.session    = session;
         this.type       = type;
         actionTimestamp = session.actionTimestamp;
     }
-
     void setAsAction(RowActionBase action) {
-
         next            = action.next;
         session         = action.session;
         actionTimestamp = action.actionTimestamp;

@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.sample;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.hsqldb.lib.RCData;
@@ -12,7 +8,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  * Sample class which executes SQL files, by embedding SqlFile.
  * <P/>
@@ -29,7 +24,6 @@ import java.util.Map;
  */
 public class SqlFileEmbedder {
     private Connection conn;
-
     /**
      * For applications that use a persistent JDBC connection, this class can
      * be used to encapsulate that connection.  (Just strip out the SqlFile
@@ -40,7 +34,6 @@ public class SqlFileEmbedder {
     public Connection getConn() {
         return conn;
     }
-
     /**
      * Run<PRE>
      *     java SqlFileEmbedder</PRE>
@@ -64,13 +57,9 @@ public class SqlFileEmbedder {
             try {
                 embedder.getConn().close();
             } catch (SQLException se) {
-                
-                
-                
             }
         }
     }
-
     /**
      * Instantiates SqlFileEmbedder object and connects to specified database.
      * <P/>
@@ -84,7 +73,6 @@ public class SqlFileEmbedder {
         conn = (new RCData(rcFile, urlid)).getConnection();
         conn.setAutoCommit(false);
     }
-
     /**
      * Your own classes can use this method to execute SQL files.
      * <P/>
@@ -97,9 +85,6 @@ public class SqlFileEmbedder {
             throws IOException, SqlToolError, SQLException {
         Map<String, String> sqlVarMap = new HashMap<String, String>();
         sqlVarMap.put("invoker", getClass().getName());
-        
-        
-
         File file;
         SqlFile sqlFile;
         for (String fileString : fileStrings) {
@@ -111,10 +96,6 @@ public class SqlFileEmbedder {
             sqlFile.setConnection(conn);
             sqlFile.addUserVars(sqlVarMap);
             sqlFile.execute();
-
-            
-            
-            
             conn = sqlFile.getConnection();
             sqlVarMap = sqlFile.getUserVars();
         }

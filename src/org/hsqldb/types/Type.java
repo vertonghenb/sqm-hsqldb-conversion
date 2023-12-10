@@ -1,10 +1,5 @@
-
-
-
 package org.hsqldb.types;
-
 import java.util.Comparator;
-
 import org.hsqldb.HsqlNameManager;
 import org.hsqldb.HsqlNameManager.HsqlName;
 import org.hsqldb.SchemaObject;
@@ -19,505 +14,345 @@ import org.hsqldb.lib.IntValueHashMap;
 import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.rights.Grantee;
 import org.hsqldb.store.ValuePool;
-
-
 public abstract class Type implements SchemaObject, Cloneable {
-
     public static final Type[] emptyArray = new Type[]{};
-
-    
     public final int        typeComparisonGroup;
     public final int        typeCode;
     public final long       precision;
     public final int        scale;
     public UserTypeModifier userTypeModifier;
-
-    
     Type(int typeGroup, int type, long precision, int scale) {
-
         this.typeComparisonGroup = typeGroup;
         this.typeCode            = type;
         this.precision           = precision;
         this.scale               = scale;
     }
-
-    
     public final int getType() {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         return userTypeModifier.getType();
     }
-
     public final HsqlName getName() {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         return userTypeModifier.getName();
     }
-
     public final HsqlName getCatalogName() {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         return userTypeModifier.getSchemaName().schema;
     }
-
     public final HsqlName getSchemaName() {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         return userTypeModifier.getSchemaName();
     }
-
     public final Grantee getOwner() {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         return userTypeModifier.getOwner();
     }
-
     public final OrderedHashSet getReferences() {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         return userTypeModifier.getReferences();
     }
-
     public final OrderedHashSet getComponents() {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         return userTypeModifier.getComponents();
     }
-
     public final void compile(Session session, SchemaObject parentObject) {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         userTypeModifier.compile(session);
     }
-
-    
     public String getSQL() {
-
         if (userTypeModifier == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
-
         return userTypeModifier.getSQL();
     }
-
     public long getChangeTimestamp() {
         return 0;
     }
-
     public Type duplicate() {
-
         try {
             return (Type) super.clone();
         } catch (CloneNotSupportedException e) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
     }
-
     public abstract int displaySize();
-
-    
     public abstract int getJDBCTypeCode();
-
-    
     public abstract String getJDBCClassName();
-
     public abstract Class getJDBCClass();
-
     public int getJDBCScale() {
         return scale;
     }
-
     public int getJDBCPrecision() {
         return precision > Integer.MAX_VALUE ? Integer.MAX_VALUE
                                              : (int) precision;
     }
-
-    
     public int getSQLGenericTypeCode() {
         return typeCode;
     }
-
-    
     public abstract String getNameString();
-
-    
     public String getFullNameString() {
         return getNameString();
     }
-
-    
     public abstract String getDefinition();
-
     public boolean hasCollation() {
         return false;
     }
-
     public String getCollationDefinition() {
         return "";
     }
-
     public Collation getCollation() {
         return null;
     }
-
     public Charset getCharacterSet() {
         return null;
     }
-
     public final String getTypeDefinition() {
-
         if (userTypeModifier == null) {
             return getDefinition();
         }
-
         return getName().getSchemaQualifiedStatementName();
     }
-
     public abstract int compare(Session session, Object a, Object b);
-
     public int compare(Session session, Object a, Object b,
                        SortAndSlice sort) {
-
         if (a == b) {
             return 0;
         }
-
         if (a == null) {
             return sort.sortNullsLast[0] ? 1
                                          : -1;
         }
-
         if (b == null) {
             return sort.sortNullsLast[0] ? -1
                                          : 1;
         }
-
         int result = compare(session, a, b);
-
         return sort.sortDescending[0] ? -result
                                       : result;
     }
-
     public abstract Object convertToTypeLimits(SessionInterface session,
             Object a);
-
-    
     public Object castToType(SessionInterface session, Object a, Type type) {
         return convertToType(session, a, type);
     }
-
-    
     public abstract Object convertToType(SessionInterface session, Object a,
                                          Type type);
-
-    
     public Object convertToTypeJDBC(SessionInterface session, Object a,
                                     Type otherType) {
-
         if (otherType.isLobType()) {
             throw Error.error(ErrorCode.X_42561);
         }
-
         return convertToType(session, a, otherType);
     }
-
     public Object convertJavaToSQL(SessionInterface session, Object a) {
         return a;
     }
-
     public Object convertSQLToJava(SessionInterface session, Object a) {
         return a;
     }
-
-    
     public abstract Object convertToDefaultType(
         SessionInterface sessionInterface, Object o);
-
     public abstract String convertToString(Object a);
-
     public abstract String convertToSQLString(Object a);
-
     public abstract boolean canConvertFrom(Type otherType);
-
-    
     public int canMoveFrom(Type otherType) {
-
         if (otherType == this) {
             return 0;
         }
-
         return -1;
     }
-
     public boolean canBeAssignedFrom(Type otherType) {
-
         if (otherType == null) {
             return true;
         }
-
         return otherType.typeCode == Types.SQL_ALL_TYPES
                || typeComparisonGroup == otherType.typeComparisonGroup;
     }
-
     public int arrayLimitCardinality() {
         return 0;
     }
-
     public Type collectionBaseType() {
         return null;
     }
-
     public boolean isArrayType() {
         return false;
     }
-
     public boolean isMultisetType() {
         return false;
     }
-
     public boolean isRowType() {
         return false;
     }
-
     public boolean isStructuredType() {
         return false;
     }
-
     public boolean isCharacterType() {
         return false;
     }
-
     public boolean isNumberType() {
         return false;
     }
-
     public boolean isIntegralType() {
         return false;
     }
-
     public boolean isExactNumberType() {
         return false;
     }
-
     public boolean isDecimalType() {
         return false;
     }
-
     public boolean isDateTimeType() {
         return false;
     }
-
     public boolean isDateTimeTypeWithZone() {
         return false;
     }
-
     public boolean isIntervalType() {
         return false;
     }
-
     public boolean isBinaryType() {
         return false;
     }
-
     public boolean isBooleanType() {
         return false;
     }
-
     public boolean isLobType() {
         return false;
     }
-
     public boolean isBitType() {
         return false;
     }
-
     public boolean isObjectType() {
         return false;
     }
-
     public boolean isDistinctType() {
-
         return userTypeModifier == null ? false
                                         : userTypeModifier.schemaObjectType
                                           == SchemaObject.TYPE;
     }
-
     public boolean isDomainType() {
-
         return userTypeModifier == null ? false
                                         : userTypeModifier.schemaObjectType
                                           == SchemaObject.DOMAIN;
     }
-
     public boolean acceptsPrecision() {
         return false;
     }
-
     public boolean requiresPrecision() {
         return false;
     }
-
     public long getMaxPrecision() {
         return 0;
     }
-
     public int getMaxScale() {
         return 0;
     }
-
     public int getPrecisionRadix() {
         return 0;
     }
-
     public boolean acceptsFractionalPrecision() {
         return false;
     }
-
     public boolean acceptsScale() {
         return false;
     }
-
     public int precedenceDegree(Type other) {
-
         if (other.typeCode == typeCode) {
             if (typeCode == Types.SQL_ARRAY) {
                 return collectionBaseType().precedenceDegree(
                     other.collectionBaseType());
             }
-
             return 0;
         }
-
         return Integer.MIN_VALUE;
     }
-
-    
     public abstract Type getAggregateType(Type other);
-
-    
     public abstract Type getCombinedType(Session session, Type other,
                                          int operation);
-
     public int compareToTypeRange(Object o) {
         return 0;
     }
-
-    
     public Object absolute(Object a) {
         throw Error.runtimeError(ErrorCode.U_S0500, "Type");
     }
-
     public Object negate(Object a) {
         throw Error.runtimeError(ErrorCode.U_S0500, "Type");
     }
-
     public Object add(Object a, Object b, Type otherType) {
         throw Error.runtimeError(ErrorCode.U_S0500, "Type");
     }
-
     public Object subtract(Object a, Object b, Type otherType) {
         throw Error.runtimeError(ErrorCode.U_S0500, "Type");
     }
-
     public Object multiply(Object a, Object b) {
         throw Error.runtimeError(ErrorCode.U_S0500, "Type");
     }
-
     public Object divide(Session session, Object a, Object b) {
         throw Error.runtimeError(ErrorCode.U_S0500, "Type");
     }
-
     public Object concat(Session session, Object a, Object b) {
         throw Error.runtimeError(ErrorCode.U_S0500, "Type");
     }
-
     public int cardinality(Session session, Object a) {
         return 0;
     }
-
     public boolean equals(Object other) {
-
         if (other == this) {
             return true;
         }
-
         if (other instanceof Type) {
             if (((Type) other).typeCode == Types.SQL_ARRAY) {
                 return false;
             }
-
             if (((Type) other).typeCode == Types.SQL_ROW) {
                 return false;
             }
-
             return ((Type) other).typeCode == typeCode
                    && ((Type) other).precision == precision
                    && ((Type) other).scale == scale
                    && ((Type) other).userTypeModifier == userTypeModifier;
         }
-
         return false;
     }
-
     public int hashCode() {
         return typeCode + (int) precision << 8 + scale << 16;
     }
-
     public static TypedComparator newComparator(Session session) {
         return new TypedComparator(session);
     }
-
     public static class TypedComparator implements Comparator {
-
         Session      session;
         Type         type;
         SortAndSlice sort;
-
         TypedComparator(Session session) {
             this.session = session;
             this.sort    = sort;
         }
-
         public int compare(Object a, Object b) {
             return type.compare(session, a, b, sort);
         }
-
         public void setType(Type type, SortAndSlice sort) {
             this.type = type;
             this.sort = sort;
         }
     }
-
-    
-
-    
     public static final Type SQL_ALL_TYPES = NullType.getNullType();
-
-    
     public static final CharacterType SQL_CHAR =
         new CharacterType(Types.SQL_CHAR, 1);
     public static final CharacterType SQL_CHAR_16 =
@@ -536,15 +371,11 @@ public abstract class Type implements SchemaObject, Cloneable {
     public static final CharacterType VARCHAR_IGNORECASE_DEFAULT =
         new CharacterType(Types.VARCHAR_IGNORECASE,
                           CharacterType.defaultVarcharPrecision);
-
-    
     public static final BitType SQL_BIT = new BitType(Types.SQL_BIT, 1);
     public static final BitType SQL_BIT_VARYING =
         new BitType(Types.SQL_BIT_VARYING, 1);
     public static final BitType SQL_BIT_VARYING_MAX_LENGTH =
         new BitType(Types.SQL_BIT_VARYING, BitType.maxBitPrecision);
-
-    
     public static final BinaryType SQL_BINARY =
         new BinaryType(Types.SQL_BINARY, 1);
     public static final BinaryType SQL_BINARY_16 =
@@ -557,14 +388,8 @@ public abstract class Type implements SchemaObject, Cloneable {
         new BinaryType(Types.SQL_VARBINARY, 32 * 1024);
     public static final BlobType SQL_BLOB =
         new BlobType(BlobType.defaultBlobSize);
-
-    
     public static final OtherType OTHER = OtherType.getOtherType();
-
-    
     public static final BooleanType SQL_BOOLEAN = BooleanType.getBooleanType();
-
-    
     public static final NumberType SQL_NUMERIC =
         new NumberType(Types.SQL_NUMERIC, NumberType.defaultNumericPrecision,
                        0);
@@ -579,8 +404,6 @@ public abstract class Type implements SchemaObject, Cloneable {
                        NumberType.bigintSquareNumericPrecision, 0);
     public static final NumberType SQL_DOUBLE =
         new NumberType(Types.SQL_DOUBLE, 0, 0);
-
-    
     public static final NumberType TINYINT = new NumberType(Types.TINYINT,
         NumberType.tinyintPrecision, 0);
     public static final NumberType SQL_SMALLINT =
@@ -589,8 +412,6 @@ public abstract class Type implements SchemaObject, Cloneable {
         new NumberType(Types.SQL_INTEGER, NumberType.integerPrecision, 0);
     public static final NumberType SQL_BIGINT =
         new NumberType(Types.SQL_BIGINT, NumberType.bigintPrecision, 0);
-
-    
     public static final DateTimeType SQL_DATE =
         new DateTimeType(Types.SQL_TIMESTAMP, Types.SQL_DATE, 0);
     public static final DateTimeType SQL_TIME =
@@ -608,8 +429,6 @@ public abstract class Type implements SchemaObject, Cloneable {
                          DTIType.defaultTimestampFractionPrecision);
     public static final DateTimeType SQL_TIMESTAMP_NO_FRACTION =
         new DateTimeType(Types.SQL_TIMESTAMP, Types.SQL_TIMESTAMP, 0);
-
-    
     public static final IntervalType SQL_INTERVAL_YEAR =
         IntervalType.newIntervalType(Types.SQL_INTERVAL_YEAR,
                                      DTIType.defaultIntervalPrecision, 0);
@@ -657,8 +476,6 @@ public abstract class Type implements SchemaObject, Cloneable {
         IntervalType.newIntervalType(Types.SQL_INTERVAL_MINUTE_TO_SECOND,
                                      DTIType.defaultIntervalPrecision,
                                      DTIType.defaultIntervalFractionPrecision);
-
-    
     public static final IntervalType SQL_INTERVAL_YEAR_MAX_PRECISION =
         IntervalType.newIntervalType(Types.SQL_INTERVAL_YEAR,
                                      DTIType.maxIntervalPrecision, 0);
@@ -682,8 +499,6 @@ public abstract class Type implements SchemaObject, Cloneable {
         IntervalType.newIntervalType(Types.SQL_INTERVAL_SECOND,
                                      DTIType.maxIntervalPrecision,
                                      DTIType.maxFractionPrecision);
-
-    
     public static final IntervalType SQL_INTERVAL_YEAR_TO_MONTH_MAX_PRECISION =
         IntervalType.newIntervalType(Types.SQL_INTERVAL_YEAR_TO_MONTH,
                                      DTIType.maxIntervalPrecision, 0);
@@ -691,18 +506,13 @@ public abstract class Type implements SchemaObject, Cloneable {
         IntervalType.newIntervalType(Types.SQL_INTERVAL_DAY_TO_SECOND,
                                      DTIType.maxIntervalPrecision,
                                      DTIType.maxFractionPrecision);
-
-    
     public static final ArrayType SQL_ARRAY_ALL_TYPES =
         new ArrayType(SQL_ALL_TYPES, 0);
-
     public static ArrayType getDefaultArrayType(int type) {
         return new ArrayType(getDefaultType(type),
                              ArrayType.defaultArrayCardinality);
     }
-
     public static Type getDefaultType(int type) {
-
         try {
             return getType(type, Type.SQL_VARCHAR.getCharacterSet(),
                            Type.SQL_VARCHAR.getCollation(), 0, 0);
@@ -710,264 +520,181 @@ public abstract class Type implements SchemaObject, Cloneable {
             return null;
         }
     }
-
     public static Type getDefaultTypeWithSize(int type) {
-
         switch (type) {
-
             case Types.SQL_ALL_TYPES :
                 return SQL_ALL_TYPES;
-
             case Types.SQL_ARRAY :
                 return SQL_ARRAY_ALL_TYPES;
-
             case Types.SQL_CHAR :
                 return SQL_CHAR_DEFAULT;
-
             case Types.SQL_VARCHAR :
                 return SQL_VARCHAR_DEFAULT;
-
             case Types.VARCHAR_IGNORECASE :
                 return VARCHAR_IGNORECASE_DEFAULT;
-
             case Types.SQL_CLOB :
                 return SQL_CLOB;
-
             case Types.SQL_INTEGER :
                 return SQL_INTEGER;
-
             case Types.SQL_SMALLINT :
                 return SQL_SMALLINT;
-
             case Types.SQL_BIGINT :
                 return SQL_BIGINT;
-
             case Types.TINYINT :
                 return TINYINT;
-
             case Types.SQL_FLOAT :
             case Types.SQL_REAL :
             case Types.SQL_DOUBLE :
                 return SQL_DOUBLE;
-
             case Types.SQL_NUMERIC :
                 return SQL_NUMERIC;
-
             case Types.SQL_DECIMAL :
                 return SQL_DECIMAL;
-
             case Types.SQL_BOOLEAN :
                 return SQL_BOOLEAN;
-
             case Types.SQL_BINARY :
                 return SQL_BINARY_DEFAULT;
-
             case Types.SQL_VARBINARY :
                 return SQL_VARBINARY_DEFAULT;
-
             case Types.SQL_BLOB :
                 return SQL_BLOB;
-
             case Types.SQL_BIT :
                 return SQL_BIT;
-
             case Types.SQL_BIT_VARYING :
                 return SQL_BIT_VARYING;
-
             case Types.SQL_DATE :
                 return SQL_DATE;
-
             case Types.SQL_TIME :
                 return SQL_TIME;
-
             case Types.SQL_TIME_WITH_TIME_ZONE :
                 return SQL_TIME_WITH_TIME_ZONE;
-
             case Types.SQL_TIMESTAMP :
                 return SQL_TIMESTAMP;
-
             case Types.SQL_TIMESTAMP_WITH_TIME_ZONE :
                 return SQL_TIMESTAMP_WITH_TIME_ZONE;
-
             case Types.SQL_INTERVAL_YEAR :
                 return SQL_INTERVAL_YEAR;
-
             case Types.SQL_INTERVAL_YEAR_TO_MONTH :
                 return SQL_INTERVAL_YEAR_TO_MONTH;
-
             case Types.SQL_INTERVAL_MONTH :
                 return SQL_INTERVAL_MONTH;
-
             case Types.SQL_INTERVAL_DAY :
                 return SQL_INTERVAL_DAY;
-
             case Types.SQL_INTERVAL_DAY_TO_HOUR :
                 return SQL_INTERVAL_DAY_TO_HOUR;
-
             case Types.SQL_INTERVAL_DAY_TO_MINUTE :
                 return SQL_INTERVAL_DAY_TO_MINUTE;
-
             case Types.SQL_INTERVAL_DAY_TO_SECOND :
                 return SQL_INTERVAL_DAY_TO_SECOND;
-
             case Types.SQL_INTERVAL_HOUR :
                 return SQL_INTERVAL_HOUR;
-
             case Types.SQL_INTERVAL_HOUR_TO_MINUTE :
                 return SQL_INTERVAL_HOUR_TO_MINUTE;
-
             case Types.SQL_INTERVAL_HOUR_TO_SECOND :
                 return SQL_INTERVAL_HOUR_TO_SECOND;
-
             case Types.SQL_INTERVAL_MINUTE :
                 return SQL_INTERVAL_MINUTE;
-
             case Types.SQL_INTERVAL_MINUTE_TO_SECOND :
                 return SQL_INTERVAL_MINUTE_TO_SECOND;
-
             case Types.SQL_INTERVAL_SECOND :
                 return SQL_INTERVAL_SECOND;
-
             case Types.OTHER :
                 return OTHER;
-
             default :
                 return null;
         }
     }
-
     public static int getHSQLDBTypeCode(int jdbcTypeNumber) {
-
         switch (jdbcTypeNumber) {
-
             case Types.BIGINT :
                 return Types.SQL_BIGINT;
-
             case Types.LONGVARCHAR :
                 return Types.SQL_VARCHAR;
-
             case Types.CLOB :
                 return Types.SQL_CLOB;
-
             case Types.BINARY :
                 return Types.SQL_BINARY;
-
             case Types.BIT :
                 return Types.SQL_BIT_VARYING;
-
             case Types.VARBINARY :
             case Types.LONGVARBINARY :
                 return Types.SQL_VARBINARY;
-
             case Types.BLOB :
                 return Types.SQL_BLOB;
-
             case Types.ARRAY :
                 return Types.SQL_ARRAY;
-
             default :
                 return jdbcTypeNumber;
         }
     }
-
-    
     public static int getJDBCTypeCode(int type) {
-
         switch (type) {
-
             case Types.SQL_BLOB :
                 return Types.BLOB;
-
             case Types.SQL_CLOB :
                 return Types.CLOB;
-
             case Types.SQL_BIGINT :
                 return Types.BIGINT;
-
             case Types.SQL_BINARY :
                 return Types.BINARY;
-
             case Types.SQL_VARBINARY :
                 return Types.VARBINARY;
-
             case Types.SQL_BIT :
             case Types.SQL_BIT_VARYING :
                 return Types.BIT;
-
             case Types.SQL_ARRAY :
                 return Types.ARRAY;
-
             default :
                 return type;
         }
     }
-
-    
     public static Type getType(int type, Charset charset, Collation collation,
                                long precision, int scale) {
-
         switch (type) {
-
             case Types.SQL_ALL_TYPES :
                 return SQL_ALL_TYPES;
-
-
             case Types.SQL_CHAR :
             case Types.SQL_VARCHAR :
             case Types.VARCHAR_IGNORECASE :
             case Types.SQL_CLOB :
                 return CharacterType.getCharacterType(type, precision,
                                                       collation);
-
             case Types.SQL_INTEGER :
                 return SQL_INTEGER;
-
             case Types.SQL_SMALLINT :
                 return SQL_SMALLINT;
-
             case Types.SQL_BIGINT :
                 return SQL_BIGINT;
-
             case Types.TINYINT :
                 return TINYINT;
-
             case Types.SQL_FLOAT :
                 if (precision > 53) {
                     throw Error.error(ErrorCode.X_42592, "" + precision);
                 }
-
-            
             case Types.SQL_REAL :
             case Types.SQL_DOUBLE :
                 return SQL_DOUBLE;
-
             case Types.SQL_NUMERIC :
             case Types.SQL_DECIMAL :
                 if (precision == 0) {
                     precision = NumberType.defaultNumericPrecision;
                 }
-
                 return NumberType.getNumberType(type, precision, scale);
-
             case Types.SQL_BOOLEAN :
                 return SQL_BOOLEAN;
-
             case Types.SQL_BINARY :
             case Types.SQL_VARBINARY :
             case Types.SQL_BLOB :
                 return BinaryType.getBinaryType(type, precision);
-
             case Types.SQL_BIT :
             case Types.SQL_BIT_VARYING :
                 return BitType.getBitType(type, precision);
-
             case Types.SQL_DATE :
             case Types.SQL_TIME :
             case Types.SQL_TIME_WITH_TIME_ZONE :
             case Types.SQL_TIMESTAMP :
             case Types.SQL_TIMESTAMP_WITH_TIME_ZONE :
                 return DateTimeType.getDateTimeType(type, scale);
-
             case Types.SQL_INTERVAL_YEAR :
             case Types.SQL_INTERVAL_YEAR_TO_MONTH :
             case Types.SQL_INTERVAL_MONTH :
@@ -982,35 +709,26 @@ public abstract class Type implements SchemaObject, Cloneable {
             case Types.SQL_INTERVAL_MINUTE_TO_SECOND :
             case Types.SQL_INTERVAL_SECOND :
                 return IntervalType.getIntervalType(type, precision, scale);
-
             case Types.OTHER :
                 return OTHER;
-
             default :
                 throw Error.runtimeError(ErrorCode.U_S0500, "Type");
         }
     }
-
     public static Type getAggregateType(Type add, Type existing) {
-
         if (existing == null || existing.typeCode == Types.SQL_ALL_TYPES) {
             return add;
         }
-
         if (add == null || add.typeCode == Types.SQL_ALL_TYPES) {
             return existing;
         }
-
         return existing.getAggregateType(add);
     }
-
     public static final IntValueHashMap typeAliases;
     public static final IntValueHashMap typeNames;
     public static final IntKeyHashMap   jdbcConvertTypes;
-
     static {
         typeNames = new IntValueHashMap(37);
-
         typeNames.put(Tokens.T_CHARACTER, Types.SQL_CHAR);
         typeNames.put(Tokens.T_VARCHAR, Types.SQL_VARCHAR);
         typeNames.put(Tokens.T_VARCHAR_IGNORECASE, Types.VARCHAR_IGNORECASE);
@@ -1035,10 +753,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         typeNames.put(Tokens.T_BLOB, Types.SQL_BLOB);
         typeNames.put(Tokens.T_BIT, Types.SQL_BIT);
         typeNames.put(Tokens.T_OTHER, Types.OTHER);
-
-        
         typeAliases = new IntValueHashMap(64);
-
         typeAliases.put(Tokens.T_CHAR, Types.SQL_CHAR);
         typeAliases.put(Tokens.T_INT, Types.SQL_INTEGER);
         typeAliases.put(Tokens.T_DEC, Types.SQL_DECIMAL);
@@ -1046,10 +761,7 @@ public abstract class Type implements SchemaObject, Cloneable {
         typeAliases.put(Tokens.T_DATETIME, Types.SQL_TIMESTAMP);
         typeAliases.put(Tokens.T_LONGVARBINARY, Types.LONGVARBINARY);
         typeAliases.put(Tokens.T_OBJECT, Types.OTHER);
-
-        
         jdbcConvertTypes = new IntKeyHashMap(37);
-
         jdbcConvertTypes.put(Tokens.SQL_CHAR, Type.SQL_CHAR_DEFAULT);
         jdbcConvertTypes.put(Tokens.SQL_VARCHAR, Type.SQL_VARCHAR_DEFAULT);
         jdbcConvertTypes.put(Tokens.SQL_LONGVARCHAR, Type.SQL_VARCHAR_DEFAULT);
@@ -1075,39 +787,28 @@ public abstract class Type implements SchemaObject, Cloneable {
         jdbcConvertTypes.put(Tokens.SQL_BLOB, Type.SQL_BLOB);
         jdbcConvertTypes.put(Tokens.SQL_BIT, Type.SQL_BIT);
     }
-
     public static int getTypeNr(String name) {
-
         int i = typeNames.get(name, Integer.MIN_VALUE);
-
         if (i == Integer.MIN_VALUE) {
             i = typeAliases.get(name, Integer.MIN_VALUE);
         }
-
         return i;
     }
-
     public static Type getTypeForJDBCConvertToken(int name) {
         return (Type) jdbcConvertTypes.get(name);
     }
-
     public static boolean isSupportedSQLType(int typeNumber) {
-
         if (getDefaultType(typeNumber) == null) {
             return false;
         }
-
         return true;
     }
-
     public static boolean matches(Type[] one, Type[] other) {
-
         for (int i = 0; i < one.length; i++) {
             if (one[i].typeCode != other[i].typeCode) {
                 return false;
             }
         }
-
         return true;
     }
 }

@@ -1,8 +1,4 @@
 package org.hsqldb.test;
-
-
-
-
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.sql.Connection;
@@ -13,10 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Enumeration;
 import java.util.Vector;
-
 class JDBCBench {
-
-    
     public static int tps       = 1;         
     public static int nbranches = 1;         
     public static int ntellers  = 10;        
@@ -38,67 +31,51 @@ class JDBCBench {
     static PrintStream      TabFile             = null;
     static boolean          verbose             = false;
     MemoryWatcherThread     MemoryWatcher;
-
-    
     public static void main(String[] Args) {
-
         String  DriverName         = "";
         String  DBUrl              = "";
         String  DBUser             = "";
         String  DBPassword         = "";
         boolean initialize_dataset = false;
-
         for (int i = 0; i < Args.length; i++) {
             if (Args[i].equals("-clients")) {
                 if (i + 1 < Args.length) {
                     i++;
-
                     n_clients = Integer.parseInt(Args[i]);
                 }
             } else if (Args[i].equals("-driver")) {
                 if (i + 1 < Args.length) {
                     i++;
-
                     DriverName = Args[i];
-
                     if (DriverName.equals(
                             "org.enhydra.instantdb.jdbc.idbDriver")) {
                         ShutdownCommand = "SHUTDOWN";
                     }
-
                     if (DriverName.equals(
                             "com.borland.datastore.jdbc.DataStoreDriver")) {}
-
                     if (DriverName.equals("com.mckoi.JDBCDriver")) {
                         ShutdownCommand = "SHUTDOWN";
                     }
-
                     if (DriverName.equals("org.hsqldb.jdbc.JDBCDriver")
                             || DriverName.equals("org.hsqldb.jdbcDriver")) {
                         tableExtension = "CREATE CACHED TABLE ";
-
-
                     }
                 }
             } else if (Args[i].equals("-url")) {
                 if (i + 1 < Args.length) {
                     i++;
-
                     DBUrl = Args[i];
                 }
             } else if (Args[i].equals("-user")) {
                 if (i + 1 < Args.length) {
                     i++;
-
                     DBUser = Args[i];
                 }
             } else if (Args[i].equals("-tabfile")) {
                 if (i + 1 < Args.length) {
                     i++;
-
                     try {
                         FileOutputStream File = new FileOutputStream(Args[i]);
-
                         TabFile = new PrintStream(File);
                     } catch (Exception e) {
                         TabFile = null;
@@ -107,13 +84,11 @@ class JDBCBench {
             } else if (Args[i].equals("-password")) {
                 if (i + 1 < Args.length) {
                     i++;
-
                     DBPassword = Args[i];
                 }
             } else if (Args[i].equals("-tpc")) {
                 if (i + 1 < Args.length) {
                     i++;
-
                     n_txn_per_client = Integer.parseInt(Args[i]);
                 }
             } else if (Args[i].equals("-init")) {
@@ -121,14 +96,12 @@ class JDBCBench {
             } else if (Args[i].equals("-tps")) {
                 if (i + 1 < Args.length) {
                     i++;
-
                     tps = Integer.parseInt(Args[i]);
                 }
             } else if (Args[i].equals("-v")) {
                 verbose = true;
             }
         }
-
         if (DriverName.length() == 0 || DBUrl.length() == 0) {
             System.out.println(
                 "usage: java JDBCBench -driver [driver_class_name] -url [url_to_db] -user [username] -password [password] [-v] [-init] [-tpc n] [-clients n]");
@@ -139,7 +112,6 @@ class JDBCBench {
             System.out.println("-clients    number of simultaneous clients");
             System.exit(-1);
         }
-
         System.out.println(
             "*********************************************************");
         System.out.println(
@@ -155,10 +127,8 @@ class JDBCBench {
         System.out.println("Number of transactions per client: "
                            + n_txn_per_client);
         System.out.println();
-
         try {
             Class.forName(DriverName);
-
             JDBCBench Me = new JDBCBench(DBUrl, DBUser, DBPassword,
                                          initialize_dataset);
         } catch (Exception E) {
@@ -166,149 +136,108 @@ class JDBCBench {
             E.printStackTrace();
         }
     }
-
     public JDBCBench(String url, String user, String password, boolean init) {
-
         Vector      vClient  = new Vector();
         Thread      Client   = null;
         Enumeration e        = null;
         Connection  guardian = null;
-
         try {
             java.util.Date start = new java.util.Date();
-
             if (init) {
                 System.out.println("Start: " + start.toString());
                 System.out.print("Initializing dataset...");
                 createDatabase(url, user, password);
-
                 double seconds = (System.currentTimeMillis() - start.getTime())
                                  / 1000D;
-
                 System.out.println("done. in " + seconds + " seconds\n");
                 System.out.println("Complete: "
                                    + (new java.util.Date()).toString());
             }
-
             System.out.println("* Starting Benchmark Run *");
-
             MemoryWatcher = new MemoryWatcherThread();
-
             MemoryWatcher.start();
             oneRound(url, user, password, transactions, true);
             oneRound(url, user, password, transactions, true);
             oneRound(url, user, password, transactions, true);
-
         } catch (Exception E) {
             System.out.println(E.toString());
             E.printStackTrace();
         } finally {
             MemoryWatcher.end();
-
             try {
                 MemoryWatcher.join();
-
                 if (ShutdownCommand.length() > 0) {
                     guardian = connect(url, user, password);
-
                     Statement Stmt = guardian.createStatement();
-
                     Stmt.execute("SHUTDOWN IMMEDIATELY");
                     Stmt.close();
                     connectClose(guardian);
                 }
-
                 if (TabFile != null) {
                     TabFile.close();
                 }
             } catch (Exception E1) {}
-
-
         }
     }
-
     void oneRound(String url, String user, String password,
                   boolean transactions,
                   boolean prepared) throws InterruptedException, SQLException {
-
         Vector      vClient  = new Vector();
         Thread      Client   = null;
         Enumeration e        = null;
         Connection  guardian = null;
-
-        
         this.transactions  = transactions;
         this.prepared_stmt = prepared;
         start_time         = System.currentTimeMillis();
-
         for (int i = 0; i < n_clients; i++) {
             Client = new ClientThread(n_txn_per_client, url, user, password,
                                       Connection.TRANSACTION_READ_COMMITTED);
-
             Client.start();
             vClient.addElement(Client);
         }
-
-        
         e = vClient.elements();
-
         while (e.hasMoreElements()) {
             Client = (Thread) e.nextElement();
-
             Client.join();
         }
-
         vClient.removeAllElements();
         reportDone();
-
         guardian = connect(url, user, password);
-
         checkSums(guardian);
         connectClose(guardian);
     }
-
     public void reportDone() {
-
         long end_time = System.currentTimeMillis();
         double completion_time = ((double) end_time - (double) start_time)
                                  / 1000;
-
         if (TabFile != null) {
             TabFile.print(tps + ";" + n_clients + ";" + n_txn_per_client
                           + ";");
         }
-
         System.out.println("\n* Benchmark Report *");
         System.out.print("* Featuring ");
-
         if (prepared_stmt) {
             System.out.print("<prepared statements> ");
-
             if (TabFile != null) {
                 TabFile.print("<prepared statements>;");
             }
         } else {
             System.out.print("<direct queries> ");
-
             if (TabFile != null) {
                 TabFile.print("<direct queries>;");
             }
         }
-
         if (transactions) {
             System.out.print("<transactions> ");
-
             if (TabFile != null) {
                 TabFile.print("<transactions>;");
             }
         } else {
             System.out.print("<auto-commit> ");
-
             if (TabFile != null) {
                 TabFile.print("<auto-commit>;");
             }
         }
-
         System.out.println("\n--------------------");
         System.out.println("Time to execute " + transaction_count
                            + " transactions: " + completion_time
@@ -318,42 +247,30 @@ class JDBCBench {
                            + (MemoryWatcher.min / 1024) + " kb");
         System.out.println(failed_transactions + " / " + transaction_count
                            + " failed to complete.");
-
         double rate = (transaction_count - failed_transactions)
                       / completion_time;
-
         System.out.println("Transaction rate: " + rate + " txn/sec.");
-
         if (TabFile != null) {
             TabFile.print((MemoryWatcher.max / 1024) + ";"
                           + (MemoryWatcher.min / 1024) + ";"
                           + failed_transactions + ";" + rate + "\n");
         }
-
         transaction_count   = 0;
         failed_transactions = 0;
-
         MemoryWatcher.reset();
     }
-
     public synchronized void incrementTransactionCount() {
         transaction_count++;
     }
-
     public synchronized void incrementFailedTransactionCount() {
         failed_transactions++;
     }
-
     void createDatabase(String url, String user,
                         String password) throws Exception {
-
         Connection Conn = connect(url, user, password);
         String     s    = Conn.getMetaData().getDatabaseProductName();
-
         System.out.println("DBMS: " + s);
-
         transactions = true;
-
         if (transactions) {
             try {
                 Conn.setAutoCommit(false);
@@ -362,215 +279,152 @@ class JDBCBench {
                 transactions = false;
             }
         }
-
         try {
             int       accountsnb = 0;
             Statement Stmt       = Conn.createStatement();
             String    Query;
-
-
             Stmt.execute("SET WRITE_DELAY 10000 MILLIS;");
             Stmt.execute("SET PROPERTY \"hsqldb.cache_scale\" 16;");
-
-
             Query = "SELECT count(*) ";
             Query += "FROM   accounts";
-
             ResultSet RS = Stmt.executeQuery(Query);
-
             Stmt.clearWarnings();
-
             while (RS.next()) {
                 accountsnb = RS.getInt(1);
             }
-
             if (transactions) {
                 Conn.commit();
             }
-
             Stmt.close();
-
             if (accountsnb == (naccounts * tps)) {
                 System.out.println("Already initialized");
                 connectClose(Conn);
-
                 return;
             }
         } catch (Exception E) {}
-
         System.out.println("Drop old tables if they exist");
-
         try {
             Statement Stmt = Conn.createStatement();
             String    Query;
-
             Query = "DROP TABLE history";
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             Query = "DROP TABLE accounts";
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             Query = "DROP TABLE tellers";
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             Query = "DROP TABLE branches";
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             if (transactions) {
                 Conn.commit();
             }
-
             Stmt.close();
         } catch (Exception E) {}
-
         System.out.println("Creates tables");
-
         try {
             Statement Stmt = Conn.createStatement();
             String    Query;
-
             if (tableExtension.length() > 0) {
                 Query = tableExtension + " branches (";
             } else {
                 Query = "CREATE TABLE branches (";
             }
-
             Query += "Bid         INTEGER NOT NULL PRIMARY KEY, ";
             Query += "Bbalance    INTEGER,";
             Query += "filler      CHAR(88))";    
-
             if (createExtension.length() > 0) {
                 Query += createExtension;
             }
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             if (tableExtension.length() > 0) {
                 Query = tableExtension + " tellers (";
             } else {
                 Query = "CREATE TABLE tellers (";
             }
-
             Query += "Tid         INTEGER NOT NULL PRIMARY KEY,";
             Query += "Bid         INTEGER,";
             Query += "Tbalance    INTEGER,";
             Query += "filler      CHAR(84))";    
-
             if (createExtension.length() > 0) {
                 Query += createExtension;
             }
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             if (tableExtension.length() > 0) {
                 Query = tableExtension + " accounts (";
             } else {
                 Query = "CREATE TABLE accounts (";
             }
-
             Query += "Aid         INTEGER NOT NULL PRIMARY KEY, ";
             Query += "Bid         INTEGER, ";
             Query += "Abalance    INTEGER, ";
             Query += "filler      CHAR(84))";    
-
             if (createExtension.length() > 0) {
                 Query += createExtension;
             }
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             if (tableExtension.length() > 0) {
                 Query = tableExtension + " history (";
             } else {
                 Query = "CREATE TABLE history (";
             }
-
             Query += "Tid         INTEGER, ";
             Query += "Bid         INTEGER, ";
             Query += "Aid         INTEGER, ";
             Query += "delta       INTEGER, ";
             Query += "tstime        TIMESTAMP, ";
             Query += "filler      CHAR(22))";    
-
             if (createExtension.length() > 0) {
                 Query += createExtension;
             }
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
-
             if (transactions) {
                 Conn.commit();
             }
-
             Stmt.close();
         } catch (Exception E) {
             System.out.println(
                 "Delete elements in table in case Drop didn't work");
         }
-
         System.out.println(
             "Delete elements in table in case Drop didn't work");
-
         try {
             Statement Stmt = Conn.createStatement();
             String    Query;
-
             Query = "DELETE FROM history";
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             Query = "DELETE FROM accounts";
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             Query = "DELETE FROM tellers";
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             Query = "DELETE FROM branches";
-
             Stmt.execute(Query);
             Stmt.clearWarnings();
-
             if (transactions) {
                 Conn.commit();
             }
-
-            
             PreparedStatement pstmt = null;
-
             prepared_stmt = true;
-
             if (prepared_stmt) {
                 try {
                     Query = "INSERT INTO branches(Bid,Bbalance) VALUES (?,0)";
                     pstmt = Conn.prepareStatement(Query);
-
                     System.out.println("Using prepared statements");
                 } catch (SQLException Epstmt) {
                     pstmt         = null;
                     prepared_stmt = false;
                 }
             }
-
             System.out.println("Insert data in branches table");
-
             for (int i = 0; i < nbranches * tps; i++) {
                 if (prepared_stmt) {
                     pstmt.setInt(1, i);
@@ -579,30 +433,23 @@ class JDBCBench {
                 } else {
                     Query = "INSERT INTO branches(Bid,Bbalance) VALUES (" + i
                             + ",0)";
-
                     Stmt.executeUpdate(Query);
                 }
-
                 if ((i % 100 == 0) && (transactions)) {
                     Conn.commit();
                 }
             }
-
             if (prepared_stmt) {
                 pstmt.close();
             }
-
             if (transactions) {
                 Conn.commit();
             }
-
             if (prepared_stmt) {
                 Query = "INSERT INTO tellers(Tid,Bid,Tbalance) VALUES (?,?,0)";
                 pstmt = Conn.prepareStatement(Query);
             }
-
             System.out.println("Insert data in tellers table");
-
             for (int i = 0; i < ntellers * tps; i++) {
                 if (prepared_stmt) {
                     pstmt.setInt(1, i);
@@ -612,31 +459,24 @@ class JDBCBench {
                 } else {
                     Query = "INSERT INTO tellers(Tid,Bid,Tbalance) VALUES ("
                             + i + "," + i / ntellers + ",0)";
-
                     Stmt.executeUpdate(Query);
                 }
-
                 if ((i % 100 == 0) && (transactions)) {
                     Conn.commit();
                 }
             }
-
             if (prepared_stmt) {
                 pstmt.close();
             }
-
             if (transactions) {
                 Conn.commit();
             }
-
             if (prepared_stmt) {
                 Query =
                     "INSERT INTO accounts(Aid,Bid,Abalance) VALUES (?,?,0)";
                 pstmt = Conn.prepareStatement(Query);
             }
-
             System.out.println("Insert data in accounts table");
-
             for (int i = 0; i < naccounts * tps; i++) {
                 if (prepared_stmt) {
                     pstmt.setInt(1, i);
@@ -646,99 +486,71 @@ class JDBCBench {
                 } else {
                     Query = "INSERT INTO accounts(Aid,Bid,Abalance) VALUES ("
                             + i + "," + i / naccounts + ",0)";
-
                     Stmt.executeUpdate(Query);
                 }
-
                 if ((i % 10000 == 0) && (transactions)) {
                     Conn.commit();
                 }
-
                 if ((i > 0) && ((i % 10000) == 0)) {
                     System.out.println("\t" + i + "\t records inserted");
                 }
             }
-
             if (prepared_stmt) {
                 pstmt.close();
             }
-
             if (transactions) {
                 Conn.commit();
             }
-
             System.out.println("\t" + (naccounts * tps)
                                + "\t records inserted");
-
-            
             if (ShutdownCommand.length() > 0) {
                 Stmt.execute(ShutdownCommand);
             }
-
             Stmt.close();
         } catch (Exception E) {
             System.out.println(E.toString());
             E.printStackTrace();
         }
-
         connectClose(Conn);
     }    
-
     public static int getRandomInt(int lo, int hi) {
-
         int ret = 0;
-
         ret = (int) (Math.random() * (hi - lo + 1));
         ret += lo;
-
         return ret;
     }
-
     public static int getRandomID(int type) {
-
         int min = 0,
             max = 0;
-
         switch (type) {
-
             case TELLER :
                 max = ntellers * tps - 1;
                 break;
-
             case BRANCH :
                 max = nbranches * tps - 1;
                 break;
-
             case ACCOUNT :
                 max = naccounts * tps - 1;
                 break;
         }
-
         return (getRandomInt(min, max));
     }
-
     public static Connection connect(String DBUrl, String DBUser,
                                      String DBPassword) {
-
         try {
             Connection conn = DriverManager.getConnection(DBUrl, DBUser,
                 DBPassword);
-
             return conn;
         } catch (Exception E) {
             System.out.println(E.toString());
             E.printStackTrace();
         }
-
         return null;
     }
-
     public static void connectClose(Connection c) {
-
         if (c == null) {
             return;
         }
-
         try {
             c.close();
         } catch (Exception E) {
@@ -746,63 +558,40 @@ class JDBCBench {
             E.printStackTrace();
         }
     }
-
     void checkSums(Connection conn) throws SQLException {
-
         Statement st1 = null;
         ResultSet rs  = null;
         int       bbalancesum;
         int       tbalancesum;
         int       abalancesum;
         int       deltasum;
-
         try {
             st1 = conn.createStatement();
             rs  = st1.executeQuery("select sum(bbalance) from branches");
-
             rs.next();
-
             bbalancesum = rs.getInt(1);
-
             rs.close();
-
             rs = st1.executeQuery("select sum(tbalance) from tellers");
-
             rs.next();
-
             tbalancesum = rs.getInt(1);
-
             rs.close();
-
             rs = st1.executeQuery("select sum(abalance) from accounts");
-
             rs.next();
-
             abalancesum = rs.getInt(1);
-
             rs.close();
-
             rs = st1.executeQuery("select sum(delta) from history");
-
             rs.next();
-
             deltasum = rs.getInt(1);
-
             rs.close();
-
             rs = null;
-
             st1.close();
-
             st1 = null;
-
             if (abalancesum != bbalancesum || bbalancesum != tbalancesum
                     || tbalancesum != deltasum) {
                 System.out.println("sums don't match!");
             } else {
                 System.out.println("sums match!");
             }
-
             System.out.println("A " + abalancesum + " B " + bbalancesum
                                + " T " + tbalancesum + " H " + deltasum);
         } finally {
@@ -811,9 +600,7 @@ class JDBCBench {
             }
         }
     }
-
     class ClientThread extends Thread {
-
         int               ntrans = 0;
         Connection        Conn;
         PreparedStatement pstmt1 = null;
@@ -821,29 +608,21 @@ class JDBCBench {
         PreparedStatement pstmt3 = null;
         PreparedStatement pstmt4 = null;
         PreparedStatement pstmt5 = null;
-
         public ClientThread(int number_of_txns, String url, String user,
                             String password, int transactionMode) {
-
             System.out.println(number_of_txns);
-
             ntrans = number_of_txns;
             Conn   = connect(url, user, password);
-
             if (Conn == null) {
                 return;
             }
-
             try {
                 if (transactions) {
                     Conn.setAutoCommit(false);
                 }
-
                 Conn.setTransactionIsolation(transactionMode);
-
                 if (prepared_stmt) {
                     String Query;
-
                     Query  = "UPDATE accounts ";
                     Query  += "SET     Abalance = Abalance + ? ";
                     Query  += "WHERE   Aid = ?";
@@ -869,37 +648,29 @@ class JDBCBench {
                 E.printStackTrace();
             }
         }
-
         public void run() {
-
             while (ntrans-- > 0) {
                 int account = JDBCBench.getRandomID(ACCOUNT);
                 int branch  = JDBCBench.getRandomID(BRANCH);
                 int teller  = JDBCBench.getRandomID(TELLER);
                 int delta   = JDBCBench.getRandomInt(0, 1000);
-
                 doOne(branch, teller, account, delta);
                 incrementTransactionCount();
             }
-
             if (prepared_stmt) {
                 try {
                     if (pstmt1 != null) {
                         pstmt1.close();
                     }
-
                     if (pstmt2 != null) {
                         pstmt2.close();
                     }
-
                     if (pstmt3 != null) {
                         pstmt3.close();
                     }
-
                     if (pstmt4 != null) {
                         pstmt4.close();
                     }
-
                     if (pstmt5 != null) {
                         pstmt5.close();
                     }
@@ -908,23 +679,15 @@ class JDBCBench {
                     E.printStackTrace();
                 }
             }
-
             connectClose(Conn);
-
             Conn = null;
         }
-
-        
         int doOne(int bid, int tid, int aid, int delta) {
-
             int aBalance = 0;
-
             if (Conn == null) {
                 incrementFailedTransactionCount();
-
                 return 0;
             }
-
             try {
                 if (prepared_stmt) {
                     pstmt1.setInt(1, delta);
@@ -932,15 +695,11 @@ class JDBCBench {
                     pstmt1.executeUpdate();
                     pstmt1.clearWarnings();
                     pstmt2.setInt(1, aid);
-
                     ResultSet RS = pstmt2.executeQuery();
-
                     pstmt2.clearWarnings();
-
                     while (RS.next()) {
                         aBalance = RS.getInt(1);
                     }
-
                     pstmt3.setInt(1, delta);
                     pstmt3.setInt(2, tid);
                     pstmt3.executeUpdate();
@@ -958,56 +717,41 @@ class JDBCBench {
                 } else {
                     Statement Stmt  = Conn.createStatement();
                     String    Query = "UPDATE accounts ";
-
                     Query += "SET     Abalance = Abalance + " + delta + " ";
                     Query += "WHERE   Aid = " + aid;
-
                     int res = Stmt.executeUpdate(Query);
-
                     Stmt.clearWarnings();
-
                     Query = "SELECT Abalance ";
                     Query += "FROM   accounts ";
                     Query += "WHERE  Aid = " + aid;
-
                     ResultSet RS = Stmt.executeQuery(Query);
-
                     Stmt.clearWarnings();
-
                     while (RS.next()) {
                         aBalance = RS.getInt(1);
                     }
-
                     Query = "UPDATE tellers ";
                     Query += "SET    Tbalance = Tbalance + " + delta + " ";
                     Query += "WHERE  Tid = " + tid;
-
                     Stmt.executeUpdate(Query);
                     Stmt.clearWarnings();
-
                     Query = "UPDATE branches ";
                     Query += "SET    Bbalance = Bbalance + " + delta + " ";
                     Query += "WHERE  Bid = " + bid;
-
                     Stmt.executeUpdate(Query);
                     Stmt.clearWarnings();
-
                     Query = "INSERT INTO history(Tid, Bid, Aid, delta) ";
                     Query += "VALUES (";
                     Query += tid + ",";
                     Query += bid + ",";
                     Query += aid + ",";
                     Query += delta + ")";
-
                     Stmt.executeUpdate(Query);
                     Stmt.clearWarnings();
                     Stmt.close();
                 }
-
                 if (transactions) {
                     Conn.commit();
                 }
-
                 return aBalance;
             } catch (Exception E) {
                 if (verbose) {
@@ -1015,62 +759,44 @@ class JDBCBench {
                                        + E.toString());
                     E.printStackTrace();
                 }
-
                 incrementFailedTransactionCount();
-
                 if (transactions) {
                     try {
                         Conn.rollback();
                     } catch (SQLException E1) {}
                 }
             }
-
             return 0;
         }    
     }    
-
     class MemoryWatcherThread extends Thread {
-
         long    min          = 0;
         long    max          = 0;
         boolean keep_running = true;
-
         public MemoryWatcherThread() {
-
             this.reset();
-
             keep_running = true;
         }
-
         public void reset() {
-
             System.gc();
-
             long currentFree  = Runtime.getRuntime().freeMemory();
             long currentAlloc = Runtime.getRuntime().totalMemory();
-
             min = max = (currentAlloc - currentFree);
         }
-
         public void end() {
             keep_running = false;
         }
-
         public void run() {
-
             while (keep_running) {
                 long currentFree  = Runtime.getRuntime().freeMemory();
                 long currentAlloc = Runtime.getRuntime().totalMemory();
                 long used         = currentAlloc - currentFree;
-
                 if (used < min) {
                     min = used;
                 }
-
                 if (used > max) {
                     max = used;
                 }
-
                 try {
                     sleep(100);
                 } catch (InterruptedException E) {}

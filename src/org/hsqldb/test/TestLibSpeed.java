@@ -1,18 +1,11 @@
-
-
-
 package org.hsqldb.test;
-
 import org.hsqldb.lib.DoubleIntIndex;
 import org.hsqldb.lib.HashSet;
 import org.hsqldb.lib.IntKeyHashMap;
 import org.hsqldb.lib.IntKeyIntValueHashMap;
 import org.hsqldb.lib.IntValueHashMap;
 import org.hsqldb.lib.StopWatch;
-
-
 public class TestLibSpeed {
-
     static final String[][] sNumeric = {
         {
             "ABS", "org.hsqldb.Library.abs"
@@ -78,13 +71,10 @@ public class TestLibSpeed {
     static IntValueHashMap intValueHashLookup =
         new IntValueHashMap(sNumeric.length);
     static IntKeyHashMap intKeyHashLookup = new IntKeyHashMap();
-
     static {
         doubleIntLookup.setKeysSearchTarget();
-
         java.util.Random randomgen = new java.util.Random();
         int[]            row       = new int[2];
-
         for (int i = 0; i < sNumeric.length; i++) {
             hashSet.add(sNumeric[i][0]);
             intKeyIntValueHashLookup.put(randomgen.nextInt(sNumeric.length),
@@ -95,114 +85,81 @@ public class TestLibSpeed {
                                    randomgen.nextInt(sNumeric.length));
         }
     }
-
     static int count = 100000;
-
     public TestLibSpeed() {
-
         java.util.Random randomgen = new java.util.Random();
         StopWatch        sw        = new StopWatch();
         int              dummy     = 0;
-
         System.out.println("set lookup ");
-
         for (int k = 0; k < 3; k++) {
             sw.zero();
-
             for (int j = 0; j < count; j++) {
                 for (int i = 0; i < sNumeric.length; i++) {
                     int r = randomgen.nextInt(sNumeric.length);
-
                     hashSet.contains(sNumeric[r][0]);
-
                     dummy += r;
                 }
             }
-
             System.out.println("HashSet contains " + sw.elapsedTime());
             sw.zero();
-
             for (int j = 0; j < count; j++) {
                 for (int i = 0; i < sNumeric.length; i++) {
                     int r = randomgen.nextInt(sNumeric.length);
-
                     intKeyIntValueHashLookup.get(r, -1);
-
                     dummy += r;
                 }
             }
-
             System.out.println("IntKeyIntValueHashMap Lookup with array "
                                + sw.elapsedTime());
             sw.zero();
-
             for (int j = 0; j < count; j++) {
                 for (int i = 0; i < sNumeric.length; i++) {
                     int r = randomgen.nextInt(sNumeric.length);
-
                     intKeyHashLookup.get(r);
-
                     dummy += r;
                 }
             }
-
             System.out.println("IntKeyHashMap Lookup " + sw.elapsedTime());
             sw.zero();
-
             for (int j = 0; j < count; j++) {
                 for (int i = 0; i < sNumeric.length; i++) {
                     int r = randomgen.nextInt(sNumeric.length);
-
                     doubleIntLookup.findFirstEqualKeyIndex(r);
-
                     dummy += r;
                 }
             }
-
             System.out.println("DoubleIntTable Lookup " + sw.elapsedTime());
             sw.zero();
-
             for (int j = 0; j < count; j++) {
                 for (int i = 0; i < sNumeric.length; i++) {
                     int r = randomgen.nextInt(sNumeric.length);
-
                     intValueHashLookup.get(sNumeric[r][0], 0);
-
                     dummy += r;
                 }
             }
-
             System.out.println("IntKeyIntValueHashMap Lookup "
                                + sw.elapsedTime());
             sw.zero();
-
             for (int j = 0; j < count; j++) {
                 for (int i = 0; i < sNumeric.length; i++) {
                     int r = randomgen.nextInt(sNumeric.length);
-
                     dummy += r;
                 }
             }
-
             System.out.println("emptyOp " + sw.elapsedTime());
             sw.zero();
-
             for (int j = 0; j < count; j++) {
                 for (int i = 0; i < sNumeric.length; i++) {
                     int r = randomgen.nextInt(sNumeric.length);
-
                     doubleIntLookup.findFirstEqualKeyIndex(r);
-
                     dummy += r;
                 }
             }
-
             System.out.println("DoubleIntTable Lookup " + sw.elapsedTime());
             sw.zero();
             System.out.println("Object Cache Test " + sw.elapsedTime());
         }
     }
-
     public static void main(String[] argv) {
         TestLibSpeed ls = new TestLibSpeed();
     }

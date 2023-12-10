@@ -1,14 +1,6 @@
-
-
-
 package org.hsqldb.lib.tar;
-
 import org.hsqldb.lib.ValidatingResourceBundle;
 import org.hsqldb.lib.RefCapableRBInterface;
-
-
-
-
 public enum RB implements RefCapableRBInterface {
     DbBackup_syntax,
     DbBackup_syntaxerr,
@@ -70,7 +62,6 @@ public enum RB implements RefCapableRBInterface {
     bad_numeric_header_value,
     listing_format,
     ;
-
     private static ValidatingResourceBundle vrb =
             new ValidatingResourceBundle(
                     RB.class.getPackage().getName() + ".rb", RB.class);
@@ -80,7 +71,6 @@ public enum RB implements RefCapableRBInterface {
         vrb.setMissingPropertyBehavior(
                 ValidatingResourceBundle.NOOP_BEHAVIOR);
     }
-
     public String getString() {
         return vrb.getString(this);
     }

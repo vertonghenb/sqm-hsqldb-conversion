@@ -1,76 +1,38 @@
-
-
-
 package org.hsqldb.test;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import junit.framework.TestCase;
-
-
-
-
 public class TestSubselect extends TestCase {
-
-    
-    
-    
     private static final String databaseDriver = "org.hsqldb.jdbc.JDBCDriver";
     private static final String databaseURL =
         "jdbc:hsqldb:/hsql/test/subselect";
     private static final String databaseUser     = "sa";
     private static final String databasePassword = "";
-
-    
-    
-    
     private Connection jdbcConnection;
-
-    
-    
-    
-
-    
     public TestSubselect(String s) {
         super(s);
     }
-
-    
-    
-    
     protected static Connection getJDBCConnection() throws SQLException {
         return DriverManager.getConnection(databaseURL, databaseUser,
                                            databasePassword);
     }
-
     protected void setUp() throws Exception {
-
         TestUtil.deleteDatabase("/hsql/test/subselect");
         Class.forName(databaseDriver);
-
         jdbcConnection = getJDBCConnection();
-
         createDataset();
     }
-
     protected void tearDown() throws Exception {
-
         jdbcConnection.close();
-
         jdbcConnection = null;
-
         super.tearDown();
     }
-
     void createDataset() throws SQLException {
-
         Statement statement = jdbcConnection.createStatement();
-
         statement.execute("drop table colors if exists; "
                           + "drop table sizes if exists; "
                           + "drop table fruits if exists; "
@@ -103,38 +65,23 @@ public class TestSubselect extends TestCase {
             + "insert into trees values(5, 'medium granny smith tree',4,2); ");
         statement.close();
     }
-
-    
-    
-    
     private static void compareResults(String sql, String[] expected,
                                        Connection jdbcConnection)
                                        throws SQLException {
-
         Statement statement = jdbcConnection.createStatement();
         ResultSet results   = statement.executeQuery(sql);
         int       rowCount  = 0;
-
         while (results.next()) {
             assertTrue("Statement <" + sql + "> returned too many rows.",
                        (rowCount < expected.length));
             assertEquals("Statement <" + sql + "> returned wrong value.",
                          expected[rowCount], results.getString(1));
-
             rowCount++;
         }
-
         assertEquals("Statement <" + sql + "> returned wrong number of rows.",
                      expected.length, rowCount);
     }
-
-    
-    
-    
-
-    
     public void testSimpleJoin() throws SQLException {
-
         String sql =
             "select trees.id, trees.name, sizes.val, fruits.name, colors.val"
             + " from trees, sizes, fruits, colors"
@@ -164,7 +111,6 @@ public class TestSubselect extends TestCase {
         String[]  sizes          = new String[expectedRows];
         String[]  colors         = new String[expectedRows];
         int       rowCount       = 0;
-
         while (results.next()) {
             assertTrue("Statement <" + sql + "> returned too many rows.",
                        (rowCount <= expectedRows));
@@ -179,174 +125,115 @@ public class TestSubselect extends TestCase {
                          expectedFruits[rowCount], results.getString(4));
             assertEquals("Statement <" + sql + "> returned wrong value.",
                          expectedColors[rowCount], results.getString(5));
-
             rowCount++;
         }
-
         assertEquals("Statement <" + sql + "> returned wrong number of rows.",
                      expectedRows, rowCount);
     }
-
-    
     public void testWhereClausesColliding() throws SQLException {
-
         String sql =
             "select name from fruits where id in (select fruit_id from trees where id < 3) order by name";
         String[] expected = new String[] {
             "golden delicious", "macintosh"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testWhereClausesCollidingWithAliases() throws SQLException {
-
         String sql =
             "select a.name from fruits a where a.id in (select b.fruit_id from trees b where b.id < 3) order by name";
         String[] expected = new String[] {
             "golden delicious", "macintosh"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testHiddenCollision() throws SQLException {
-
         String sql =
             "select name from fruits where id in (select fruit_id from trees) order by name";
         String[] expected = new String[] {
             "golden delicious", "granny smith", "macintosh", "red delicious"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testHiddenCollisionWithAliases() throws SQLException {
-
         String sql =
             "select a.name from fruits a where a.id in (select b.fruit_id from trees b) order by a.name";
         String[] expected = new String[] {
             "golden delicious", "granny smith", "macintosh", "red delicious"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testWhereSelectColliding() throws SQLException {
-
-        
         String sql =
             "select val from colors where id in (select id from trees where fruit_id = 3) order by val";
         String[] expected = new String[] {
             "indigo", "orange"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testWhereSelectCollidingWithAliases() throws SQLException {
-
-        
         String sql =
             "select a.val from colors a where a.id in (select b.id from trees b where b.fruit_id = 3) order by a.val";
         String[] expected = new String[] {
             "indigo", "orange"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testSameTable() throws SQLException {
-
         String sql =
             "select name from trees where id in (select id from trees where fruit_id = 3) order by name";
         String[] expected = new String[] {
             "large red delicious tree", "small red delicious tree"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testSameTableWithAliases() throws SQLException {
-
         String sql =
             "select a.name from trees a where a.id in (select b.id from trees b where b.fruit_id = 3) order by a.name";
         String[] expected = new String[] {
             "large red delicious tree", "small red delicious tree"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testSameTableWithJoin() throws SQLException {
-
         String sql =
             "select sizes.val from trees, sizes where sizes.id = trees.size_id and trees.id in (select id from trees where fruit_id = 3) order by sizes.val";
         String[] expected = new String[] {
             "large", "small"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testAndedSubselects() throws SQLException {
-
         String sql =
             "select name from trees where size_id in (select id from sizes where val = 'large') and fruit_id in (select id from fruits where color_id = 1) order by name";
         String[] expected = new String[] {
             "large macintosh tree", "large red delicious tree"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testNestedSubselects() throws SQLException {
-
         String sql =
             "select name from trees where fruit_id in (select id from fruits where color_id in (select id from colors where val = 'red')) order by name";
         String[] expected = new String[] {
             "large macintosh tree", "large red delicious tree",
             "small red delicious tree"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testNotIn() throws SQLException {
-
         String sql =
             "select name from fruits where id not in (select fruit_id from trees) order by name";
         String[] expected = new String[]{ "tangerine" };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testNotInSameTableAndColumn() throws SQLException {
-
         String sql =
             "select name from fruits where id not in (select id from fruits where color_id > 1 ) order by name";
         String[] expected = new String[] {
             "macintosh", "red delicious"
         };
-
         compareResults(sql, expected, jdbcConnection);
     }
-
-    
     public void testAliasScope() throws SQLException {
-
         String sql =
             "select a.val, b.name from sizes a, trees b where a.id = b.size_id and b.id in (select a.id from trees a, fruits b where a.fruit_id = b.id and b.name='red delicious') order by a.val";
         String[] expectedSizes = new String[] {
@@ -355,15 +242,12 @@ public class TestSubselect extends TestCase {
         String[] expectedTrees = new String[] {
             "large red delicious tree", "small red delicious tree"
         };
-
         assertEquals(
             "Programmer error: expected arrays should be of equal length.",
             expectedSizes.length, expectedTrees.length);
-
         Statement statement = jdbcConnection.createStatement();
         ResultSet results   = statement.executeQuery(sql);
         int       rowCount  = 0;
-
         while (results.next()) {
             assertTrue("Statement <" + sql + "> returned too many rows.",
                        (rowCount < expectedSizes.length));
@@ -371,10 +255,8 @@ public class TestSubselect extends TestCase {
                          expectedSizes[rowCount], results.getString(1));
             assertEquals("Statement <" + sql + "> returned wrong value.",
                          expectedTrees[rowCount], results.getString(2));
-
             rowCount++;
         }
-
         assertEquals("Statement <" + sql + "> returned wrong number of rows.",
                      expectedSizes.length, rowCount);
     }

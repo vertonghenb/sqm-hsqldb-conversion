@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb;
-
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -10,7 +6,6 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.hsqldb.error.Error;
 import org.hsqldb.error.ErrorCode;
 import org.hsqldb.lib.ArrayUtil;
@@ -39,10 +34,7 @@ import org.hsqldb.types.TimeData;
 import org.hsqldb.types.TimestampData;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
-
-
 public class FunctionCustom extends FunctionSQL {
-
     public static final String[] openGroupNumericFunctions = {
         "ABS", "ACOS", "ASIN", "ATAN", "ATAN2", "BITAND", "BITOR", "BITXOR",
         "CEILING", "COS", "COT", "DEGREES", "EXP", "FLOOR", "LOG", "LOG10",
@@ -63,8 +55,6 @@ public class FunctionCustom extends FunctionSQL {
     public static final String[] openGroupSystemFunctions = {
         "DATABASE", "IFNULL", "USER"
     };
-
-    
     private static final int FUNC_ACOS                     = 71;
     private static final int FUNC_ACTION_ID                = 72;
     private static final int FUNC_ASCII                    = 73;
@@ -150,14 +140,9 @@ public class FunctionCustom extends FunctionSQL {
     private static final int FUNC_TRUNCATE                 = 153;
     private static final int FUNC_UUID                     = 154;
     private static final int FUNC_UNIX_TIMESTAMP           = 155;
-
-    
     static final IntKeyIntValueHashMap customRegularFuncMap =
         new IntKeyIntValueHashMap();
-
     static {
-        
-
         nonDeterministicFuncSet.add(FUNC_ACTION_ID);
         nonDeterministicFuncSet.add(FUNC_CRYPT_KEY);
         nonDeterministicFuncSet.add(FUNC_DATABASE);
@@ -179,8 +164,6 @@ public class FunctionCustom extends FunctionSQL {
         nonDeterministicFuncSet.add(FUNC_TRANSACTION_SIZE);
         nonDeterministicFuncSet.add(FUNC_UUID);
         nonDeterministicFuncSet.add(FUNC_UNIX_TIMESTAMP);
-
-        
         customRegularFuncMap.put(Tokens.ACOS, FUNC_ACOS);
         customRegularFuncMap.put(Tokens.ACTION_ID, FUNC_ACTION_ID);
         customRegularFuncMap.put(Tokens.ARRAY_SORT, FUNC_SORT_ARRAY);
@@ -289,36 +272,26 @@ public class FunctionCustom extends FunctionSQL {
         customRegularFuncMap.put(Tokens.UUID, FUNC_UUID);
         customRegularFuncMap.put(Tokens.WEEK, FUNC_EXTRACT);
         customRegularFuncMap.put(Tokens.YEAR, FUNC_EXTRACT);
-        
     }
-
     static final IntKeyIntValueHashMap customValueFuncMap =
         new IntKeyIntValueHashMap();
-
     static {
         customValueFuncMap.put(Tokens.SYSDATE, FUNC_LOCALTIMESTAMP);
         customValueFuncMap.put(Tokens.SYSTIMESTAMP, FUNC_CURRENT_TIMESTAMP);
         customValueFuncMap.put(Tokens.TODAY, FUNC_CURRENT_DATE);
         customValueFuncMap.put(Tokens.NOW, FUNC_LOCALTIMESTAMP);
     }
-
     private int     extractSpec;
     private Pattern pattern;
-
     public static FunctionSQL newCustomFunction(String token, int tokenType) {
-
         int id = customRegularFuncMap.get(tokenType, -1);
-
         if (id == -1) {
             id = customValueFuncMap.get(tokenType, -1);
         }
-
         if (id == -1) {
             return null;
         }
-
         switch (tokenType) {
-
             case Tokens.BITLENGTH :
             case Tokens.LCASE :
             case Tokens.LENGTH :
@@ -326,7 +299,6 @@ public class FunctionCustom extends FunctionSQL {
             case Tokens.OCTETLENGTH :
             case Tokens.UCASE :
                 return new FunctionSQL(id);
-
             case Tokens.SYSTIMESTAMP :
             case Tokens.CURDATE :
             case Tokens.CURTIME :
@@ -334,91 +306,66 @@ public class FunctionCustom extends FunctionSQL {
             case Tokens.SYSDATE :
             case Tokens.NOW : {
                 FunctionSQL function = new FunctionSQL(id);
-
                 function.parseList = optionalNoParamList;
-
                 return function;
             }
             case Tokens.SUBSTR : {
                 FunctionSQL function = new FunctionSQL(id);
-
                 function.parseList = tripleParamList;
-
                 return function;
             }
         }
-
         FunctionCustom function = new FunctionCustom(id);
-
         if (id == FUNC_TRIM_CHAR) {
             switch (tokenType) {
-
                 case Tokens.LTRIM :
                     function.extractSpec = Tokens.LEADING;
                     break;
-
                 case Tokens.RTRIM :
                     function.extractSpec = Tokens.TRAILING;
                     break;
             }
         }
-
         if (id == FUNC_EXTRACT) {
             switch (tokenType) {
-
                 case Tokens.DAYNAME :
                     function.extractSpec = Tokens.DAY_NAME;
                     break;
-
                 case Tokens.MONTHNAME :
                     function.extractSpec = Tokens.MONTH_NAME;
                     break;
-
                 case Tokens.DAYOFMONTH :
                     function.extractSpec = Tokens.DAY_OF_MONTH;
                     break;
-
                 case Tokens.DAYOFWEEK :
                     function.extractSpec = Tokens.DAY_OF_WEEK;
                     break;
-
                 case Tokens.DAYOFYEAR :
                     function.extractSpec = Tokens.DAY_OF_YEAR;
                     break;
-
                 case Tokens.WEEK :
                     function.extractSpec = Tokens.WEEK_OF_YEAR;
                     break;
-
                 default :
                     function.extractSpec = tokenType;
             }
         }
-
         if (function.name == null) {
             function.name = token;
         }
-
         return function;
     }
-
     public static boolean isRegularFunction(int tokenType) {
         return customRegularFuncMap.get(tokenType, -1) != -1;
     }
-
     public static boolean isValueFunction(int tokenType) {
         return customValueFuncMap.get(tokenType, -1) != -1;
     }
-
     private FunctionCustom(int id) {
-
         super();
-
         this.funcType   = id;
         isDeterministic = !nonDeterministicFuncSet.contains(id);
-
         switch (id) {
-
             case FUNC_ACTION_ID :
             case FUNC_DATABASE :
             case FUNC_DATABASE_ISOLATION_LEVEL :
@@ -440,7 +387,6 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_TRANSACTION_SIZE :
                 parseList = emptyParamList;
                 break;
-
             case FUNC_ACOS :
             case FUNC_ASCII :
             case FUNC_ASIN :
@@ -466,7 +412,6 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_TO_NUMBER :
                 parseList = singleParamList;
                 break;
-
             case FUNC_TO_CHAR :
             case FUNC_TO_DATE :
             case FUNC_TO_TIMESTAMP :
@@ -486,7 +431,6 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_RIGHT :
                 parseList = doubleParamList;
                 break;
-
             case FUNC_DATEDIFF :
                 parseList = new short[] {
                     Tokens.OPENBRACKET, Tokens.QUESTION, Tokens.COMMA,
@@ -494,12 +438,10 @@ public class FunctionCustom extends FunctionSQL {
                     Tokens.QUESTION, Tokens.CLOSEBRACKET
                 };
                 break;
-
             case FUNC_DATEADD :
             case FUNC_SEQUENCE_ARRAY :
                 parseList = tripleParamList;
                 break;
-
             case FUNC_REPLACE :
             case FUNC_LPAD :
             case FUNC_RPAD :
@@ -510,38 +452,31 @@ public class FunctionCustom extends FunctionSQL {
                     Tokens.QUESTION, Tokens.CLOSEBRACKET
                 };
                 break;
-
             case FUNC_UNIX_TIMESTAMP :
             case FUNC_UUID :
                 parseList = optionalSingleParamList;
                 break;
-
             case FUNC_EXTRACT :
                 name      = Tokens.T_EXTRACT;
                 parseList = singleParamList;
                 break;
-
             case FUNC_TRIM_CHAR :
                 name      = Tokens.T_TRIM;
                 parseList = singleParamList;
                 break;
-
             case FUNC_OVERLAY_CHAR :
                 name      = Tokens.T_OVERLAY;
                 parseList = quadParamList;
                 break;
-
             case FUNC_IDENTITY :
                 name      = Tokens.T_IDENTITY;
                 parseList = emptyParamList;
                 break;
-
             case FUNC_DIAGNOSTICS :
                 parseList = new short[] {
                     Tokens.OPENBRACKET, Tokens.ROW_COUNT, Tokens.CLOSEBRACKET
                 };
                 break;
-
             case FUNC_POSITION_ARRAY :
                 parseList = new short[] {
                     Tokens.OPENBRACKET, Tokens.QUESTION, Tokens.IN,
@@ -549,7 +484,6 @@ public class FunctionCustom extends FunctionSQL {
                     Tokens.QUESTION, Tokens.CLOSEBRACKET
                 };
                 break;
-
             case FUNC_SORT_ARRAY :
                 parseList = new short[] {
                     Tokens.OPENBRACKET, Tokens.QUESTION, Tokens.X_OPTION, 4,
@@ -558,7 +492,6 @@ public class FunctionCustom extends FunctionSQL {
                     Tokens.FIRST, Tokens.LAST, Tokens.CLOSEBRACKET
                 };
                 break;
-
             case FUNC_TIMESTAMPADD :
                 name      = Tokens.T_TIMESTAMPADD;
                 parseList = new short[] {
@@ -572,7 +505,6 @@ public class FunctionCustom extends FunctionSQL {
                     Tokens.CLOSEBRACKET
                 };
                 break;
-
             case FUNC_TIMESTAMPDIFF :
                 name      = Tokens.T_TIMESTAMPDIFF;
                 parseList = new short[] {
@@ -586,7 +518,6 @@ public class FunctionCustom extends FunctionSQL {
                     Tokens.CLOSEBRACKET
                 };
                 break;
-
             case FUNC_LOAD_FILE :
             case FUNC_ROUND :
             case FUNC_TIMESTAMP :
@@ -597,56 +528,42 @@ public class FunctionCustom extends FunctionSQL {
                     Tokens.COMMA, Tokens.QUESTION, Tokens.CLOSEBRACKET
                 };
                 break;
-
             case FUNC_RAND :
                 parseList = optionalSingleParamList;
                 break;
-
             default :
                 throw Error.runtimeError(ErrorCode.U_S0500, "FunctionCustom");
         }
     }
-
     public void setArguments(Expression[] nodes) {
-
         switch (funcType) {
-
             case FUNC_POSITION_CHAR : {
-
-                
                 Expression[] newNodes = new Expression[4];
-
                 newNodes[0] = nodes[0];
                 newNodes[1] = nodes[1];
                 newNodes[3] = nodes[2];
                 nodes       = newNodes;
-
                 break;
             }
             case FUNC_OVERLAY_CHAR : {
                 Expression start  = nodes[1];
                 Expression length = nodes[2];
-
                 nodes[1] = nodes[3];
                 nodes[2] = start;
                 nodes[3] = length;
-
                 break;
             }
             case FUNC_EXTRACT : {
                 Expression[] newNodes = new Expression[2];
-
                 newNodes[0] =
                     new ExpressionValue(ValuePool.getInt(extractSpec),
                                         Type.SQL_INTEGER);
                 newNodes[1] = nodes[0];
                 nodes       = newNodes;
-
                 break;
             }
             case FUNC_TRIM_CHAR : {
                 Expression[] newNodes = new Expression[3];
-
                 newNodes[0] =
                     new ExpressionValue(ValuePool.getInt(extractSpec),
                                         Type.SQL_INTEGER);
@@ -655,95 +572,70 @@ public class FunctionCustom extends FunctionSQL {
                 nodes       = newNodes;
             }
         }
-
         super.setArguments(nodes);
     }
-
     public Expression getFunctionExpression() {
-
         switch (funcType) {
-
             case FUNC_CONCAT :
                 return new ExpressionArithmetic(OpTypes.CONCAT,
                                                 nodes[Expression.LEFT],
                                                 nodes[Expression.RIGHT]);
         }
-
         return super.getFunctionExpression();
     }
-
     Object getValue(Session session, Object[] data) {
-
         switch (funcType) {
-
             case FUNC_POSITION_CHAR :
             case FUNC_EXTRACT :
             case FUNC_TRIM_CHAR :
             case FUNC_OVERLAY_CHAR :
                 return super.getValue(session, data);
-
             case FUNC_DATABASE :
                 return session.getDatabase().getPath();
-
             case FUNC_DATABASE_NAME :
                 return session.getDatabase().getUniqueName();
-
             case FUNC_ISAUTOCOMMIT :
                 return session.isAutoCommit() ? Boolean.TRUE
                                               : Boolean.FALSE;
-
             case FUNC_ISREADONLYSESSION :
                 return session.isReadOnlyDefault() ? Boolean.TRUE
                                                    : Boolean.FALSE;
-
             case FUNC_ISREADONLYDATABASE :
                 return session.getDatabase().databaseReadOnly ? Boolean.TRUE
                                                               : Boolean.FALSE;
-
             case FUNC_ISREADONLYDATABASEFILES :
                 return session.getDatabase().isFilesReadOnly() ? Boolean.TRUE
                                                                : Boolean.FALSE;
-
             case FUNC_ISOLATION_LEVEL : {
                 return Session.getIsolationString(session.isolationLevel);
             }
             case FUNC_SESSION_ISOLATION_LEVEL :
                 return Session.getIsolationString(
                     session.isolationLevelDefault);
-
             case FUNC_DATABASE_ISOLATION_LEVEL :
                 return Session.getIsolationString(
                     session.database.defaultIsolationLevel);
-
             case FUNC_TRANSACTION_CONTROL :
                 switch (session.database.txManager.getTransactionControl()) {
-
                     case TransactionManager.MVCC :
                         return Tokens.T_MVCC;
-
                     case TransactionManager.MVLOCKS :
                         return Tokens.T_MVLOCKS;
-
                     case TransactionManager.LOCKS :
                     default :
                         return Tokens.T_LOCKS;
                 }
             case FUNC_TIMEZONE :
                 return new IntervalSecondData(session.getZoneSeconds(), 0);
-
             case FUNC_SESSION_TIMEZONE :
                 return new IntervalSecondData(session.sessionTimeZoneSeconds,
                                               0);
-
             case FUNC_DATABASE_TIMEZONE :
                 int sec =
                     HsqlDateTime.getZoneSeconds(HsqlDateTime.tempCalDefault);
-
                 return new IntervalSecondData(sec, 0);
-
             case FUNC_DATABASE_VERSION :
                 return HsqlDatabaseProperties.THIS_FULL_VERSION;
-
             case FUNC_SESSION_ID : {
                 return Long.valueOf(session.getId());
             }
@@ -758,16 +650,13 @@ public class FunctionCustom extends FunctionSQL {
             }
             case FUNC_LOB_ID : {
                 LobData lob = (LobData) data[0];
-
                 if (lob == null) {
                     return null;
                 }
-
                 return Long.valueOf(lob.getId());
             }
             case FUNC_IDENTITY : {
                 Number id = session.getLastIdentity();
-
                 if (id instanceof Long) {
                     return id;
                 } else {
@@ -784,16 +673,13 @@ public class FunctionCustom extends FunctionSQL {
                         return null;
                     }
                 }
-
                 HsqlArrayList list    = new HsqlArrayList();
                 Object        current = data[0];
                 Type          type    = nodes[0].getDataType();
                 boolean ascending = type.compare(session, data[1], data[0])
                                     >= 0;
-
                 while (true) {
                     int compare = type.compare(session, current, data[1]);
-
                     if (ascending) {
                         if (compare > 0) {
                             break;
@@ -801,14 +687,10 @@ public class FunctionCustom extends FunctionSQL {
                     } else if (compare < 0) {
                         break;
                     }
-
                     list.add(current);
-
                     Object newValue = type.add(current, data[2],
                                                nodes[2].getDataType());
-
                     compare = type.compare(session, current, newValue);
-
                     if (ascending) {
                         if (compare >= 0) {
                             break;
@@ -816,96 +698,69 @@ public class FunctionCustom extends FunctionSQL {
                     } else if (compare <= 0) {
                         break;
                     }
-
                     current = newValue;
                 }
-
                 Object[] array = list.toArray();
-
                 return array;
             }
             case FUNC_TIMESTAMPADD : {
                 if (data[1] == null || data[2] == null) {
                     return null;
                 }
-
                 data[1] = Type.SQL_BIGINT.convertToType(session, data[1],
                         nodes[1].getDataType());
-
                 int           part = ((Number) nodes[0].valueData).intValue();
                 long          units  = ((Number) data[1]).longValue();
                 TimestampData source = (TimestampData) data[2];
                 IntervalType  t;
                 Object        o;
-
                 switch (part) {
-
                     case Tokens.SQL_TSI_FRAC_SECOND : {
                         long seconds = units / DTIType.limitNanoseconds;
                         int  nanos = (int) (units % DTIType.limitNanoseconds);
-
                         t = Type.SQL_INTERVAL_SECOND_MAX_FRACTION;
                         o = new IntervalSecondData(seconds, nanos, t);
-
                         return dataType.add(source, o, t);
                     }
                     case Tokens.SQL_TSI_MILLI_SECOND : {
                         long seconds = units / 1000;
                         int  nanos   = (int) (units % 1000) * 1000000;
-
                         t = Type.SQL_INTERVAL_SECOND_MAX_FRACTION;
                         o = new IntervalSecondData(seconds, nanos, t);
-
                         return dataType.add(source, o, t);
                     }
                     case Tokens.SQL_TSI_SECOND :
                         t = Type.SQL_INTERVAL_SECOND_MAX_PRECISION;
                         o = IntervalSecondData.newIntervalSeconds(units, t);
-
                         return dataType.add(source, o, t);
-
                     case Tokens.SQL_TSI_MINUTE :
                         t = Type.SQL_INTERVAL_MINUTE_MAX_PRECISION;
                         o = IntervalSecondData.newIntervalMinute(units, t);
-
                         return dataType.add(source, o, t);
-
                     case Tokens.SQL_TSI_HOUR :
                         t = Type.SQL_INTERVAL_HOUR_MAX_PRECISION;
                         o = IntervalSecondData.newIntervalHour(units, t);
-
                         return dataType.add(source, o, t);
-
                     case Tokens.SQL_TSI_DAY :
                         t = Type.SQL_INTERVAL_DAY_MAX_PRECISION;
                         o = IntervalSecondData.newIntervalDay(units, t);
-
                         return dataType.add(source, o, t);
-
                     case Tokens.SQL_TSI_WEEK :
                         t = Type.SQL_INTERVAL_DAY_MAX_PRECISION;
                         o = IntervalSecondData.newIntervalDay(units * 7, t);
-
                         return dataType.add(source, o, t);
-
                     case Tokens.SQL_TSI_MONTH :
                         t = Type.SQL_INTERVAL_MONTH_MAX_PRECISION;
                         o = IntervalMonthData.newIntervalMonth(units, t);
-
                         return dataType.add(source, o, t);
-
                     case Tokens.SQL_TSI_QUARTER :
                         t = Type.SQL_INTERVAL_MONTH_MAX_PRECISION;
                         o = IntervalMonthData.newIntervalMonth(units * 3, t);
-
                         return dataType.add(source, o, t);
-
                     case Tokens.SQL_TSI_YEAR :
                         t = Type.SQL_INTERVAL_YEAR_MAX_PRECISION;
                         o = IntervalMonthData.newIntervalMonth(units * 12, t);
-
                         return dataType.add(source, o, t);
-
                     default :
                         throw Error.runtimeError(ErrorCode.U_S0500,
                                                  "FunctionCustom");
@@ -915,92 +770,66 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[1] == null || data[2] == null) {
                     return null;
                 }
-
                 int           part = ((Number) nodes[0].valueData).intValue();
                 TimestampData a    = (TimestampData) data[2];
                 TimestampData b    = (TimestampData) data[1];
-
                 if (nodes[2].dataType.isDateTimeTypeWithZone()) {
                     a = (TimestampData) Type.SQL_TIMESTAMP.convertToType(
                         session, a, Type.SQL_TIMESTAMP_WITH_TIME_ZONE);
                 }
-
                 if (nodes[1].dataType.isDateTimeTypeWithZone()) {
                     b = (TimestampData) Type.SQL_TIMESTAMP.convertToType(
                         session, b, Type.SQL_TIMESTAMP_WITH_TIME_ZONE);
                 }
-
                 IntervalType t;
-
                 switch (part) {
-
                     case Tokens.SQL_TSI_FRAC_SECOND : {
                         t = Type.SQL_INTERVAL_SECOND_MAX_PRECISION;
-
                         IntervalSecondData interval =
                             (IntervalSecondData) t.subtract(a, b, null);
-
                         return new Long(
                             DTIType.limitNanoseconds * interval.getSeconds()
                             + interval.getNanos());
                     }
                     case Tokens.SQL_TSI_MILLI_SECOND : {
                         t = Type.SQL_INTERVAL_SECOND_MAX_PRECISION;
-
                         IntervalSecondData interval =
                             (IntervalSecondData) t.subtract(a, b, null);
-
                         return new Long(1000 * interval.getSeconds()
                                         + interval.getNanos() / 1000000);
                     }
                     case Tokens.SQL_TSI_SECOND :
                         t = Type.SQL_INTERVAL_SECOND_MAX_PRECISION;
-
                         return new Long(t.convertToLong(t.subtract(a, b,
                                 null)));
-
                     case Tokens.SQL_TSI_MINUTE :
                         t = Type.SQL_INTERVAL_MINUTE_MAX_PRECISION;
-
                         return new Long(t.convertToLong(t.subtract(a, b,
                                 null)));
-
                     case Tokens.SQL_TSI_HOUR :
                         t = Type.SQL_INTERVAL_HOUR_MAX_PRECISION;
-
                         return new Long(t.convertToLong(t.subtract(a, b,
                                 null)));
-
                     case Tokens.SQL_TSI_DAY :
                         t = Type.SQL_INTERVAL_DAY_MAX_PRECISION;
-
                         return new Long(t.convertToLong(t.subtract(a, b,
                                 null)));
-
                     case Tokens.SQL_TSI_WEEK :
                         t = Type.SQL_INTERVAL_DAY_MAX_PRECISION;
-
                         return new Long(t.convertToLong(t.subtract(a, b, null))
                                         / 7);
-
                     case Tokens.SQL_TSI_MONTH :
                         t = Type.SQL_INTERVAL_MONTH_MAX_PRECISION;
-
                         return new Long(t.convertToLong(t.subtract(a, b,
                                 null)));
-
                     case Tokens.SQL_TSI_QUARTER :
                         t = Type.SQL_INTERVAL_MONTH_MAX_PRECISION;
-
                         return new Long(t.convertToLong(t.subtract(a, b, null))
                                         / 3);
-
                     case Tokens.SQL_TSI_YEAR :
                         t = Type.SQL_INTERVAL_YEAR_MAX_PRECISION;
-
                         return new Long(t.convertToLong(t.subtract(a, b,
                                 null)));
-
                     default :
                         throw Error.runtimeError(ErrorCode.U_S0500,
                                                  "FunctionCustom");
@@ -1010,63 +839,49 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[0] == null) {
                     return null;
                 }
-
                 IntervalSecondData diff =
                     (IntervalSecondData) Type.SQL_INTERVAL_DAY_MAX_PRECISION
                         .subtract(data[0], DateTimeType.epochTimestamp,
                                   Type.SQL_DATE);
-
                 return ValuePool.getInt((int) (diff.getSeconds()
                                                / (24 * 60 * 60) + 1));
             }
             case FUNC_ROUND :
             case FUNC_TRUNC : {
                 int interval = Types.SQL_INTERVAL_DAY;
-
                 if (data[0] == null) {
                     return null;
                 }
-
                 if (dataType.isDateTimeType()) {
                     DateTimeType type = (DateTimeType) dataType;
-
                     if (nodes.length > 1 && nodes[1] != null) {
                         if (data[1] == null) {
                             return null;
                         }
-
                         interval = HsqlDateTime.toStandardIntervalPart(
                             (String) data[1]);
                     }
-
                     if (interval < 0) {
                         throw Error.error(ErrorCode.X_42566, (String) data[1]);
                     }
-
                     return funcType == FUNC_ROUND
                            ? type.round(data[0], interval)
                            : type.truncate(data[0], interval);
                 }
             }
-
-            
             case FUNC_TRUNCATE : {
                 int offset = 0;
-
                 if (data[0] == null) {
                     return null;
                 }
-
                 if (nodes.length > 1) {
                     if (data[1] == null) {
                         return null;
                     }
-
                     data[1] = Type.SQL_INTEGER.convertToType(session, data[1],
                             nodes[1].getDataType());
                     offset = ((Number) data[1]).intValue();
                 }
-
                 return funcType == FUNC_ROUND
                        ? ((NumberType) dataType).round(data[0], offset)
                        : ((NumberType) dataType).truncate(data[0], offset);
@@ -1075,12 +890,10 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[0] == null || data[1] == null) {
                     return null;
                 }
-
                 SimpleDateFormat format = session.getSimpleDateFormatGMT();
                 Date date =
                     (Date) ((DateTimeType) nodes[0].dataType)
                         .convertSQLToJavaGMT(session, data[0]);
-
                 return HsqlDateTime.toFormattedDate(date, (String) data[1],
                                                     format);
             }
@@ -1088,7 +901,6 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[0] == null) {
                     return null;
                 }
-
                 return dataType.convertToType(session, data[0],
                                               nodes[0].dataType);
             }
@@ -1097,35 +909,29 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[0] == null || data[1] == null) {
                     return null;
                 }
-
                 SimpleDateFormat format = session.getSimpleDateFormatGMT();
                 Date date = HsqlDateTime.toDate((String) data[0],
                                                 (String) data[1], format);
                 long millis = date.getTime();
                 int  nanos  = 0;
-
                 if (funcType == FUNC_TO_DATE) {
                     millis = HsqlDateTime.convertToNormalisedDate(millis,
                             format.getCalendar());
                 } else {
                     nanos = ((int) (millis % 1000)) * 100000;
                 }
-
                 return new TimestampData(millis / 1000, nanos);
             }
             case FUNC_TIMESTAMP : {
                 boolean unary = nodes[1] == null;
-
                 if (data[0] == null) {
                     return null;
                 }
-
                 if (unary) {
                     if (nodes[0].dataType.isNumberType()) {
                         return new TimestampData(
                             ((Number) data[0]).longValue());
                     }
-
                     try {
                         return Type.SQL_TIMESTAMP.convertToType(session,
                                 data[0], nodes[0].dataType);
@@ -1134,32 +940,26 @@ public class FunctionCustom extends FunctionSQL {
                                                            nodes[0].dataType);
                     }
                 }
-
                 if (data[1] == null) {
                     return null;
                 }
-
                 TimestampData date =
                     (TimestampData) Type.SQL_DATE.convertToType(session,
                         data[0], nodes[0].dataType);
                 TimeData time = (TimeData) Type.SQL_TIME.convertToType(session,
                     data[1], nodes[1].dataType);
-
                 return new TimestampData(date.getSeconds()
                                          + time.getSeconds(), time.getNanos());
             }
             case FUNC_PI :
                 return new Double(Math.PI);
-
             case FUNC_RAND : {
                 if (nodes[0] == null) {
                     return new Double(session.random());
                 } else {
                     data[0] = Type.SQL_BIGINT.convertToType(session, data[0],
                             nodes[0].getDataType());
-
                     long seed = ((Number) data[0]).longValue();
-
                     return new Double(session.random(seed));
                 }
             }
@@ -1168,14 +968,12 @@ public class FunctionCustom extends FunctionSQL {
                     UUID uuid = java.util.UUID.randomUUID();
                     long hi   = uuid.getMostSignificantBits();
                     long lo   = uuid.getLeastSignificantBits();
-
                     return new BinaryData(ArrayUtil.toByteArray(hi, lo),
                                           false);
                 } else {
                     if (data[0] == null) {
                         return null;
                     }
-
                     if (dataType.isBinaryType()) {
                         return new BinaryData(
                             StringConverter.toBinaryUUID((String) data[0]),
@@ -1189,13 +987,11 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_UNIX_TIMESTAMP : {
                 if (nodes[0] == null) {
                     TimestampData ts = session.getCurrentTimestamp(false);
-
                     return Long.valueOf(ts.getSeconds());
                 } else {
                     if (data[0] == null) {
                         return null;
                     }
-
                     return Long.valueOf(
                         ((TimestampData) data[0]).getSeconds());
                 }
@@ -1204,174 +1000,134 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.acos(d));
             }
             case FUNC_ASIN : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.asin(d));
             }
             case FUNC_ATAN : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.atan(d));
             }
             case FUNC_COS : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.cos(d));
             }
             case FUNC_COT : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
                 double c = 1.0 / java.lang.Math.tan(d);
-
                 return new Double(c);
             }
             case FUNC_DEGREES : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.toDegrees(d));
             }
             case FUNC_SIN : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.sin(d));
             }
             case FUNC_TAN : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.tan(d));
             }
             case FUNC_LOG10 : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.log10(d));
             }
             case FUNC_RADIANS : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double d = NumberType.toDouble(data[0]);
-
                 return new Double(java.lang.Math.toRadians(d));
             }
-
-            
             case FUNC_SIGN : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 int val =
                     ((NumberType) nodes[0].dataType).compareToZero(data[0]);
-
                 return ValuePool.getInt(val);
             }
             case FUNC_ATAN2 : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 double a = NumberType.toDouble(data[0]);
                 double b = NumberType.toDouble(data[1]);
-
                 return new Double(java.lang.Math.atan2(a, b));
             }
             case FUNC_ASCII : {
                 String arg;
-
                 if (data[0] == null) {
                     return null;
                 }
-
                 if (nodes[0].dataType.isLobType()) {
                     arg = ((ClobData) data[0]).getSubString(session, 0, 1);
                 } else {
                     arg = (String) data[0];
                 }
-
                 if (arg.length() == 0) {
                     return null;
                 }
-
                 return ValuePool.getInt(arg.charAt(0));
             }
             case FUNC_CHAR :
                 if (data[0] == null) {
                     return null;
                 }
-
                 data[0] = Type.SQL_INTEGER.convertToType(session, data[0],
                         nodes[0].getDataType());
-
                 int arg = ((Number) data[0]).intValue();
-
                 if (Character.isValidCodePoint(arg)
                         && Character.isValidCodePoint((char) arg)) {
                     return String.valueOf((char) arg);
                 }
-
                 throw Error.error(ErrorCode.X_22511);
             case FUNC_ROUNDMAGIC : {
                 int offset = 0;
-
                 if (data[0] == null) {
                     return null;
                 }
-
                 if (nodes.length > 1) {
                     if (data[1] == null) {
                         return null;
                     }
-
                     offset = ((Number) data[1]).intValue();
                 }
-
                 return ((NumberType) dataType).round(data[0], offset);
             }
             case FUNC_SOUNDEX : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 String s = (String) data[0];
-
                 return new String(soundex(s), 0, 4);
             }
             case FUNC_BITAND :
@@ -1384,59 +1140,45 @@ public class FunctionCustom extends FunctionSQL {
                         return null;
                     }
                 }
-
                 if (dataType.isNumberType()) {
                     long v = 0;
                     long a;
                     long b = 0;
-
                     data[0] = Type.SQL_BIGINT.convertToType(session, data[0],
                             nodes[0].getDataType());
                     a = ((Number) data[0]).longValue();
-
                     if (funcType != FUNC_BITNOT) {
                         data[1] = Type.SQL_BIGINT.convertToType(session,
                                 data[1], nodes[1].getDataType());
                         b = ((Number) data[1]).longValue();
                     }
-
                     switch (funcType) {
-
                         case FUNC_BITAND :
                             v = a & b;
                             break;
-
                         case FUNC_BITANDNOT :
                             v = a & ~b;
                             break;
-
                         case FUNC_BITNOT :
                             v = ~a;
                             break;
-
                         case FUNC_BITOR :
                             v = a | b;
                             break;
-
                         case FUNC_BITXOR :
                             v = a ^ b;
                             break;
                     }
-
                     switch (dataType.typeCode) {
-
                         case Types.SQL_NUMERIC :
                         case Types.SQL_DECIMAL :
                             return BigDecimal.valueOf(v);
-
                         case Types.SQL_BIGINT :
                             return ValuePool.getLong(v);
-
                         case Types.SQL_INTEGER :
                         case Types.SQL_SMALLINT :
                         case Types.TINYINT :
                             return ValuePool.getInt((int) v);
-
                         default :
                             throw Error.error(ErrorCode.X_42561);
                     }
@@ -1444,38 +1186,29 @@ public class FunctionCustom extends FunctionSQL {
                     byte[] a = ((BinaryData) data[0]).getBytes();
                     byte[] b = null;
                     byte[] v;
-
                     if (funcType != FUNC_BITNOT) {
                         b = ((BinaryData) data[1]).getBytes();
                     }
-
                     switch (funcType) {
-
                         case FUNC_BITAND :
                             v = BitMap.and(a, b);
                             break;
-
                         case FUNC_BITANDNOT :
                             b = BitMap.not(b);
                             v = BitMap.and(a, b);
                             break;
-
                         case FUNC_BITNOT :
                             v = BitMap.not(a);
                             break;
-
                         case FUNC_BITOR :
                             v = BitMap.or(a, b);
                             break;
-
                         case FUNC_BITXOR :
                             v = BitMap.xor(a, b);
                             break;
-
                         default :
                             throw Error.error(ErrorCode.X_42561);
                     }
-
                     return new BinaryData(v, dataType.precision);
                 }
             }
@@ -1485,21 +1218,16 @@ public class FunctionCustom extends FunctionSQL {
                         return null;
                     }
                 }
-
                 char[] s1 = soundex((String) data[0]);
                 char[] s2 = soundex((String) data[1]);
                 int    e  = 0;
-
                 if (s1[0] == s2[0]) {
                     e++;
                 }
-
                 if (e == 4) {
                     return ValuePool.getInt(e);
                 }
-
                 int js = 1;
-
                 for (int i = 1; i < 4; i++) {
                     for (int j = js; j < 4; j++) {
                         if (s1[j] == s2[i]) {
@@ -1509,16 +1237,13 @@ public class FunctionCustom extends FunctionSQL {
                         }
                     }
                 }
-
                 e = 0;
-
                 return ValuePool.getInt(e);
             }
             case FUNC_HEXTORAW : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 return dataType.convertToType(session, data[0],
                                               nodes[0].dataType);
             }
@@ -1526,11 +1251,9 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[0] == null) {
                     return null;
                 }
-
                 BlobData binary = (BlobData) data[0];
                 byte[] bytes = binary.getBytes(session, 0,
                                                (int) binary.length(session));
-
                 return StringConverter.byteArrayToHexString(bytes);
             }
             case FUNC_REPEAT : {
@@ -1539,18 +1262,14 @@ public class FunctionCustom extends FunctionSQL {
                         return null;
                     }
                 }
-
                 data[1] = Type.SQL_INTEGER.convertToType(session, data[1],
                         nodes[1].getDataType());
-
                 String       string = (String) data[0];
                 int          i      = ((Number) data[1]).intValue();
                 StringBuffer sb     = new StringBuffer(string.length() * i);
-
                 while (i-- > 0) {
                     sb.append(string);
                 }
-
                 return sb.toString();
             }
             case FUNC_REPLACE : {
@@ -1559,28 +1278,21 @@ public class FunctionCustom extends FunctionSQL {
                         return null;
                     }
                 }
-
                 String       string  = (String) data[0];
                 String       find    = (String) data[1];
                 String       replace = (String) data[2];
                 StringBuffer sb      = new StringBuffer();
                 int          start   = 0;
-
                 while (true) {
                     int i = string.indexOf(find, start);
-
                     if (i == -1) {
                         sb.append(string.substring(start));
-
                         break;
                     }
-
                     sb.append(string.substring(start, i));
                     sb.append(replace);
-
                     start = i + find.length();
                 }
-
                 return sb.toString();
             }
             case FUNC_LEFT :
@@ -1590,9 +1302,7 @@ public class FunctionCustom extends FunctionSQL {
                         return null;
                     }
                 }
-
                 int count = ((Number) data[1]).intValue();
-
                 return ((CharacterType) dataType).substring(session, data[0],
                         0, count, true, funcType == FUNC_RIGHT);
             }
@@ -1600,26 +1310,19 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[0] == null) {
                     return null;
                 }
-
                 data[0] = Type.SQL_INTEGER.convertToType(session, data[0],
                         nodes[0].getDataType());
-
                 int    count = ((Number) data[0]).intValue();
                 char[] array = new char[count];
-
                 ArrayUtil.fillArray(array, 0, ' ');
-
                 return String.valueOf(array);
             }
             case FUNC_REVERSE : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 StringBuffer sb = new StringBuffer((String) data[0]);
-
                 sb = sb.reverse();
-
                 return sb.toString();
             }
             case FUNC_REGEXP_MATCHES :
@@ -1630,27 +1333,19 @@ public class FunctionCustom extends FunctionSQL {
                         return null;
                     }
                 }
-
                 Pattern currentPattern = pattern;
-
                 if (currentPattern == null) {
                     String matchPattern = (String) data[1];
-
                     currentPattern = Pattern.compile(matchPattern);
                 }
-
                 Matcher matcher = currentPattern.matcher((String) data[0]);
-
                 switch (funcType) {
-
                     case FUNC_REGEXP_MATCHES : {
                         boolean match = matcher.matches();
-
                         return Boolean.valueOf(match);
                     }
                     case FUNC_REGEXP_SUBSTRING : {
                         boolean match = matcher.find();
-
                         if (match) {
                             return matcher.group();
                         } else {
@@ -1659,11 +1354,9 @@ public class FunctionCustom extends FunctionSQL {
                     }
                     case FUNC_REGEXP_SUBSTRING_ARRAY : {
                         HsqlArrayList list = new HsqlArrayList();
-
                         while (matcher.find()) {
                             list.add(matcher.group());
                         }
-
                         return list.toArray();
                     }
                 }
@@ -1671,22 +1364,17 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_CRYPT_KEY : {
                 byte[] bytes = Crypto.getNewKey((String) data[0],
                                                 (String) data[1]);
-
                 return StringConverter.byteArrayToHexString(bytes);
             }
             case FUNC_LOAD_FILE : {
                 String fileName = (String) data[0];
-
                 if (fileName == null) {
                     return null;
                 }
-
                 switch (dataType.typeCode) {
-
                     case Types.SQL_CLOB :
                         return session.sessionData.createClobFromFile(fileName,
                                 (String) data[1]);
-
                     case Types.SQL_BLOB :
                     default :
                         return session.sessionData.createBlobFromFile(
@@ -1698,33 +1386,26 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[0] == null || data[1] == null) {
                     return null;
                 }
-
                 String value;
-
                 if (nodes[0].dataType.isCharacterType()
                         && !nodes[0].dataType.isLobType()) {
                     value = (String) data[0];
                 } else {
                     value = nodes[0].dataType.convertToString(data[0]);
                 }
-
                 int length = ((Integer) Type.SQL_INTEGER.convertToType(session,
                     data[1], nodes[1].dataType)).intValue();
                 String pad = " ";
-
                 if (nodes[2] != null) {
                     pad = nodes[2].dataType.convertToString(data[2]);
-
                     if (pad.length() == 0) {
                         pad = " ";
                     }
                 }
-
                 value = (String) Type.SQL_VARCHAR.trim(session, value, ' ',
                                                        true, true);
                 value = StringUtil.toPaddedString(value, length, pad,
                                                   funcType == FUNC_RPAD);
-
                 if (dataType.isLobType()) {
                     return dataType.convertToType(session, value,
                                                   Type.SQL_VARCHAR);
@@ -1736,109 +1417,81 @@ public class FunctionCustom extends FunctionSQL {
                 if (data[1] == null) {
                     return null;
                 }
-
                 if (data[2] == null) {
                     return null;
                 }
-
                 Object[]  array       = (Object[]) data[1];
                 ArrayType dt          = (ArrayType) nodes[1].dataType;
                 Type      elementType = dt.collectionBaseType();
                 int start = ((Number) Type.SQL_INTEGER.convertToType(session,
                     data[2], nodes[2].dataType)).intValue();
-
                 if (start <= 0) {
                     throw Error.error(ErrorCode.X_22003);
                 }
-
                 start--;
-
                 for (int i = start; i < array.length; i++) {
                     if (elementType.compare(session, data[0], array[i]) == 0) {
                         return ValuePool.getInt(i + 1);
                     }
                 }
-
                 return ValuePool.INTEGER_0;
             }
             case FUNC_SORT_ARRAY : {
                 if (data[0] == null) {
                     return null;
                 }
-
                 ArrayType    dt       = (ArrayType) dataType;
                 SortAndSlice exprSort = new SortAndSlice();
-
                 exprSort.prepareSingleColumn(1);
-
                 exprSort.sortDescending[0] = ((Number) data[1]).intValue()
                                              == Tokens.DESC;
                 exprSort.sortNullsLast[0] = ((Number) data[2]).intValue()
                                             == Tokens.LAST;
-
                 Object array = ArrayUtil.duplicateArray(data[0]);
-
                 dt.sort(session, array, exprSort);
-
                 return array;
             }
             default :
                 throw Error.runtimeError(ErrorCode.U_S0500, "FunctionCustom");
         }
     }
-
     public void resolveTypes(Session session, Expression parent) {
-
         for (int i = 0; i < nodes.length; i++) {
             if (nodes[i] != null) {
                 nodes[i].resolveTypes(session, this);
             }
         }
-
         switch (funcType) {
-
             case FUNC_POSITION_CHAR :
             case FUNC_EXTRACT :
             case FUNC_TRIM_CHAR :
             case FUNC_OVERLAY_CHAR :
                 super.resolveTypes(session, parent);
-
                 return;
-
             case FUNC_DATABASE :
                 dataType = Type.SQL_VARCHAR_DEFAULT;
-
                 return;
-
             case FUNC_DATABASE_NAME :
                 dataType = Type.SQL_VARCHAR_DEFAULT;
-
                 return;
-
             case FUNC_ISAUTOCOMMIT :
             case FUNC_ISREADONLYSESSION :
             case FUNC_ISREADONLYDATABASE :
             case FUNC_ISREADONLYDATABASEFILES :
                 dataType = Type.SQL_BOOLEAN;
-
                 return;
-
             case FUNC_ISOLATION_LEVEL :
             case FUNC_SESSION_ISOLATION_LEVEL :
             case FUNC_DATABASE_ISOLATION_LEVEL :
             case FUNC_TRANSACTION_CONTROL :
             case FUNC_DATABASE_VERSION :
                 dataType = Type.SQL_VARCHAR_DEFAULT;
-
                 return;
-
             case FUNC_TIMEZONE :
             case FUNC_SESSION_TIMEZONE :
             case FUNC_DATABASE_TIMEZONE :
                 dataType = Type.SQL_INTERVAL_HOUR_TO_MINUTE;
-
                 return;
-
             case FUNC_SESSION_ID :
             case FUNC_ACTION_ID :
             case FUNC_TRANSACTION_ID :
@@ -1846,29 +1499,23 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_LOB_ID :
             case FUNC_IDENTITY :
                 dataType = Type.SQL_BIGINT;
-
                 return;
-
             case FUNC_DIAGNOSTICS : {
                 exprSubType = ExpressionColumn.idx_row_count;
                 dataType    = Type.SQL_INTEGER;
-
                 return;
             }
             case FUNC_SEQUENCE_ARRAY : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = nodes[1].dataType;
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = nodes[0].dataType;
                 }
-
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_INTEGER;
                     nodes[1].dataType = Type.SQL_INTEGER;
                 }
-
                 if (nodes[0].dataType.isNumberType()) {
                     if (nodes[2].dataType == null) {
                         nodes[2].dataType = nodes[0].dataType;
@@ -1877,59 +1524,45 @@ public class FunctionCustom extends FunctionSQL {
                     if (nodes[2].dataType == null) {
                         throw Error.error(ErrorCode.X_42561);
                     }
-
                     if (!nodes[2].dataType.isIntervalType()) {
                         throw Error.error(ErrorCode.X_42561);
                     }
                 }
-
                 dataType =
                     new ArrayType(nodes[0].getDataType(),
                                   ArrayType.defaultLargeArrayCardinality);
-
                 return;
             }
             case FUNC_DATEADD : {
                 int part;
-
                 if (!nodes[0].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 part               = getTSIToken((String) nodes[0].valueData);
                 nodes[0].valueData = ValuePool.getInt(part);
                 nodes[0].dataType  = Type.SQL_INTEGER;
                 funcType           = FUNC_TIMESTAMPADD;
             }
-
-            
             case FUNC_TIMESTAMPADD :
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_BIGINT;
                 }
-
                 if (nodes[2].dataType == null) {
                     nodes[2].dataType = Type.SQL_TIMESTAMP;
                 }
-
                 if (!nodes[1].dataType.isNumberType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 if (nodes[2].dataType.typeCode != Types.SQL_DATE
                         && nodes[2].dataType.typeCode != Types.SQL_TIMESTAMP
                         && nodes[2].dataType.typeCode
                            != Types.SQL_TIMESTAMP_WITH_TIME_ZONE) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = nodes[2].dataType;
-
                 return;
-
             case FUNC_DATEDIFF : {
                 int part;
-
                 if (nodes[2] == null) {
                     nodes[2] = nodes[0];
                     nodes[0] = new ExpressionValue(
@@ -1939,53 +1572,41 @@ public class FunctionCustom extends FunctionSQL {
                     if (!nodes[0].dataType.isCharacterType()) {
                         throw Error.error(ErrorCode.X_42563);
                     }
-
                     part = getTSIToken((String) nodes[0].valueData);
                     nodes[0].valueData = ValuePool.getInt(part);
                     nodes[0].dataType  = Type.SQL_INTEGER;
                 }
-
                 funcType = FUNC_TIMESTAMPDIFF;
             }
-
-            
             case FUNC_TIMESTAMPDIFF : {
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = nodes[2].dataType;
                 }
-
                 if (nodes[2].dataType == null) {
                     nodes[2].dataType = nodes[1].dataType;
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_TIMESTAMP;
                     nodes[2].dataType = Type.SQL_TIMESTAMP;
                 }
-
                 switch (nodes[1].dataType.typeCode) {
-
                     case Types.SQL_DATE :
                         if (nodes[2].dataType.typeCode == Types.SQL_TIME
                                 || nodes[2].dataType.typeCode
                                    == Types.SQL_TIME_WITH_TIME_ZONE) {
                             throw Error.error(ErrorCode.X_42563);
                         }
-
                         switch (((Integer) nodes[0].valueData).intValue()) {
-
                             case Tokens.SQL_TSI_DAY :
                             case Tokens.SQL_TSI_WEEK :
                             case Tokens.SQL_TSI_MONTH :
                             case Tokens.SQL_TSI_QUARTER :
                             case Tokens.SQL_TSI_YEAR :
                                 break;
-
                             default :
                                 throw Error.error(ErrorCode.X_42563);
                         }
                         break;
-
                     case Types.SQL_TIMESTAMP :
                     case Types.SQL_TIMESTAMP_WITH_TIME_ZONE :
                         if (nodes[2].dataType.typeCode == Types.SQL_TIME
@@ -1994,39 +1615,30 @@ public class FunctionCustom extends FunctionSQL {
                             throw Error.error(ErrorCode.X_42563);
                         }
                         break;
-
                     default :
                         throw Error.error(ErrorCode.X_42563);
                 }
-
                 dataType = Type.SQL_BIGINT;
-
                 return;
             }
             case FUNC_DAYS : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_DATE;
                 }
-
                 switch (nodes[0].dataType.typeCode) {
-
                     case Types.SQL_DATE :
                     case Types.SQL_TIMESTAMP :
                     case Types.SQL_TIMESTAMP_WITH_TIME_ZONE :
                         break;
-
                     default :
                         throw Error.error(ErrorCode.X_42563);
                 }
-
                 dataType = Type.SQL_INTEGER;
-
                 return;
             }
             case FUNC_ROUND :
             case FUNC_TRUNC : {
                 boolean single = nodes.length == 1 || nodes[1] == null;
-
                 if (nodes[0].dataType == null) {
                     if (single) {
                         nodes[0].dataType = Type.SQL_DECIMAL;
@@ -2034,7 +1646,6 @@ public class FunctionCustom extends FunctionSQL {
                         if (nodes[1].dataType == null) {
                             nodes[1].dataType = Type.SQL_INTEGER;
                         }
-
                         if (nodes[1].dataType.isNumberType()) {
                             nodes[0].dataType = Type.SQL_DECIMAL;
                         } else {
@@ -2042,37 +1653,27 @@ public class FunctionCustom extends FunctionSQL {
                         }
                     }
                 }
-
                 if (nodes[0].dataType.isDateTimeType()) {
                     if (!single) {
                         if (!nodes[1].dataType.isCharacterType()) {
                             throw Error.error(ErrorCode.X_42566);
                         }
                     }
-
                     dataType = nodes[0].dataType;
-
                     break;
                 } else if (nodes[0].dataType.isNumberType()) {
-
-                    
                 } else {
                     throw Error.error(ErrorCode.X_42561);
                 }
             }
-
-            
             case FUNC_TRUNCATE : {
                 Number offset = null;
-
                 if (nodes[0].dataType == null) {
                     throw Error.error(ErrorCode.X_42567);
                 }
-
                 if (!nodes[0].dataType.isNumberType()) {
                     throw Error.error(ErrorCode.X_42563);
                 }
-
                 if (nodes[1] == null) {
                     nodes[1] = new ExpressionValue(ValuePool.INTEGER_0,
                                                    Type.SQL_INTEGER);
@@ -2083,23 +1684,18 @@ public class FunctionCustom extends FunctionSQL {
                     } else if (!nodes[1].dataType.isIntegralType()) {
                         throw Error.error(ErrorCode.X_42563);
                     }
-
                     if (nodes[1].opType == OpTypes.VALUE) {
                         offset = (Number) nodes[1].getValue(session);
                     }
                 }
-
                 dataType = nodes[0].dataType;
-
                 if (offset != null) {
                     int scale = offset.intValue();
-
                     if (scale < 0) {
                         scale = 0;
                     } else if (scale > dataType.scale) {
                         scale = dataType.scale;
                     }
-
                     if (dataType.typeCode == Types.SQL_DECIMAL
                             || dataType.typeCode == Types.SQL_NUMERIC) {
                         if (scale != dataType.scale) {
@@ -2110,45 +1706,33 @@ public class FunctionCustom extends FunctionSQL {
                         }
                     }
                 }
-
                 return;
             }
             case FUNC_TO_CHAR : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_TIMESTAMP;
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 if (!nodes[1].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42563);
                 }
-
                 if (!nodes[0].dataType.isDateTimeType()) {
                     throw Error.error(ErrorCode.X_42563);
                 }
-
-                
                 dataType = CharacterType.getCharacterType(Types.SQL_VARCHAR,
                         64);
-
                 return;
             }
             case FUNC_TO_NUMBER : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
-
                 if (!nodes[0].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42563);
                 }
-
-                
                 dataType = Type.SQL_DECIMAL_DEFAULT;
-
                 return;
             }
             case FUNC_TO_DATE :
@@ -2156,29 +1740,23 @@ public class FunctionCustom extends FunctionSQL {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 if (!nodes[0].dataType.isCharacterType()
                         || !nodes[1].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42567);
                 }
-
                 dataType = funcType == FUNC_TO_DATE ? Type.SQL_DATE
                                                     : Type.SQL_TIMESTAMP;
-
                 return;
             }
             case FUNC_TIMESTAMP : {
                 Type argType = nodes[0].dataType;
-
                 if (nodes[1] == null) {
                     if (argType == null) {
                         argType = nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                     }
-
                     if (argType.isCharacterType()
                             || argType.typeCode == Types.SQL_TIMESTAMP
                             || argType.typeCode
@@ -2201,7 +1779,6 @@ public class FunctionCustom extends FunctionSQL {
                             }
                         }
                     }
-
                     if (nodes[1].dataType == null) {
                         if (argType.isCharacterType()) {
                             nodes[1].dataType = Type.SQL_VARCHAR_DEFAULT;
@@ -2209,7 +1786,6 @@ public class FunctionCustom extends FunctionSQL {
                             nodes[1].dataType = Type.SQL_TIME;
                         }
                     }
-
                     if ((argType.typeCode == Types.SQL_DATE && nodes[1]
                             .dataType.typeCode == Types.SQL_TIME) || argType
                                 .isCharacterType() && nodes[1].dataType
@@ -2218,15 +1794,12 @@ public class FunctionCustom extends FunctionSQL {
                         throw Error.error(ErrorCode.X_42561);
                     }
                 }
-
                 dataType = Type.SQL_TIMESTAMP;
-
                 return;
             }
             case FUNC_PI :
                 dataType = Type.SQL_DOUBLE;
                 break;
-
             case FUNC_UUID : {
                 if (nodes[0] == null) {
                     dataType = Type.SQL_BINARY_16;
@@ -2243,7 +1816,6 @@ public class FunctionCustom extends FunctionSQL {
                         throw Error.error(ErrorCode.X_42563);
                     }
                 }
-
                 break;
             }
             case FUNC_UNIX_TIMESTAMP : {
@@ -2257,9 +1829,7 @@ public class FunctionCustom extends FunctionSQL {
                         throw Error.error(ErrorCode.X_42563);
                     }
                 }
-
                 dataType = Type.SQL_BIGINT;
-
                 break;
             }
             case FUNC_RAND : {
@@ -2270,9 +1840,7 @@ public class FunctionCustom extends FunctionSQL {
                         throw Error.error(ErrorCode.X_42563);
                     }
                 }
-
                 dataType = Type.SQL_DOUBLE;
-
                 break;
             }
             case FUNC_ACOS :
@@ -2289,58 +1857,45 @@ public class FunctionCustom extends FunctionSQL {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_DOUBLE;
                 }
-
                 if (!nodes[0].dataType.isNumberType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = Type.SQL_DOUBLE;
-
                 break;
             }
             case FUNC_SIGN : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_DOUBLE;
                 }
-
                 if (!nodes[0].dataType.isNumberType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = Type.SQL_INTEGER;
-
                 break;
             }
             case FUNC_ATAN2 : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_DOUBLE;
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_DOUBLE;
                 }
-
                 if (!nodes[0].dataType.isNumberType()
                         || !nodes[1].dataType.isNumberType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = Type.SQL_DOUBLE;
-
                 break;
             }
             case FUNC_SOUNDEX : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR;
                 }
-
                 if (!nodes[0].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = CharacterType.getCharacterType(Types.SQL_VARCHAR,
                         4);
-
                 break;
             }
             case FUNC_BITAND :
@@ -2351,33 +1906,25 @@ public class FunctionCustom extends FunctionSQL {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = nodes[1].dataType;
                 }
-
                 if (funcType == FUNC_BITNOT) {
                     if (nodes[0].dataType == null) {
                         nodes[0].dataType = Type.SQL_INTEGER;
                     }
-
                     dataType = nodes[0].dataType;
-
                 } else {
                     dataType = nodes[0].dataType;
-
                     if (nodes[1].dataType == null) {
                         nodes[1].dataType = nodes[0].dataType;
                     }
-
                     for (int i = 0; i < nodes.length; i++) {
                         if (nodes[i].dataType == null) {
                             nodes[i].dataType = Type.SQL_INTEGER;
                         }
                     }
-
                     dataType =
                         nodes[0].dataType.getAggregateType(nodes[1].dataType);
                 }
-
                 switch (dataType.typeCode) {
-
                     case Types.SQL_DOUBLE :
                     case Types.SQL_DECIMAL :
                     case Types.SQL_NUMERIC :
@@ -2386,115 +1933,91 @@ public class FunctionCustom extends FunctionSQL {
                     case Types.SQL_SMALLINT :
                     case Types.TINYINT :
                         break;
-
                     case Types.SQL_BIT :
                     case Types.SQL_BIT_VARYING :
                         break;
-
                     default :
                         throw Error.error(ErrorCode.X_42561);
                 }
-
                 break;
             }
             case FUNC_ASCII : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR;
                 }
-
                 if (!nodes[0].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = Type.SQL_INTEGER;
-
                 break;
             }
             case FUNC_CHAR : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_INTEGER;
                 }
-
                 if (!nodes[0].dataType.isExactNumberType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = CharacterType.getCharacterType(Types.SQL_VARCHAR,
                         1);
-
                 break;
             }
             case FUNC_DIFFERENCE : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR;
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_VARCHAR;
                 }
-
                 dataType = Type.SQL_INTEGER;
-
                 break;
             }
             case FUNC_HEXTORAW : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR;
                 }
-
                 if (!nodes[0].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = nodes[0].dataType.precision == 0
                            ? Type.SQL_VARBINARY_DEFAULT
                            : BinaryType.getBinaryType(
                                Types.SQL_VARBINARY,
                                nodes[0].dataType.precision / 2);
-
                 break;
             }
             case FUNC_RAWTOHEX : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARBINARY;
                 }
-
                 if (!nodes[0].dataType.isBinaryType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = nodes[0].dataType.precision == 0
                            ? Type.SQL_VARCHAR_DEFAULT
                            : CharacterType.getCharacterType(Types.SQL_VARCHAR,
                            nodes[0].dataType.precision * 2);
-
                 break;
             }
             case FUNC_REPEAT : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR;
                 }
-
                 boolean isChar = nodes[0].dataType.isCharacterType();
-
                 if (!isChar && !nodes[0].dataType.isBinaryType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 if (!nodes[1].dataType.isExactNumberType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = isChar ? (Type) Type.SQL_VARCHAR_DEFAULT
                                   : (Type) Type.SQL_VARBINARY_DEFAULT;
-
                 break;
             }
             case FUNC_REPLACE : {
                 if (nodes[2] == null) {
                     nodes[2] = new ExpressionValue("", Type.SQL_VARCHAR);
                 }
-
                 for (int i = 0; i < nodes.length; i++) {
                     if (nodes[i].dataType == null) {
                         nodes[i].dataType = Type.SQL_VARCHAR;
@@ -2502,9 +2025,7 @@ public class FunctionCustom extends FunctionSQL {
                         throw Error.error(ErrorCode.X_42561);
                     }
                 }
-
                 dataType = Type.SQL_VARCHAR_DEFAULT;
-
                 break;
             }
             case FUNC_LEFT :
@@ -2512,50 +2033,39 @@ public class FunctionCustom extends FunctionSQL {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR;
                 }
-
                 if (!nodes[0].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_INTEGER;
                 }
-
                 if (!nodes[1].dataType.isExactNumberType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = nodes[0].dataType.precision == 0
                            ? Type.SQL_VARCHAR_DEFAULT
                            : ((CharacterType) nodes[0].dataType)
                                .getCharacterType(nodes[0].dataType.precision);
-
                 break;
             }
             case FUNC_SPACE : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_INTEGER;
                 }
-
                 if (!nodes[0].dataType.isIntegralType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 dataType = Type.SQL_VARCHAR_DEFAULT;
-
                 break;
             }
             case FUNC_REVERSE : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 dataType = nodes[0].dataType;
-
                 if (!dataType.isCharacterType() || dataType.isLobType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 break;
             }
             case FUNC_REGEXP_MATCHES :
@@ -2564,40 +2074,30 @@ public class FunctionCustom extends FunctionSQL {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 if (!nodes[0].dataType.isCharacterType()
                         || !nodes[1].dataType.isCharacterType()
                         || nodes[1].dataType.isLobType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 if (nodes[1].exprSubType == OpTypes.VALUE) {
                     String matchPattern = (String) nodes[1].getValue(session);
-
                     pattern = Pattern.compile(matchPattern);
                 }
-
                 switch (funcType) {
-
                     case FUNC_REGEXP_MATCHES :
                         dataType = Type.SQL_BOOLEAN;
                         break;
-
                     case FUNC_REGEXP_SUBSTRING :
                         dataType = Type.SQL_VARCHAR_DEFAULT;
                         break;
-
                     case FUNC_REGEXP_SUBSTRING_ARRAY : {
                         dataType = Type.getDefaultArrayType(Types.SQL_VARCHAR);
-
                         break;
                     }
                 }
-
                 break;
             }
             case FUNC_CRYPT_KEY : {
@@ -2608,31 +2108,25 @@ public class FunctionCustom extends FunctionSQL {
                         throw Error.error(ErrorCode.X_42561);
                     }
                 }
-
                 dataType = Type.SQL_VARCHAR_DEFAULT;
-
                 break;
             }
             case FUNC_LOAD_FILE : {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 if (!nodes[0].dataType.isCharacterType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 if (nodes[1] == null) {
                     dataType = Type.SQL_BLOB;
                 } else {
                     dataType = Type.SQL_CLOB;
-
                     if (nodes[1].dataType == null
                             || !nodes[1].dataType.isCharacterType()) {
                         throw Error.error(ErrorCode.X_42561);
                     }
                 }
-
                 break;
             }
             case FUNC_LPAD :
@@ -2640,179 +2134,135 @@ public class FunctionCustom extends FunctionSQL {
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 if (nodes[1].dataType == null) {
                     nodes[1].dataType = Type.SQL_INTEGER;
                 }
-
                 if (!nodes[1].dataType.isIntegralType()) {
                     throw Error.error(ErrorCode.X_42561);
                 }
-
                 if (nodes[2] != null) {
                     if (nodes[2].dataType == null) {
                         nodes[2].dataType = Type.SQL_VARCHAR_DEFAULT;
                     }
-
                     if (!nodes[2].dataType.isCharacterType()) {
                         throw Error.error(ErrorCode.X_42561);
                     }
                 }
-
                 dataType = nodes[0].dataType;
-
                 if (dataType.typeCode != Types.SQL_CLOB) {
                     dataType = Type.SQL_VARCHAR_DEFAULT;
                 }
-
                 if (nodes[1].opType == OpTypes.VALUE) {
                     Number value = (Number) nodes[1].getValue(session);
-
                     if (value != null) {
                         dataType = ((CharacterType) dataType).getCharacterType(
                             value.longValue());
                     }
                 }
-
                 break;
             }
             case FUNC_POSITION_ARRAY : {
                 if (nodes[1].dataType == null) {
                     throw Error.error(ErrorCode.X_42567);
                 }
-
                 if (!nodes[1].dataType.isArrayType()) {
                     throw Error.error(ErrorCode.X_42563);
                 }
-
                 if (nodes[0].dataType == null) {
                     nodes[0].dataType =
                         ((ArrayType) nodes[1].dataType).collectionBaseType();
                 }
-
                 if (((ArrayType) nodes[1].dataType).collectionBaseType()
                         .typeComparisonGroup != nodes[0].dataType
                         .typeComparisonGroup) {
                     throw Error.error(ErrorCode.X_42563);
                 }
-
                 if (nodes[2] == null) {
                     nodes[2] = new ExpressionValue(ValuePool.INTEGER_1,
                                                    Type.SQL_INTEGER);
                 }
-
                 if (nodes[2].dataType == null) {
                     nodes[2].dataType = Type.SQL_INTEGER;
                 }
-
                 if (!nodes[2].dataType.isIntegralType()) {
                     throw Error.error(ErrorCode.X_42563);
                 }
-
                 dataType = Type.SQL_INTEGER;
-
                 break;
             }
             case FUNC_SORT_ARRAY : {
                 if (nodes[0].dataType == null) {
                     throw Error.error(ErrorCode.X_42567);
                 }
-
                 if (!nodes[0].dataType.isArrayType()) {
                     throw Error.error(ErrorCode.X_42563);
                 }
-
                 if (nodes[1] == null) {
                     nodes[1] =
                         new ExpressionValue(ValuePool.getInt(Tokens.ASC),
                                             Type.SQL_INTEGER);
                 }
-
                 if (nodes[2] == null) {
                     nodes[2] =
                         new ExpressionValue(ValuePool.getInt(Tokens.FIRST),
                                             Type.SQL_INTEGER);
                 }
-
                 dataType = nodes[0].dataType;
-
                 break;
             }
             default :
                 throw Error.runtimeError(ErrorCode.U_S0500, "FunctionCustom");
         }
     }
-
     public String getSQL() {
-
         switch (funcType) {
-
             case FUNC_POSITION_CHAR : {
-
-                
                 StringBuffer sb = new StringBuffer(Tokens.T_LOCATE).append(
                     Tokens.T_OPENBRACKET).append(nodes[0].getSQL())         
                     .append(Tokens.T_COMMA).append(nodes[1].getSQL());      
-
                 if (nodes.length > 3 && nodes[3] != null) {
                     sb.append(Tokens.T_COMMA).append(nodes[3].getSQL());    
                 }
-
                 sb.append(Tokens.T_CLOSEBRACKET).toString();
-
                 return sb.toString();
             }
             case FUNC_LPAD :
             case FUNC_RPAD : {
                 StringBuffer sb = new StringBuffer(name);
-
                 sb.append(Tokens.T_OPENBRACKET).append(nodes[0].getSQL());
                 sb.append(Tokens.T_COMMA).append(nodes[1].getSQL());
-
                 if (nodes[2] != null) {
                     sb.append(Tokens.T_COMMA).append(nodes[2].getSQL());
                 }
-
                 sb.append(Tokens.T_CLOSEBRACKET).toString();
-
                 return sb.toString();
             }
             case FUNC_EXTRACT :
             case FUNC_TRIM_CHAR :
             case FUNC_OVERLAY_CHAR :
                 return super.getSQL();
-
             case FUNC_POSITION_ARRAY : {
                 StringBuffer sb = new StringBuffer(name).append('(');
-
                 sb.append(nodes[0].getSQL()).append(' ').append(Tokens.T_IN);
                 sb.append(' ').append(nodes[1].getSQL());
-
                 if (((Number) nodes[1].valueData).intValue() == Tokens.DESC) {
                     sb.append(' ').append(Tokens.T_FROM);
                     sb.append(' ').append(nodes[2].getSQL());
                 }
-
                 sb.append(')');
-
                 return sb.toString();
             }
             case FUNC_SORT_ARRAY : {
                 StringBuffer sb = new StringBuffer(name).append('(');
-
                 sb.append(nodes[0].getSQL());
-
                 if (((Number) nodes[1].valueData).intValue() == Tokens.DESC) {
                     sb.append(' ').append(Tokens.T_DESC);
                 }
-
                 if (((Number) nodes[2].valueData).intValue() == Tokens.LAST) {
                     sb.append(' ').append(Tokens.T_NULLS).append(' ');
                     sb.append(Tokens.T_LAST);
                 }
-
                 sb.append(')');
-
                 return sb.toString();
             }
             case FUNC_DATABASE :
@@ -2838,11 +2288,9 @@ public class FunctionCustom extends FunctionSQL {
                 return new StringBuffer(name).append(
                     Tokens.T_OPENBRACKET).append(
                     Tokens.T_CLOSEBRACKET).toString();
-
             case FUNC_TIMESTAMPADD : {
                 String token = Tokens.getSQLTSIString(
                     ((Number) nodes[0].getValue(null)).intValue());
-
                 return new StringBuffer(Tokens.T_TIMESTAMPADD).append(
                     Tokens.T_OPENBRACKET).append(token)                     
                     .append(Tokens.T_COMMA).append(nodes[1].getSQL())       
@@ -2852,7 +2300,6 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_TIMESTAMPDIFF : {
                 String token = Tokens.getSQLTSIString(
                     ((Number) nodes[0].getValue(null)).intValue());
-
                 return new StringBuffer(Tokens.T_TIMESTAMPDIFF).append(
                     Tokens.T_OPENBRACKET).append(token)                     
                     .append(Tokens.T_COMMA).append(nodes[1].getSQL())       
@@ -2862,13 +2309,10 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_UNIX_TIMESTAMP :
             case FUNC_RAND : {
                 StringBuffer sb = new StringBuffer(name).append('(');
-
                 if (nodes[0] != null) {
                     sb.append(nodes[0].getSQL());
                 }
-
                 sb.append(')');
-
                 return sb.toString();
             }
             case FUNC_LOAD_FILE :
@@ -2877,15 +2321,11 @@ public class FunctionCustom extends FunctionSQL {
             case FUNC_TRUNC :
             case FUNC_TRUNCATE : {
                 StringBuffer sb = new StringBuffer(name).append('(');
-
                 sb.append(nodes[0].getSQL());
-
                 if (nodes[1] != null) {
                     sb.append(',').append(nodes[1].getSQL());
                 }
-
                 sb.append(')');
-
                 return sb.toString();
             }
             case FUNC_ACOS :
@@ -2936,11 +2376,8 @@ public class FunctionCustom extends FunctionSQL {
             }
             case FUNC_DIAGNOSTICS : {
                 StringBuffer sb = new StringBuffer(name).append('(');
-
-                
                 sb.append(Tokens.T_ROW_COUNT);
                 sb.append(')');
-
                 return sb.toString();
             }
             case FUNC_SEQUENCE_ARRAY :
@@ -2954,26 +2391,19 @@ public class FunctionCustom extends FunctionSQL {
                 return super.getSQL();
         }
     }
-
-    
     public static char[] soundex(String s) {
-
         if (s == null) {
             return null;
         }
-
         s = s.toUpperCase(Locale.ENGLISH);
-
         int    len       = s.length();
         char[] b         = new char[] {
             '0', '0', '0', '0'
         };
         char   lastdigit = '0';
-
         for (int i = 0, j = 0; i < len && j < 4; i++) {
             char c = s.charAt(i);
             char newdigit;
-
             if ("AEIOUY".indexOf(c) != -1) {
                 newdigit = '7';
             } else if (c == 'H' || c == 'W') {
@@ -2993,7 +2423,6 @@ public class FunctionCustom extends FunctionSQL {
             } else {
                 continue;
             }
-
             if (j == 0) {
                 b[j++]    = c;
                 lastdigit = newdigit;
@@ -3006,14 +2435,10 @@ public class FunctionCustom extends FunctionSQL {
                 lastdigit = newdigit;
             }
         }
-
         return b;
     }
-
     int getTSIToken(String string) {
-
         int part;
-
         if ("yy".equalsIgnoreCase(string) || "year".equalsIgnoreCase(string)) {
             part = Tokens.SQL_TSI_YEAR;
         } else if ("mm".equalsIgnoreCase(string)
@@ -3037,7 +2462,6 @@ public class FunctionCustom extends FunctionSQL {
         } else {
             throw Error.error(ErrorCode.X_42566, string);
         }
-
         return part;
     }
 }

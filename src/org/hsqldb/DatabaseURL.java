@@ -1,18 +1,8 @@
-
-
-
 package org.hsqldb;
-
 import java.util.Locale;
-
 import org.hsqldb.persist.HsqlProperties;
 import org.hsqldb.server.ServerConstants;
-
-
-
-
 public class DatabaseURL {
-
     static final String        S_DOT               = ".";
     public static final String S_MEM               = "mem:";
     public static final String S_FILE              = "file:";
@@ -26,31 +16,20 @@ public class DatabaseURL {
     public static final String S_URL_INTERNAL      = "jdbc:default:connection";
     public static final String url_connection_type = "connection_type";
     public static final String url_database        = "database";
-
-    
     public static boolean isFileBasedDatabaseType(String type) {
-
         if (type == S_FILE || type == S_RES) {
             return true;
         }
-
         return false;
     }
-
-    
     public static boolean isInProcessDatabaseType(String type) {
-
         if (type == S_FILE || type == S_RES || type == S_MEM) {
             return true;
         }
-
         return false;
     }
-
-    
     public static HsqlProperties parseURL(String url, boolean hasPrefix,
                                           boolean noPath) {
-
         String         urlImage   = url.toLowerCase(Locale.ENGLISH);
         HsqlProperties props      = new HsqlProperties();
         HsqlProperties extraProps = null;
@@ -61,7 +40,6 @@ public class DatabaseURL {
         String         database;
         String         path;
         boolean        isNetwork = false;
-
         if (hasPrefix) {
             if (urlImage.startsWith(S_URL_PREFIX)) {
                 pos = S_URL_PREFIX.length();
@@ -69,56 +47,37 @@ public class DatabaseURL {
                 return props;
             }
         }
-
         while (true) {
             int replacePos = url.indexOf("${");
-
             if (replacePos == -1) {
                 break;
             }
-
             int endPos = url.indexOf("}", replacePos);
-
             if (endPos == -1) {
                 break;
             }
-
             String varName  = url.substring(replacePos + 2, endPos);
             String varValue = null;
-
             try {
                 varValue = System.getProperty(varName);
             } catch (SecurityException e) {}
-
             if (varValue == null) {
                 break;
             }
-
             url = url.substring(0, replacePos) + varValue
                   + url.substring(endPos + 1);
             urlImage = url.toLowerCase(Locale.ENGLISH);
         }
-
         props.setProperty("url", url);
-
         int postUrlPos = url.length();
-
-        
-        
-        
-        
         int semiPos = url.indexOf(';', pos);
-
         if (semiPos > -1) {
             arguments  = url.substring(semiPos + 1, urlImage.length());
             postUrlPos = semiPos;
             extraProps = HsqlProperties.delimitedArgPairsToProps(arguments,
                     "=", ";", null);
-
-            
             props.addProperties(extraProps);
         }
-
         if (postUrlPos == pos + 1 && urlImage.startsWith(S_DOT, pos)) {
             type = S_DOT;
         } else if (urlImage.startsWith(S_MEM, pos)) {
@@ -146,90 +105,53 @@ public class DatabaseURL {
             port      = ServerConstants.SC_DEFAULT_HTTPS_SERVER_PORT;
             isNetwork = true;
         }
-
         if (type == null) {
             type = S_FILE;
         } else if (type == S_DOT) {
             type = S_MEM;
-
-            
         } else {
             pos += type.length();
         }
-
         props.setProperty("connection_type", type);
-
         if (isNetwork) {
-
-            
             String pathSeg = null;
             String hostSeg = null;
             String portSeg = null;
             int    endPos  = url.indexOf('/', pos);
-
             if (endPos > 0 && endPos < postUrlPos) {
                 pathSeg = url.substring(endPos, postUrlPos);
-
-                
             } else {
                 endPos = postUrlPos;
             }
-
-            
             if (url.charAt(pos) == '[') {
-
-                
                 int endIpv6 = url.indexOf(']', pos + 2);
-
-                
                 if (endIpv6 < 0 || endIpv6 >= endPos) {
                     return null;
-
-                    
-                    
                 }
-
                 hostSeg = urlImage.substring(pos + 1, endIpv6);
-
                 if (endPos > endIpv6 + 1) {
                     portSeg = url.substring(endIpv6 + 1, endPos);
                 }
             } else {
-
-                
                 int colPos = url.indexOf(':', pos + 1);
-
                 if (colPos > -1 && colPos < endPos) {
-
-                    
                     portSeg = url.substring(colPos, endPos);
                 } else {
                     colPos = -1;
                 }
-
                 hostSeg = urlImage.substring(pos, (colPos > 0) ? colPos
                                                                : endPos);
             }
-
-            
-            
             if (portSeg != null) {
                 if (portSeg.length() < 2 || portSeg.charAt(0) != ':') {
-
-                    
-                    
                     return null;
                 }
-
                 try {
                     port = Integer.parseInt(portSeg.substring(1));
                 } catch (NumberFormatException e) {
-
-                    
                     return null;
                 }
             }
-
             if (noPath) {
                 path     = "";
                 database = pathSeg;
@@ -238,7 +160,6 @@ public class DatabaseURL {
                 database = "";
             } else {
                 int lastSlashPos = pathSeg.lastIndexOf('/');
-
                 if (lastSlashPos < 1) {
                     path = "/";
                     database =
@@ -248,15 +169,11 @@ public class DatabaseURL {
                     database = pathSeg.substring(lastSlashPos + 1);
                 }
             }
-
-            
             props.setProperty("port", port);
             props.setProperty("host", hostSeg);
             props.setProperty("path", path);
-
             if (!noPath && extraProps != null) {
                 String filePath = extraProps.getProperty("filepath");
-
                 if (filePath != null && database.length() != 0) {
                     database += ";" + filePath;
                 } else {
@@ -271,51 +188,36 @@ public class DatabaseURL {
                 database = urlImage.substring(pos, postUrlPos);
             } else if (type == S_RES) {
                 database = url.substring(pos, postUrlPos);
-
                 if (database.indexOf('/') != 0) {
                     database = '/' + database;
                 }
             } else {
                 database = url.substring(pos, postUrlPos);
-
                 if (database.startsWith("~")) {
                     String userHome = "~";
-
                     try {
                         userHome = System.getProperty("user.home");
                     } catch (SecurityException e) {}
-
                     database = userHome + database.substring(1);
                 }
             }
-
             if (database.length() == 0) {
                 return null;
             }
         }
-
         pos = database.indexOf("&password=");
-
         if (pos != -1) {
             String password = database.substring(pos + "&password=".length());
-
             props.setProperty("password", password);
-
             database = database.substring(0, pos);
         }
-
         pos = database.indexOf("?user=");
-
         if (pos != -1) {
             String user = database.substring(pos + "?user=".length());
-
             props.setProperty("user", user);
-
             database = database.substring(0, pos);
         }
-
         props.setProperty("database", database);
-
         return props;
     }
 }

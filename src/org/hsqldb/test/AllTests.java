@@ -1,22 +1,13 @@
-
-
-
 package org.hsqldb.test;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
 public class AllTests extends TestCase {
-
     public AllTests(String s) {
         super(s);
     }
-
     public static Test suite() {
-
         TestSuite suite = new TestSuite();
-
         suite.addTestSuite(org.hsqldb.test.TestBatchExecution.class);
         suite.addTestSuite(org.hsqldb.test.TestBug1191815.class);
         suite.addTestSuite(org.hsqldb.test.TestBug778213.class);
@@ -40,10 +31,7 @@ public class AllTests extends TestCase {
         suite.addTestSuite(org.hsqldb.test.TestTextTable.class);
         suite.addTestSuite(org.hsqldb.test.TestTextTables.class);
         suite.addTestSuite(org.hsqldb.test.TestViewAsterisks.class);
-
-        
         suite.addTestSuite(org.hsqldb.test.TestCascade.class);
-
         suite.addTestSuite(org.hsqldb.test.TestGroupByHaving.class);
         suite.addTestSuite(org.hsqldb.test.TestSqlPersistent.class);
         suite.addTestSuite(org.hsqldb.test.TestUpdatableResults.class);
@@ -51,7 +39,6 @@ public class AllTests extends TestCase {
         suite.addTestSuite(org.hsqldb.test.TestTriggers.class);
         return suite;
     }
-
     public static void main(String[] args) {
         junit.textui.TestRunner.run(suite());
     }

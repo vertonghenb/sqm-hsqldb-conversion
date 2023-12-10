@@ -1,15 +1,5 @@
-
-
-
 package org.hsqldb;
-
-
-
-
-
 public interface Trigger {
-
-    
     int INSERT_AFTER      = 0;
     int DELETE_AFTER      = 1;
     int UPDATE_AFTER      = 2;
@@ -19,8 +9,6 @@ public interface Trigger {
     int INSERT_BEFORE_ROW = 6;
     int DELETE_BEFORE_ROW = 7;
     int UPDATE_BEFORE_ROW = 8;
-
-    
     void fire(int type, String trigName, String tabName, Object[] oldRow,
               Object[] newRow) throws HsqlException;
 }

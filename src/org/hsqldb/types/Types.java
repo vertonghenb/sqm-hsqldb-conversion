@@ -1,30 +1,16 @@
-
-
-
 package org.hsqldb.types;
-
 import org.hsqldb.error.Error;
 import org.hsqldb.error.ErrorCode;
 import org.hsqldb.lib.HashSet;
 import org.hsqldb.lib.IntValueHashMap;
 import org.hsqldb.persist.HsqlDatabaseProperties;
-
-
-
-
-
 public class Types {
-
-    
     public static final String DecimalClassName   = "java.math.BigDecimal";
     public static final String DateClassName      = "java.sql.Date";
     public static final String TimeClassName      = "java.sql.Time";
     public static final String TimestampClassName = "java.sql.Timestamp";
     public static final String BlobClassName      = "java.sql.Blob";
     public static final String ClobClassName      = "java.sql.Clob";
-    
-
-    
     public static final int SQL_CHAR              = 1;
     public static final int SQL_NUMERIC           = 2;
     public static final int SQL_DECIMAL           = 3;
@@ -63,16 +49,7 @@ public class Types {
     public static final int SQL_INTERVAL_HOUR_TO_MINUTE   = 111;
     public static final int SQL_INTERVAL_HOUR_TO_SECOND   = 112;
     public static final int SQL_INTERVAL_MINUTE_TO_SECOND = 113;
-
-    
     public static final int SQL_TYPE_NUMBER_LIMIT = 256;
-
-    
-    
-    
-    
-    
-    
     public static final int SQL_BIT         = 14;                   
     public static final int SQL_BIT_VARYING = 15;                   
     public static final int SQL_DATALINK         = 70;
@@ -86,8 +63,6 @@ public class Types {
     public static final int SQL_DATETIME         = 9;               
     public static final int SQL_INTERVAL         = 10;              
     public static final int SQL_XML              = 137;
-
-    
     public static final int SQL_NCHAR         = (-8);
     public static final int SQL_WCHAR         = (-8);
     public static final int SQL_WVARCHAR      = (-9);
@@ -98,146 +73,48 @@ public class Types {
     public static final int SQL_IMAGE         = (-4);
     public static final int SQL_GUID          = (-11);
     public static final int SQL_VARIANT       = (-150);
-
-    
     public static final int SQL_SUB_DISTINCT   = 1;
     public static final int SQL_SUB_STRUCTURED = 2;
-
-    
     public static final int VARCHAR_IGNORECASE = 100;
-
-    
     public static final int ARRAY = 2003;
-
-    
     public static final int BIGINT = -5;
-
-    
     public static final int BINARY = -2;
-
-    
     public static final int BIT = -7;
-
-    
     public static final int BLOB = 2004;
-
-    
     public static final int BOOLEAN = SQL_BOOLEAN;
-
-    
     public static final int CHAR = SQL_CHAR;
-
-    
     public static final int CLOB = 2005;
-
-    
     public static final int DATALINK = 70;
-
-    
     public static final int DATE = SQL_DATE;
-
-    
     public static final int DECIMAL = SQL_DECIMAL;
-
-    
     public static final int DISTINCT = 2001;
-
-    
     public static final int DOUBLE = SQL_DOUBLE;
-
-    
     public static final int FLOAT = SQL_FLOAT;
-
-    
     public static final int INTEGER = SQL_INTEGER;
-
-    
     public static final int JAVA_OBJECT = 2000;
-
-    
     public static final int LONGVARBINARY = -4;
-
-    
     public static final int LONGVARCHAR = -1;
-
-    
     public static final int MULTISET = 0;                           
-
-    
     public static final int NULL = 0;
-
-    
     public static final int NUMERIC = SQL_NUMERIC;
-
-    
     public static final int OTHER = 1111;
-
-    
     public static final int REAL = SQL_REAL;
-
-    
     public static final int REF = 2006;
-
-    
     public static final int SMALLINT = SQL_SMALLINT;
-
-    
     public static final int STRUCT = 2002;
-
-    
     public static final int TIME = SQL_TIME;
-
-    
     public static final int TIMESTAMP = SQL_TIMESTAMP;
-
-    
     public static final int TINYINT = -6;
-
-    
     public static final int VARBINARY = -3;
-
-    
     public static final int VARCHAR = SQL_VARCHAR;
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
     public static final int ROWID = 2008;
-
-    
     public static final int NCHAR = -8;
-
-    
     public static final int NVARCHAR = -9;
-
-    
     public static final int LONGNVARCHAR = -10;
-
-    
     public static final int NCLOB = 2007;
-
-    
     public static final int SQLXML = 2009;
-
-    
-
-    
     public static final int TYPE_SUB_DEFAULT = 1;
-
-    
     public static final int TYPE_SUB_IGNORECASE = TYPE_SUB_DEFAULT << 2;
-
-    
     public static final int[][] ALL_TYPES = {
         {
             SQL_ARRAY, TYPE_SUB_DEFAULT
@@ -307,19 +184,10 @@ public class Types {
             SQL_XML, TYPE_SUB_DEFAULT
         }
     };
-
-
     static final IntValueHashMap javaTypeNumbers;
-
-
-
-
-
     private static final HashSet illegalParameterClasses;
-
     static {
         javaTypeNumbers = new IntValueHashMap(32);
-
         javaTypeNumbers.put("int", Types.SQL_INTEGER);
         javaTypeNumbers.put("java.lang.Integer", Types.SQL_INTEGER);
         javaTypeNumbers.put("double", Types.SQL_DOUBLE);
@@ -343,100 +211,69 @@ public class Types {
         javaTypeNumbers.put("[B", Types.SQL_BINARY);
         javaTypeNumbers.put("java.lang.Object", Types.OTHER);
         javaTypeNumbers.put("java.lang.Void", Types.SQL_ALL_TYPES);
-
-        
         illegalParameterClasses = new org.hsqldb.lib.HashSet();
-
         illegalParameterClasses.add(Byte.TYPE);
         illegalParameterClasses.add(Short.TYPE);
         illegalParameterClasses.add(Float.TYPE);
         illegalParameterClasses.add(Byte.class);
         illegalParameterClasses.add(Short.class);
         illegalParameterClasses.add(Float.class);
-
-        
     }
-
-    
     public static Type getParameterSQLType(Class c) {
-
         String  name;
         int     typeCode;
         boolean isArray;
-
         if (c == null) {
             throw Error.runtimeError(ErrorCode.U_S0500, "Types");
         }
-
         if (Void.TYPE.equals(c)) {
             return Type.SQL_ALL_TYPES;
         }
-
         name     = c.getName();
         typeCode = javaTypeNumbers.get(name, Integer.MIN_VALUE);
-
         if (typeCode != Integer.MIN_VALUE) {
             return Type.getDefaultTypeWithSize(typeCode);
         }
-
         if (c.isArray()) {
             Class c1 = c.getComponentType();
-
             name     = c1.getName();
             typeCode = javaTypeNumbers.get(name, Integer.MIN_VALUE);
-
             if (typeCode != Integer.MIN_VALUE) {
                 return Type.getDefaultTypeWithSize(typeCode);
             }
-
             if (typeCode == Types.SQL_ALL_TYPES) {
                 return null;
             }
-
             return Type.getDefaultTypeWithSize(typeCode);
         }
-
         if (name.equals("java.sql.Array")) {
             return Type.getDefaultArrayType(Types.SQL_ALL_TYPES);
         }
-
         return null;
     }
-
     public static boolean acceptsZeroPrecision(int type) {
-
         switch (type) {
-
             case Types.SQL_TIME :
             case Types.SQL_TIMESTAMP :
                 return true;
-
             default :
                 return false;
         }
     }
-
     public static boolean requiresPrecision(int type) {
-
         switch (type) {
-
             case Types.SQL_BIT_VARYING :
             case Types.SQL_VARBINARY :
             case Types.SQL_VARCHAR :
             case Types.SQL_NVARCHAR :
             case Types.VARCHAR_IGNORECASE :
                 return true;
-
             default :
                 return false;
         }
     }
-
-    
     public static boolean acceptsPrecision(int type) {
-
         switch (type) {
-
             case Types.LONGVARCHAR :
             case Types.LONGVARBINARY :
             case Types.SQL_ARRAY :
@@ -471,49 +308,24 @@ public class Types {
             case Types.SQL_INTERVAL_MINUTE_TO_SECOND :
             case Types.SQL_INTERVAL_SECOND :
                 return true;
-
             default :
                 return false;
         }
     }
-
     public static boolean acceptsScaleCreateParam(int type) {
-
         switch (type) {
-
             case Types.SQL_INTERVAL_SECOND :
                 return true;
-
             case Types.SQL_DECIMAL :
             case Types.SQL_NUMERIC :
                 return true;
-
             default :
                 return false;
         }
     }
-
-    
     public static final int MAX_CHAR_OR_VARCHAR_DISPLAY_SIZE =
         MAX_CHAR_OR_VARCHAR_DISPLAY_SIZE();
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     private static int MAX_CHAR_OR_VARCHAR_DISPLAY_SIZE() {
-
         try {
             return Integer.getInteger(
                 HsqlDatabaseProperties.system_max_char_or_varchar_display_size,
@@ -522,11 +334,8 @@ public class Types {
             return 32766;
         }
     }
-
     public static boolean isSearchable(int type) {
-
         switch (type) {
-
             case Types.SQL_BLOB :
             case Types.SQL_CLOB :
             case Types.NCLOB :
@@ -535,7 +344,6 @@ public class Types {
             case Types.OTHER :
             case Types.ROWID :
                 return false;
-
             case Types.SQL_ARRAY :
             default :
                 return true;

@@ -1,17 +1,8 @@
-
-
-
 package org.hsqldb.cmdline;
-
 import org.hsqldb.lib.ValidatingResourceBundle;
 import org.hsqldb.lib.RefCapableRBInterface;
-
-
-
-
 public enum SqltoolRB implements RefCapableRBInterface {
     SqlTool_syntax,
-    
     passwordFor_prompt,
     SqlTool_varset_badformat,
     SqlTool_abort_continue_mutuallyexclusive,
@@ -26,8 +17,6 @@ public enum SqltoolRB implements RefCapableRBInterface {
     conndata_retrieval_fail,
     jdbc_established,
     SqlTool_params_redundant,
-
-    
     SqlFile_banner,
     buffer_help,
     special_help,
@@ -42,8 +31,6 @@ public enum SqltoolRB implements RefCapableRBInterface {
     rejectreport_row,
     rejectreport_bottom,
     macro_help,
-
-    
     rawmode_prompt,
     raw_movedtobuffer,
     input_movedtobuffer,
@@ -232,7 +219,6 @@ public enum SqltoolRB implements RefCapableRBInterface {
     else_without_if,
     import_col_dup
     ;
-
     private static ValidatingResourceBundle vrb =
             new ValidatingResourceBundle(
                     SqltoolRB.class.getPackage().getName() + ".sqltool",
@@ -241,7 +227,6 @@ public enum SqltoolRB implements RefCapableRBInterface {
         vrb.setMissingPosValueBehavior(ValidatingResourceBundle.NOOP_BEHAVIOR);
         vrb.setMissingPropertyBehavior(ValidatingResourceBundle.NOOP_BEHAVIOR);
     }
-
     public String getString() {
         return vrb.getString(this);
     }

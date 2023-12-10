@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.auth;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -17,27 +13,18 @@ import javax.security.auth.callback.CallbackHandler;
 import javax.security.auth.Subject;
 import java.security.Principal;
 import org.hsqldb.lib.FrameworkLogger;
-
-
 public class JaasAuthBean implements AuthFunctionBean {
     private static FrameworkLogger logger =
             FrameworkLogger.getLog(JaasAuthBean.class);
-
     private boolean initialized;
     private String applicationKey;
     private Pattern roleSchemaValuePattern;
     private boolean roleSchemaViaCredential;
-
     public JaasAuthBean() {
-        
     }
-
-    
     public void setRoleSchemaViaCredential(boolean roleSchemaViaCredential) {
         this.roleSchemaViaCredential = roleSchemaViaCredential;
     }
-
-    
     public void init() {
         if (applicationKey == null) {
             throw new IllegalStateException(
@@ -52,31 +39,22 @@ public class JaasAuthBean implements AuthFunctionBean {
         }
         initialized = true;
     }
-
-    
     public void setApplicationKey(String applicationKey) {
         this.applicationKey = applicationKey;
     }
-
-    
     public void setRoleSchemaValuePattern(Pattern roleSchemaValuePattern) {
         this.roleSchemaValuePattern = roleSchemaValuePattern;
     }
-
-    
     public void setRoleSchemaValuePatternString(String patternString) {
         setRoleSchemaValuePattern(Pattern.compile(patternString));
     }
-
     public static class UPCallbackHandler implements CallbackHandler {
         private String u;
         private char[] p;
-
         public UPCallbackHandler(String u, String pString) {
             this.u = u;
             p = pString.toCharArray();
         }
-
         public void handle(Callback[] callbacks)
                 throws UnsupportedCallbackException {
             boolean didSetName = false;
@@ -101,8 +79,6 @@ public class JaasAuthBean implements AuthFunctionBean {
                         + "does not include a PasswordCallback");
         }
     }
-
-    
     public String[] authenticate(String userName, String password)
             throws DenyException {
         if (!initialized) {
@@ -117,8 +93,6 @@ public class JaasAuthBean implements AuthFunctionBean {
             try {
                 lc.login();
             } catch (LoginException le) {
-                
-                
                 logger.finer("JSSE backend denying access:  " + le);
                 throw new DenyException();
             }

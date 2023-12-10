@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.lib;
-
 public interface RefCapableRBInterface {
     public String getString();
     public String getString(String... strings);

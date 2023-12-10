@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.test;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,8 +15,6 @@ import java.util.Iterator;
 import java.lang.reflect.Method;
 import org.hsqldb.test.TestUtil;
 import org.hsqldb.lib.RCData;
-
-
 class TestScriptRunner {
     protected static final String DEFAULT_RCFILE = "testscriptrunner.rc";
     public static String LS = System.getProperty("line.separator");
@@ -43,13 +37,9 @@ class TestScriptRunner {
         + "    --populate       Use TestCacheSize class to populate one database" + LS
         + "    --sqltool=URLID  Invoke an interactive SqlTool session on given URLID" + LS
         + "(This last is useful for troubleshooting and interactive script dev).";
-
     public boolean verbose = false;
     public boolean threaded = false;
-
-    
     public static void main(String[] sa) throws IOException, SQLException {
-        
         int argIndex = 0;
         boolean threaded = false;
         boolean verbose = false;
@@ -59,7 +49,6 @@ class TestScriptRunner {
         String currentUrlid = null;
         String sqlToolUrlid = null;
         Method sqlToolMainMethod = null;
-
         try {
             for (int i = 0; i < sa.length; i++) {
                 if (sa[i].equals("--verbose")) {
@@ -105,7 +94,6 @@ class TestScriptRunner {
             System.err.println(SYNTAX_MSG);
             System.exit(2);
         }
-
         if (sqlToolUrlid != null) {
             Class sqlToolClass = null;
             try {
@@ -139,25 +127,20 @@ class TestScriptRunner {
         if (tcs != null) tcs.tearDown();
         System.exit(success ? 0 : 1);
     }
-
     List scriptRuns = new ArrayList();
-
     private class ScriptRun extends Thread {
         private Reader reader;
         private Connection conn = null;
         private RCData rcdata;
         private boolean success = false;
-
         public ScriptRun(String name, Reader reader, RCData rcdata) {
             super(name);
             this.reader = reader;
             this.rcdata = rcdata;
         }
-
         public boolean getSuccess() {
             return success;
         }
-
         public void connect() throws SQLException {
             if (conn != null) {
                 throw new IllegalStateException("Thread '" + getName()
@@ -174,7 +157,6 @@ class TestScriptRunner {
             System.out.println("ScriptRun '" + getName() + "' connected with "
                     + RCData.tiToString(conn.getTransactionIsolation()) + '.');
         }
-
         public void run() {
             try {
                 TestUtil.testScript(conn, getName(), reader);
@@ -197,14 +179,12 @@ class TestScriptRunner {
             } }
         }
     }
-
     public void setVerbose(boolean verbose) {
         this.verbose = verbose;
     }
     public void setThreaded(boolean threaded) {
         this.threaded = threaded;
     }
-
     public TestScriptRunner(String rcFileString, Map scriptFileMap)
             throws IOException {
         TestUtil.setAbortOnErr(true);
@@ -213,12 +193,10 @@ class TestScriptRunner {
         if (!rcFile.isFile())
             throw new IllegalArgumentException(
                     "RC file '" + rcFileString + "' not a file");
-
         String scriptPath, urlid;
         Iterator it;
         File file;
         Reader reader = null;
-
         it = scriptFileMap.values().iterator();
         while (it.hasNext()) {
             urlid = (String) it.next();
@@ -231,12 +209,10 @@ class TestScriptRunner {
                         + rcFile + "' for urlid '" + urlid + "'", e);
             }
         }
-
         it = scriptFileMap.keySet().iterator();
         while (it.hasNext()) {
             scriptPath = (String) it.next();
             urlid = (String) scriptFileMap.get(scriptPath);
-
             if (scriptPath.equals("-")) {
                 reader = new InputStreamReader(System.in);
             } else {
@@ -251,14 +227,12 @@ class TestScriptRunner {
                     reader, (RCData) rcdataMap.get(urlid)));
         }
     }
-
     public void establishConnections() throws SQLException {
         for (int i = 0; i < scriptRuns.size(); i++)
             ((ScriptRun) scriptRuns.get(i)).connect();
         if (verbose) System.out.println(Integer.toString(scriptRuns.size())
                     + " connection threads connected");
     }
-
     public boolean runScripts() {
         ScriptRun scriptRun;
         for (int i = 0; i < scriptRuns.size(); i++) {
@@ -291,21 +265,13 @@ class TestScriptRunner {
         }
         return true;
     }
-
-    
     static protected TestCacheSize populate() {
         TestCacheSize  test  = new TestCacheSize();
-
-        
-
         test.filepath = "mem:test";
         test.filedb   = false;
         test.shutdown = false;
-
         test.setUp();
         test.testFillUp();
-        
-        
         return test;
     }
 }

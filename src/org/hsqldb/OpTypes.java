@@ -1,10 +1,5 @@
-
-
-
 package org.hsqldb;
-
 public interface OpTypes {
-
     int NONE                 = 0,
         VALUE                = 1,     
         COLUMN               = 2,     

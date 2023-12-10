@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.sample;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.hsqldb.lib.RCData;
@@ -12,17 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
-
 public class SqlFileEmbedder {
     private Connection conn;
-
-    
     public Connection getConn() {
         return conn;
     }
-
-    
     public static void main(String[] sa) throws Exception {
         if (sa.length < 3) {
             System.err.println("SYNTAX:  " + SqlFileEmbedder.class.getName()
@@ -41,27 +31,17 @@ public class SqlFileEmbedder {
             try {
                 embedder.getConn().close();
             } catch (SQLException se) {
-                
-                
-                
             }
         }
     }
-
-    
     public SqlFileEmbedder(File rcFile, String urlid) throws Exception {
         conn = (new RCData(rcFile, urlid)).getConnection();
         conn.setAutoCommit(false);
     }
-
-    
     public void executeFiles(String[] fileStrings)
             throws IOException, SqlToolError, SQLException {
         Map<String, String> sqlVarMap = new HashMap<String, String>();
         sqlVarMap.put("invoker", getClass().getName());
-        
-        
-
         File file;
         SqlFile sqlFile;
         for (String fileString : fileStrings) {
@@ -73,10 +53,6 @@ public class SqlFileEmbedder {
             sqlFile.setConnection(conn);
             sqlFile.addUserVars(sqlVarMap);
             sqlFile.execute();
-
-            
-            
-            
             conn = sqlFile.getConnection();
             sqlVarMap = sqlFile.getUserVars();
         }

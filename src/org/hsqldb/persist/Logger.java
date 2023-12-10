@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.persist;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,7 +6,6 @@ import java.lang.reflect.Constructor;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
-
 import org.hsqldb.Database;
 import org.hsqldb.DatabaseURL;
 import org.hsqldb.HsqlException;
@@ -50,20 +45,11 @@ import org.hsqldb.scriptio.ScriptWriterBase;
 import org.hsqldb.scriptio.ScriptWriterText;
 import org.hsqldb.types.RowType;
 import org.hsqldb.types.Type;
-
-
-
-
 public class Logger {
-
     public SimpleLog appLog;
     public SimpleLog sqlLog;
-
-    
     FrameworkLogger fwLogger;
     FrameworkLogger sqlLogger;
-
-    
     private Database database;
     public boolean   checkpointRequired;
     public boolean   checkpointDue;
@@ -71,8 +57,6 @@ public class Logger {
     private boolean  logsStatements;    
     private boolean  loggingEnabled;
     private boolean  syncFile = false;
-
-    
     boolean propIsFileDatabase;
     boolean propFilesReadOnly;
     boolean propDatabaseReadOnly;
@@ -96,8 +80,6 @@ public class Logger {
     boolean propRefIntegrity = true;
     int     propLobBlockSize = 32 * 1024;
     int     propScriptFormat = 0;
-
-    
     Log               log;
     private LockFile  lockFile;
     private Crypto    crypto;
@@ -105,23 +87,13 @@ public class Logger {
     public FileAccess fileAccess;
     public boolean    isStoredFileAccess;
     String            tempDirectoryPath;
-
-    
     private HashMap textCacheList = new HashMap();
-
-    
     public boolean isNewDatabase;
-
-    
     public boolean isSingleFile;
-
-    
     AtomicInteger    backupState     = new AtomicInteger();
     static final int stateNormal     = 0;
     static final int stateBackup     = 1;
     static final int stateCheckpoint = 2;
-
-    
     public static final String oldFileExtension        = ".old";
     public static final String newFileExtension        = ".new";
     public static final String appLogFileExtension     = ".app.log";
@@ -133,30 +105,22 @@ public class Logger {
     public static final String backupFileExtension     = ".backup";
     public static final String lobsFileExtension       = ".lobs";
     public static final String lockFileExtension       = ".lck";
-
     public Logger(Database database) {
         this.database = database;
     }
-
-    
     public void openPersistence() {
-
-        
         String fileaccess_class_name =
             (String) database.getURLProperties().getProperty(
                 HsqlDatabaseProperties.url_fileaccess_class_name);
         boolean hasFileProps = false;
         boolean hasScript    = false;
-
         if (fileaccess_class_name != null) {
             String storagekey = database.getURLProperties().getProperty(
                 HsqlDatabaseProperties.url_storage_key);
-
             try {
                 Class zclass = Class.forName(fileaccess_class_name);
                 Constructor constructor = zclass.getConstructor(new Class[]{
                     Object.class });
-
                 fileAccess =
                     (FileAccess) constructor.newInstance(new Object[]{
                         storagekey });
@@ -173,62 +137,49 @@ public class Logger {
         } else {
             fileAccess = FileUtil.getFileAccess(database.isFilesInJar());
         }
-
         propIsFileDatabase =
             DatabaseURL.isFileBasedDatabaseType(database.getType());
         database.databaseProperties = new HsqlDatabaseProperties(database);
         propTextAllowFullPath = database.databaseProperties.isPropertyTrue(
             HsqlDatabaseProperties.textdb_allow_full_path);
-
         if (propIsFileDatabase) {
             hasFileProps = database.databaseProperties.load();
             hasScript = fileAccess.isStreamElement(database.getPath()
                                                    + scriptFileExtension);
-
             boolean exists;
-
             if (database.databaseProperties.isVersion18()) {
                 exists = hasFileProps;
             } else {
                 exists = hasScript;
-
                 if (!exists) {
                     exists =
                         fileAccess.isStreamElement(database.getPath()
                                                    + scriptFileExtension
                                                    + Logger.newFileExtension);
-
                     if (exists) {
                         database.databaseProperties.setDBModified(
                             HsqlDatabaseProperties.FILES_MODIFIED_NEW);
                     }
                 }
             }
-
             isNewDatabase = !exists;
         } else {
             isNewDatabase = true;
         }
-
         if (isNewDatabase) {
             String name = newUniqueName();
-
             database.setUniqueName(name);
-
             boolean checkExists = database.isFilesInJar();
-
             checkExists |=
                 (database.urlProperties
                     .isPropertyTrue(HsqlDatabaseProperties
                         .url_ifexists) || !database.urlProperties
                             .isPropertyTrue(HsqlDatabaseProperties
                                 .url_create, true));
-
             if (checkExists) {
                 throw Error.error(ErrorCode.DATABASE_NOT_EXISTS,
                                   database.getPath());
             }
-
             database.databaseProperties.setURLProperties(
                 database.urlProperties);
         } else {
@@ -236,142 +187,104 @@ public class Logger {
                 database.databaseProperties.setDBModified(
                     HsqlDatabaseProperties.FILES_MODIFIED);
             }
-
-            
             if (database.urlProperties.isPropertyTrue(
                     HsqlDatabaseProperties.hsqldb_files_readonly)) {
                 database.databaseProperties.setProperty(
                     HsqlDatabaseProperties.hsqldb_files_readonly, true);
             }
-
             if (database.urlProperties.isPropertyTrue(
                     HsqlDatabaseProperties.hsqldb_readonly)) {
                 database.databaseProperties.setProperty(
                     HsqlDatabaseProperties.hsqldb_readonly, true);
             }
-
-            
             if (!database.urlProperties.isPropertyTrue(
                     HsqlDatabaseProperties.hsqldb_lock_file, true)) {
                 database.databaseProperties.setProperty(
                     HsqlDatabaseProperties.hsqldb_lock_file, false);
             }
-
             int value = database.urlProperties.getIntegerProperty(
                 HsqlDatabaseProperties.hsqldb_applog, -1);
-
             if (value >= 0) {
                 database.databaseProperties.setProperty(
                     HsqlDatabaseProperties.hsqldb_applog, value);
             }
-
             value = database.urlProperties.getIntegerProperty(
                 HsqlDatabaseProperties.hsqldb_sqllog, -1);
-
             if (value >= 0) {
                 database.databaseProperties.setProperty(
                     HsqlDatabaseProperties.hsqldb_sqllog, value);
             }
-
             value = database.urlProperties.getIntegerProperty(
                 HsqlDatabaseProperties.hsqldb_cache_free_count, -1);
-
             if (value >= 0) {
                 database.databaseProperties.setProperty(
                     HsqlDatabaseProperties.hsqldb_cache_free_count,
                     ArrayUtil.getTwoPowerFloor(value));
             }
         }
-
         setVariables();
-
         String appLogPath = null;
         String sqlLogPath = null;
-
         if (propIsFileDatabase && !database.isFilesReadOnly()) {
             appLogPath = database.getPath() + appLogFileExtension;
             sqlLogPath = database.getPath() + sqlLogFileExtension;
         }
-
         appLog = new SimpleLog(appLogPath, propEventLogLevel);
         sqlLog = new SimpleLog(sqlLogPath, propSqlLogLevel);
-
         database.setReferentialIntegrity(propRefIntegrity);
-
         if (!isFileDatabase()) {
             return;
         }
-
         checkpointRequired = false;
         logsStatements     = false;
-
         boolean useLock = database.getProperties().isPropertyTrue(
             HsqlDatabaseProperties.hsqldb_lock_file);
-
         if (useLock && !database.isFilesReadOnly()) {
             acquireLock(database.getPath());
         }
-
         boolean version18 = database.databaseProperties.isVersion18();
-
         if (version18) {
             database.setUniqueName(newUniqueName());
-
             if (!hasScript) {
                 database.schemaManager.createPublicSchema();
             }
         }
-
         log = new Log(database);
-
         log.open();
-
         logsStatements = true;
         loggingEnabled = propLogData && !database.isFilesReadOnly();
-
         if (version18) {
             HsqlName name = database.schemaManager.findSchemaHsqlName(
                 SqlInvariants.PUBLIC_SCHEMA);
-
             if (name != null) {
                 database.schemaManager.setDefaultSchemaHsqlName(name);
             }
-
             checkpoint(false);
         }
-
         if (database.getUniqueName() == null) {
             database.setUniqueName(newUniqueName());
         }
     }
-
     private void setVariables() {
-
         String cryptKey = database.urlProperties.getProperty(
             HsqlDatabaseProperties.url_crypt_key);
-
         if (cryptKey != null) {
             String cryptType = database.urlProperties.getProperty(
                 HsqlDatabaseProperties.url_crypt_type);
             String cryptProvider = database.urlProperties.getProperty(
                 HsqlDatabaseProperties.url_crypt_provider);
-
             crypto = new Crypto(cryptKey, cryptType, cryptProvider);
             cryptLobs = database.urlProperties.isPropertyTrue(
                 HsqlDatabaseProperties.url_crypt_lobs, true);
         }
-
         if (database.databaseProperties.isPropertyTrue(
                 HsqlDatabaseProperties.hsqldb_readonly)) {
             database.setReadOnly();
         }
-
         if (database.databaseProperties.isPropertyTrue(
                 HsqlDatabaseProperties.hsqldb_files_readonly)) {
             database.setFilesReadOnly();
         }
-
-        
         if (!database.isFilesReadOnly()) {
             if (database.getType() == DatabaseURL.S_MEM
                     || isStoredFileAccess) {
@@ -380,43 +293,32 @@ public class Logger {
             } else {
                 tempDirectoryPath = database.getPath() + ".tmp";
             }
-
             if (tempDirectoryPath != null) {
                 tempDirectoryPath =
                     FileUtil.makeDirectories(tempDirectoryPath);
             }
         }
-
         propScriptFormat = database.databaseProperties.getIntegerProperty(
             HsqlDatabaseProperties.hsqldb_script_format);
-
         boolean version18 = database.databaseProperties.isVersion18();
-
         propMaxFreeBlocks = database.databaseProperties.getIntegerProperty(
             HsqlDatabaseProperties.hsqldb_cache_free_count);
         propMaxFreeBlocks = ArrayUtil.getTwoPowerFloor(propMaxFreeBlocks);
-
         if (!isNewDatabase && !version18) {
             return;
         }
-
         if (tempDirectoryPath != null) {
             int rows = database.databaseProperties.getIntegerProperty(
                 HsqlDatabaseProperties.hsqldb_result_max_memory_rows);
-
             database.setResultMaxMemoryRows(rows);
         }
-
         String tableType = database.databaseProperties.getStringProperty(
             HsqlDatabaseProperties.hsqldb_default_table_type);
-
         if ("CACHED".equalsIgnoreCase(tableType)) {
             database.schemaManager.setDefaultTableType(TableBase.CACHED_TABLE);
         }
-
         String txMode = database.databaseProperties.getStringProperty(
             HsqlDatabaseProperties.hsqldb_tx);
-
         if (Tokens.T_MVCC.equalsIgnoreCase(txMode)) {
             propTxMode = TransactionManager.MVCC;
         } else if (Tokens.T_MVLOCKS.equalsIgnoreCase(txMode)) {
@@ -424,31 +326,24 @@ public class Logger {
         } else if (Tokens.T_LOCKS.equalsIgnoreCase(txMode)) {
             propTxMode = TransactionManager.LOCKS;
         }
-
         switch (propTxMode) {
-
             case TransactionManager.LOCKS :
                 break;
-
             case TransactionManager.MVLOCKS :
                 database.txManager = new TransactionManagerMV2PL(database);
                 break;
-
             case TransactionManager.MVCC :
                 database.txManager = new TransactionManagerMVCC(database);
                 break;
         }
-
         String txLevel = database.databaseProperties.getStringProperty(
             HsqlDatabaseProperties.hsqldb_tx_level);
-
         if (Tokens.T_SERIALIZABLE.equalsIgnoreCase(txLevel)) {
             database.defaultIsolationLevel = SessionInterface.TX_SERIALIZABLE;
         } else {
             database.defaultIsolationLevel =
                 SessionInterface.TX_READ_COMMITTED;
         }
-
         database.txConflictRollback =
             database.databaseProperties.isPropertyTrue(
                 HsqlDatabaseProperties.hsqldb_tx_conflict_rollback);
@@ -491,12 +386,10 @@ public class Logger {
             HsqlDatabaseProperties.sql_syntax_ora);
         database.sqlSyntaxPgs = database.databaseProperties.isPropertyTrue(
             HsqlDatabaseProperties.sql_syntax_pgs);
-
         if (database.databaseProperties.isPropertyTrue(
                 HsqlDatabaseProperties.sql_compare_in_locale)) {
             database.collation.setCollationAsLocale();
         }
-
         propEventLogLevel = database.databaseProperties.getIntegerProperty(
             HsqlDatabaseProperties.hsqldb_applog);
         propSqlLogLevel = database.databaseProperties.getIntegerProperty(
@@ -517,24 +410,20 @@ public class Logger {
         propCacheMaxSize =
             database.databaseProperties.getIntegerProperty(
                 HsqlDatabaseProperties.hsqldb_cache_size) * 1024;
-
         setLobFileScaleNoCheck(
             database.databaseProperties.getIntegerProperty(
                 HsqlDatabaseProperties.hsqldb_lob_file_scale));
         setCacheFileScaleNoCheck(
             database.databaseProperties.getIntegerProperty(
                 HsqlDatabaseProperties.hsqldb_cache_file_scale));
-
         propCacheDefragLimit = database.databaseProperties.getIntegerProperty(
             HsqlDatabaseProperties.hsqldb_defrag_limit);
         propWriteDelay = database.databaseProperties.getIntegerProperty(
             HsqlDatabaseProperties.hsqldb_write_delay_millis);
-
         if (!database.databaseProperties.isPropertyTrue(
                 HsqlDatabaseProperties.hsqldb_write_delay)) {
             propWriteDelay = 0;
         }
-
         propLogSize = database.databaseProperties.getIntegerProperty(
             HsqlDatabaseProperties.hsqldb_log_size);
         propLogData = database.databaseProperties.isPropertyTrue(
@@ -544,33 +433,22 @@ public class Logger {
         propRefIntegrity = database.databaseProperties.isPropertyTrue(
             HsqlDatabaseProperties.sql_ref_integrity);
     }
-
-
-
-    
     public boolean closePersistence(int closemode) {
-
         if (log == null) {
             closeAllTextCaches(false);
-
             return true;
         }
-
         log.synchLog();
         database.lobManager.synch();
         database.lobManager.deleteUnusedLobs();
-
         try {
             switch (closemode) {
-
                 case Database.CLOSEMODE_IMMEDIATELY :
                     log.shutdown();
                     break;
-
                 case Database.CLOSEMODE_NORMAL :
                     log.close(false);
                     break;
-
                 case Database.CLOSEMODE_COMPACT :
                 case Database.CLOSEMODE_SCRIPT :
                     log.close(true);
@@ -578,92 +456,57 @@ public class Logger {
             }
         } catch (Throwable e) {
             database.logger.logSevereEvent("error closing log", e);
-
             log = null;
-
             return false;
         }
-
         database.logger.logInfoEvent("Database closed");
-
         log = null;
-
         appLog.close();
-
         logsStatements = false;
         loggingEnabled = false;
-
         return true;
     }
-
     String newUniqueName() {
-
         String name = StringUtil.toPaddedString(
             Long.toHexString(System.currentTimeMillis()), 16, '0', false);
-
         name = "HSQLDB" + name.substring(6).toUpperCase(Locale.ENGLISH);
-
         return name;
     }
-
-    
     public boolean isLogged() {
         return propIsFileDatabase && !database.isFilesReadOnly();
     }
-
     public boolean isAllowedFullPath() {
         return this.propTextAllowFullPath;
     }
-
-    
     private void getEventLogger() {
-
         if (fwLogger != null) {
             return;
         }
-
         String name = database.getUniqueName();
-
         if (name == null) {
-
-            
-            
-            
-            
             return;
         }
-
         fwLogger = FrameworkLogger.getLog(SimpleLog.logTypeNameEngine,
                                           "hsqldb.db."
                                           + database.getUniqueName());
-        
     }
-
     public void setEventLogLevel(int level, boolean sqlLog) {
-
         if (level < SimpleLog.LOG_NONE || level > SimpleLog.LOG_DETAIL) {
             throw Error.error(ErrorCode.X_42556);
         }
-
         if (sqlLog) {
             propSqlLogLevel = level;
-
             this.sqlLog.setLevel(level);
         } else {
             propEventLogLevel = level;
-
             appLog.setLevel(level);
         }
     }
-
     public void logSevereEvent(String message, Throwable t) {
-
         getEventLogger();
-
         if (fwLogger != null) {
             fwLogger.severe(message, t);
         }
-
         if (appLog != null) {
             if (t == null) {
                 appLog.logContext(SimpleLog.LOG_ERROR, message);
@@ -672,60 +515,42 @@ public class Logger {
             }
         }
     }
-
     public void logWarningEvent(String message, Throwable t) {
-
         getEventLogger();
-
         if (fwLogger != null) {
             fwLogger.warning(message, t);
         }
-
         appLog.logContext(t, message, SimpleLog.LOG_ERROR);
     }
-
     public void logInfoEvent(String message) {
-
         getEventLogger();
-
         if (fwLogger != null) {
             fwLogger.info(message);
         }
-
         appLog.logContext(SimpleLog.LOG_NORMAL, message);
     }
-
     public void logDetailEvent(String message) {
-
         getEventLogger();
-
         if (fwLogger != null) {
             fwLogger.finest(message);
         }
-
         if (appLog != null) {
             appLog.logContext(SimpleLog.LOG_DETAIL, message);
         }
     }
-
     public void logStatementEvent(Session session, Statement statement,
                                   Object[] paramValues, int level) {
-
         getEventLogger();
-
         if (sqlLogger != null) {
             sqlLogger.finest(statement.getSQL());
         }
-
         if (sqlLog != null && level <= propSqlLogLevel) {
             String sessionId = Long.toString(session.getId());
             String sql       = statement.getSQL();
             String values    = "";
-
             if (sql.length() > 100) {
                 sql.substring(0, 100);
             }
-
             if (level == SimpleLog.LOG_DETAIL) {
                 if (paramValues != null && paramValues.length > 0) {
                     values = RowType.convertToSQLString(
@@ -734,112 +559,77 @@ public class Logger {
                         32);
                 }
             }
-
             sqlLog.logContext(SimpleLog.LOG_DETAIL, sessionId, sql, values);
         }
     }
-
     public int getSqlEventLogLevel() {
         return propSqlLogLevel;
     }
-
-    
     private DataFileCache getCache() {
-
         if (log == null) {
             return null;
         } else {
             return log.getCache();
         }
     }
-
-    
     private boolean hasCache() {
-
         if (log == null) {
             return false;
         } else {
             return log.hasCache();
         }
     }
-
-    
     public synchronized void writeStartSession(Session session) {
-
         if (loggingEnabled) {
             log.writeOtherStatement(session,
                                     session.getUser().getConnectUserSQL());
         }
     }
-
-    
     public synchronized void writeOtherStatement(Session session,
             String statement) {
-
         if (loggingEnabled) {
             log.writeOtherStatement(session, statement);
         }
     }
-
-    
     public synchronized void writeInsertStatement(Session session, Row row,
             Table table) {
-
         if (loggingEnabled) {
             log.writeInsertStatement(session, row, table);
         }
     }
-
-    
     public synchronized void writeDeleteStatement(Session session, Table t,
             Object[] row) {
-
         if (loggingEnabled) {
             log.writeDeleteStatement(session, t, row);
         }
     }
-
-    
     public synchronized void writeSequenceStatement(Session session,
             NumberSequence s) {
-
         if (loggingEnabled) {
             log.writeSequenceStatement(session, s);
         }
     }
-
-    
     public synchronized void writeCommitStatement(Session session) {
-
         if (loggingEnabled) {
             log.writeCommitStatement(session);
         }
     }
-
-    
     public synchronized void writeRollbackStatement(Session session) {
-
         if (loggingEnabled) {
             log.writeOtherStatement(session, "ROLLBACK");
         }
     }
-
-    
     public synchronized void checkpoint(boolean mode) {
-
         if (!backupState.compareAndSet(stateNormal, stateCheckpoint)) {
             throw Error.error(ErrorCode.ACCESS_IS_DENIED);
         }
-
         try {
             checkpointInternal(mode);
         } finally {
             backupState.set(stateNormal);
         }
     }
-
     void checkpointInternal(boolean mode) {
-
         if (logsStatements) {
             database.logger.logInfoEvent("Checkpoint start");
             log.checkpoint(mode);
@@ -850,293 +640,203 @@ public class Logger {
                 database.lobManager.deleteUnusedLobs();
             }
         }
-
         checkpointRequired = false;
         checkpointDue      = false;
     }
-
-    
     public synchronized void setLogSize(int megas) {
-
         propLogSize = megas;
-
         if (log != null) {
             log.setLogSize(propLogSize);
         }
     }
-
-    
     public synchronized void setLogData(boolean mode) {
-
         propLogData    = mode;
         loggingEnabled = propLogData && !database.isFilesReadOnly();
         loggingEnabled &= logsStatements;
     }
-
-    
     public synchronized void setScriptType(int format) {
-
         if (format == propScriptFormat) {
             return;
         }
-
         propScriptFormat   = format;
         checkpointRequired = true;
     }
-
-    
     public synchronized void setWriteDelay(int delay) {
-
         propWriteDelay = delay;
-
         if (log != null) {
             syncFile = (delay == 0);
-
             log.setWriteDelay(delay);
         }
     }
-
     public Crypto getCrypto() {
         return crypto;
     }
-
     public int getWriteDelay() {
         return propWriteDelay;
     }
-
     public int getLogSize() {
         return propLogSize;
     }
-
     public int getLobBlockSize() {
         return propLobBlockSize;
     }
-
     public synchronized void setIncrementBackup(boolean val) {
-
         if (val == propIncrementBackup) {
             return;
         }
-
         if (log != null) {
             log.setIncrementBackup(val);
-
             if (log.hasCache()) {
                 checkpointRequired = true;
             }
         }
-
         propIncrementBackup = val;
     }
-
     public void setCacheMaxRows(int value) {
         propCacheMaxRows = value;
     }
-
     public int getCacheRowsDefault() {
         return propCacheMaxRows;
     }
-
     public void setCacheSize(int value) {
         propCacheMaxSize = value * 1024;
     }
-
     public int getCacheSize() {
         return propCacheMaxSize;
     }
-
     public void setCacheFileScale(int value) {
-
         if (propCacheFileScale == value) {
             return;
         }
-
         checkPower(value, 10);
-
         if (value < 8 && value != 1) {
             throw Error.error(ErrorCode.X_42556);
         }
-
         if (hasCache()) {
             throw Error.error(ErrorCode.DATA_FILE_IN_USE);
         }
-
         propCacheFileScale = value;
     }
-
     public void setCacheFileScaleNoCheck(int value) {
-
         checkPower(value, 10);
-
         if (value < 8 && value != 1) {
             throw Error.error(ErrorCode.X_42556);
         }
-
         propCacheFileScale = value;
     }
-
     public int getCacheFileScale() {
         return propCacheFileScale;
     }
-
     public void setLobFileScale(int value) {
-
         if (propLobBlockSize == value * 1024) {
             return;
         }
-
         checkPower(value, 5);
-
         if (database.lobManager.getLobCount() > 0) {
             throw Error.error(ErrorCode.DATA_FILE_IN_USE);
         }
-
         propLobBlockSize = value * 1024;
-
         database.lobManager.close();
         database.lobManager.open();
     }
-
     public void setLobFileScaleNoCheck(int value) {
-
         checkPower(value, 5);
-
         propLobBlockSize = value * 1024;
     }
-
     public int getLobFileScale() {
         return propLobBlockSize / 1024;
     }
-
     public void setDefagLimit(int value) {
         propCacheDefragLimit = value;
     }
-
     public int getDefragLimit() {
         return propCacheDefragLimit;
     }
-
     public void setDefaultTextTableProperties(String source,
             HsqlProperties props) {
-
         props.setProperty(HsqlDatabaseProperties.url_check_props, true);
         database.getProperties().setURLProperties(props);
-
         this.propTextSourceDefault = source;
     }
-
     public void setNioDataFile(boolean value) {
         propNioDataFile = value;
     }
-
     public void setNioMaxSize(int value) {
-
         checkPower(value, 11);
-
         if (value < 8) {
             throw Error.error(ErrorCode.X_42556);
         }
-
         propNioMaxSize = value * 1024L * 1024L;
     }
-
     public FileAccess getFileAccess() {
         return fileAccess;
     }
-
     public boolean isStoredFileAccess() {
         return isStoredFileAccess;
     }
-
     public boolean isFileDatabase() {
         return propIsFileDatabase;
     }
-
     public String getTempDirectoryPath() {
         return tempDirectoryPath;
     }
-
     static void checkPower(int n, int max) {
-
         if (!ArrayUtil.isTwoPower(n, max)) {
             throw Error.error(ErrorCode.X_42556);
         }
     }
-
     public synchronized void setCheckpointRequired() {
         checkpointRequired = true;
     }
-
     public synchronized boolean needsCheckpointReset() {
-
         if (checkpointRequired && !checkpointDue && !checkpointDisabled) {
             checkpointDue      = true;
             checkpointRequired = false;
-
             return true;
         }
-
         return false;
     }
-
     public boolean hasLockFile() {
         return lockFile != null;
     }
-
     public void acquireLock(String path) {
-
         if (lockFile != null) {
             return;
         }
-
         lockFile = LockFile.newLockFileLock(path);
     }
-
     public void releaseLock() {
-
         try {
             if (lockFile != null) {
                 lockFile.tryRelease();
             }
         } catch (Exception e) {}
-
         lockFile = null;
     }
-
     public PersistentStore newStore(Session session,
                                     PersistentStoreCollection collection,
                                     TableBase table) {
-
         switch (table.getTableType()) {
-
             case TableBase.CACHED_TABLE :
                 DataFileCache cache = getCache();
-
                 if (cache == null) {
                     break;
                 }
-
                 return new RowStoreAVLDisk(collection, cache, (Table) table);
-
             case TableBase.FUNCTION_TABLE :
             case TableBase.MEMORY_TABLE :
             case TableBase.SYSTEM_TABLE :
                 return new RowStoreAVLMemory(collection, (Table) table);
-
             case TableBase.TEXT_TABLE :
                 return new RowStoreAVLDiskData(collection, (Table) table);
-
             case TableBase.INFO_SCHEMA_TABLE :
                 return new RowStoreAVLHybridExtended(session, collection,
                                                      table, false);
-
             case TableBase.TEMP_TABLE :
                 return new RowStoreAVLHybridExtended(session, collection,
                                                      table, true);
-
             case TableBase.CHANGE_SET_TABLE :
                 return new RowStoreDataChange(session, collection, table);
-
             case TableBase.RESULT_TABLE :
             case TableBase.SYSTEM_SUBQUERY :
             case TableBase.VIEW_TABLE :
@@ -1144,28 +844,22 @@ public class Logger {
                 if (session == null) {
                     return null;
                 }
-
                 return new RowStoreAVLHybrid(session, collection, table, true);
         }
-
         throw Error.runtimeError(ErrorCode.U_S0500, "Logger");
     }
-
     public Index newIndex(HsqlName name, long id, TableBase table,
                           int[] columns, boolean[] descending,
                           boolean[] nullsLast, Type[] colTypes, boolean pk,
                           boolean unique, boolean constraint,
                           boolean forward) {
-
         switch (table.getTableType()) {
-
             case TableBase.INFO_SCHEMA_TABLE :
             case TableBase.SYSTEM_TABLE :
             case TableBase.MEMORY_TABLE :
                 return new IndexAVLMemory(name, id, table, columns,
                                           descending, nullsLast, colTypes, pk,
                                           unique, constraint, forward);
-
             case TableBase.CHANGE_SET_TABLE :
             case TableBase.FUNCTION_TABLE :
             case TableBase.CACHED_TABLE :
@@ -1179,198 +873,147 @@ public class Logger {
                                     nullsLast, colTypes, pk, unique,
                                     constraint, forward);
         }
-
         throw Error.runtimeError(ErrorCode.U_S0500, "Logger");
     }
-
     public Index newIndex(Table table, Index index, int[] columns) {
-
         boolean[] modeFlags = new boolean[columns.length];
         Type[]    colTypes  = new Type[columns.length];
-
         ArrayUtil.projectRow(table.getColumnTypes(), columns, colTypes);
-
         switch (table.getTableType()) {
-
             case TableBase.MEMORY_TABLE :
                 return new IndexAVLMemory(index.getName(),
                                           index.getPersistenceId(), table,
                                           columns, modeFlags, modeFlags,
                                           colTypes, false, false, false,
                                           false);
-
             case TableBase.CACHED_TABLE :
             case TableBase.TEXT_TABLE :
                 return new IndexAVL(index.getName(), index.getPersistenceId(),
                                     table, columns, modeFlags, modeFlags,
                                     colTypes, false, false, false, false);
         }
-
         throw Error.runtimeError(ErrorCode.U_S0500, "Logger");
     }
-
     public String getValueStringForProperty(String name) {
-
         String value = "";
-
         if (HsqlDatabaseProperties.hsqldb_tx.equals(name)) {
             switch (database.txManager.getTransactionControl()) {
-
                 case TransactionManager.MVCC :
                     value = Tokens.T_MVCC.toLowerCase();
                     break;
-
                 case TransactionManager.MVLOCKS :
                     value = Tokens.T_MVLOCKS.toLowerCase();
                     break;
-
                 case TransactionManager.LOCKS :
                     value = Tokens.T_LOCKS.toLowerCase();
                     break;
             }
-
             return value;
         }
-
         if (HsqlDatabaseProperties.hsqldb_tx_level.equals(name)) {
             switch (database.defaultIsolationLevel) {
-
                 case SessionInterface.TX_READ_COMMITTED :
                     value = new StringBuffer(Tokens.T_READ).append(' ').append(
                         Tokens.T_COMMITTED).toString().toLowerCase();
                     break;
-
                 case SessionInterface.TX_SERIALIZABLE :
                     value = Tokens.T_SERIALIZABLE.toLowerCase();
                     break;
             }
-
             return value;
         }
-
         if (HsqlDatabaseProperties.hsqldb_applog.equals(name)) {
             return String.valueOf(appLog.getLevel());
         }
-
         if (HsqlDatabaseProperties.hsqldb_lob_file_scale.equals(name)) {
             return String.valueOf(propLobBlockSize);
         }
-
         if (HsqlDatabaseProperties.hsqldb_cache_file_scale.equals(name)) {
             return String.valueOf(propCacheFileScale);
         }
-
         if (HsqlDatabaseProperties.hsqldb_cache_free_count.equals(name)) {
             return String.valueOf(this.propMaxFreeBlocks);
         }
-
         if (HsqlDatabaseProperties.hsqldb_cache_rows.equals(name)) {
             return String.valueOf(this.propCacheMaxRows);
         }
-
         if (HsqlDatabaseProperties.hsqldb_cache_size.equals(name)) {
             String.valueOf(this.propCacheMaxSize);
         }
-
         if (HsqlDatabaseProperties.hsqldb_default_table_type.equals(name)) {
             return database.schemaManager.getDefaultTableType()
                    == TableBase.CACHED_TABLE ? "cached"
                                              : "memory";
         }
-
         if (HsqlDatabaseProperties.hsqldb_defrag_limit.equals(name)) {
             return String.valueOf(this.propCacheDefragLimit);
         }
-
         if (HsqlDatabaseProperties.hsqldb_files_readonly.equals(name)) {
             return database.databaseProperties.getPropertyString(
                 HsqlDatabaseProperties.hsqldb_files_readonly);
         }
-
         if (HsqlDatabaseProperties.hsqldb_lock_file.equals(name)) {
             return database.databaseProperties.getPropertyString(
                 HsqlDatabaseProperties.hsqldb_lock_file);
         }
-
         if (HsqlDatabaseProperties.hsqldb_log_data.equals(name)) {
             return String.valueOf(this.propLogData);
         }
-
         if (HsqlDatabaseProperties.hsqldb_log_size.equals(name)) {
             return String.valueOf(this.propLogSize);
         }
-
         if (HsqlDatabaseProperties.hsqldb_nio_data_file.equals(name)) {
             return String.valueOf(this.propNioDataFile);
         }
-
         if (HsqlDatabaseProperties.hsqldb_nio_max_size.equals(name)) {
             return String.valueOf(this.propNioMaxSize);
         }
-
         if (HsqlDatabaseProperties.hsqldb_script_format.equals(name)) {
             return ScriptWriterBase.LIST_SCRIPT_FORMATS[0].toLowerCase();
         }
-
         if (HsqlDatabaseProperties.hsqldb_temp_directory.equals(name)) {
             return null;
         }
-
         if (HsqlDatabaseProperties.hsqldb_result_max_memory_rows.equals(
                 name)) {
             return String.valueOf(database.getResultMaxMemoryRows());
         }
-
         if (HsqlDatabaseProperties.hsqldb_write_delay.equals(name)) {
             return String.valueOf(this.propWriteDelay != 0);
         }
-
         if (HsqlDatabaseProperties.hsqldb_write_delay_millis.equals(name)) {
             return String.valueOf(this.propWriteDelay);
         }
-
         if (HsqlDatabaseProperties.sql_ref_integrity.equals(name)) {
             return database.isReferentialIntegrity() ? "true"
                                                      : "false";
         }
-
         if (HsqlDatabaseProperties.sql_compare_in_locale.equals(name)) {
             return null;
         }
-
         if (HsqlDatabaseProperties.sql_enforce_size.equals(name)) {
             return String.valueOf(database.sqlEnforceSize);
         }
-
         if (HsqlDatabaseProperties.sql_enforce_refs.equals(name)) {
             return String.valueOf(database.sqlEnforceRefs);
         }
-
         if (HsqlDatabaseProperties.sql_enforce_names.equals(name)) {
             return String.valueOf(database.sqlEnforceNames);
         }
-
         if (HsqlDatabaseProperties.sql_enforce_types.equals(name)) {
             return String.valueOf(database.sqlEnforceTypes);
         }
-
         if (HsqlDatabaseProperties.jdbc_translate_tti_types.equals(name)) {
             return String.valueOf(database.sqlTranslateTTI);
         }
-
         if (HsqlDatabaseProperties.sql_longvar_is_lob.equals(name)) {
             return String.valueOf(database.sqlLongvarIsLob);
         }
-
-
         return null;
     }
-
     public String[] getPropertiesSQL() {
-
         HsqlArrayList list = new HsqlArrayList();
         StringBuffer  sb   = new StringBuffer();
-
         sb.append("SET DATABASE ").append(Tokens.T_UNIQUE).append(' ');
         sb.append(Tokens.T_NAME).append(' ').append(database.getUniqueName());
         list.add(sb.toString());
@@ -1484,7 +1127,6 @@ public class Logger {
                                            : Tokens.T_FALSE);
         list.add(sb.toString());
         sb.setLength(0);
-
         if (database.sqlSyntaxDb2) {
             sb.append("SET DATABASE ").append(Tokens.T_SQL).append(' ');
             sb.append(Tokens.T_SYNTAX).append(' ');
@@ -1494,7 +1136,6 @@ public class Logger {
             list.add(sb.toString());
             sb.setLength(0);
         }
-
         if (database.sqlSyntaxMss) {
             sb.append("SET DATABASE ").append(Tokens.T_SQL).append(' ');
             sb.append(Tokens.T_SYNTAX).append(' ');
@@ -1504,7 +1145,6 @@ public class Logger {
             list.add(sb.toString());
             sb.setLength(0);
         }
-
         if (database.sqlSyntaxMys) {
             sb.append("SET DATABASE ").append(Tokens.T_SQL).append(' ');
             sb.append(Tokens.T_SYNTAX).append(' ');
@@ -1514,7 +1154,6 @@ public class Logger {
             list.add(sb.toString());
             sb.setLength(0);
         }
-
         if (database.sqlSyntaxOra) {
             sb.append("SET DATABASE ").append(Tokens.T_SQL).append(' ');
             sb.append(Tokens.T_SYNTAX).append(' ');
@@ -1524,7 +1163,6 @@ public class Logger {
             list.add(sb.toString());
             sb.setLength(0);
         }
-
         if (database.sqlSyntaxPgs) {
             sb.append("SET DATABASE ").append(Tokens.T_SQL).append(' ');
             sb.append(Tokens.T_SYNTAX).append(' ');
@@ -1534,43 +1172,33 @@ public class Logger {
             list.add(sb.toString());
             sb.setLength(0);
         }
-
         sb.append("SET DATABASE ").append(Tokens.T_TRANSACTION);
         sb.append(' ').append(Tokens.T_CONTROL).append(' ');
-
         switch (database.txManager.getTransactionControl()) {
-
             case TransactionManager.MVCC :
                 sb.append(Tokens.T_MVCC);
                 break;
-
             case TransactionManager.MVLOCKS :
                 sb.append(Tokens.T_MVLOCKS);
                 break;
-
             case TransactionManager.LOCKS :
                 sb.append(Tokens.T_LOCKS);
                 break;
         }
-
         list.add(sb.toString());
         sb.setLength(0);
         sb.append("SET DATABASE ").append(Tokens.T_DEFAULT).append(' ');
         sb.append(Tokens.T_ISOLATION).append(' ').append(Tokens.T_LEVEL);
         sb.append(' ');
-
         switch (database.defaultIsolationLevel) {
-
             case SessionInterface.TX_READ_COMMITTED :
                 sb.append(Tokens.T_READ).append(' ').append(
                     Tokens.T_COMMITTED);
                 break;
-
             case SessionInterface.TX_SERIALIZABLE :
                 sb.append(Tokens.T_SERIALIZABLE);
                 break;
         }
-
         list.add(sb.toString());
         sb.setLength(0);
         sb.append("SET DATABASE ").append(Tokens.T_TRANSACTION);
@@ -1587,15 +1215,12 @@ public class Logger {
         sb.append(propTextSourceDefault).append('\'');
         list.add(sb.toString());
         sb.setLength(0);
-
         if (database.schemaManager.getDefaultTableType()
                 == TableBase.CACHED_TABLE) {
             list.add("SET DATABASE DEFAULT TABLE TYPE CACHED");
         }
-
         int     delay  = propWriteDelay;
         boolean millis = delay > 0 && delay < 1000;
-
         if (millis) {
             if (delay < 20) {
                 delay = 20;
@@ -1603,15 +1228,12 @@ public class Logger {
         } else {
             delay /= 1000;
         }
-
         sb.setLength(0);
         sb.append("SET FILES ").append(Tokens.T_WRITE).append(' ');
         sb.append(Tokens.T_DELAY).append(' ').append(delay);
-
         if (millis) {
             sb.append(' ').append(Tokens.T_MILLIS);
         }
-
         list.add(sb.toString());
         sb.setLength(0);
         sb.append("SET FILES ").append(Tokens.T_BACKUP);
@@ -1662,41 +1284,30 @@ public class Logger {
         sb.append(Tokens.T_SIZE).append(' ').append(propLogSize);
         list.add(sb.toString());
         sb.setLength(0);
-
-        
         String[] array = new String[list.size()];
-
         list.toArray(array);
-
         return array;
     }
-
     public void backup(String destPath, boolean script, boolean blocking,
                        boolean compressed) {
-
         if (!backupState.compareAndSet(stateNormal, stateBackup)) {
             throw Error.error(ErrorCode.BACKUP_ERROR, "BACKUP IN PROGRESS");
         }
-
         try {
             backupInternal(destPath, script, blocking, compressed);
         } finally {
             backupState.set(stateNormal);
         }
     }
-
     private SimpleDateFormat backupFileFormat =
         new SimpleDateFormat("yyyyMMdd'T'HHmmss");
     private Character runtimeFileDelim =
         new Character(System.getProperty("file.separator").charAt(0));
     DbBackup backup;
-
     void backupInternal(String destPath, boolean script, boolean blocking,
                         boolean compressed) {
-
         String scriptName = null;
         String dbPath     = database.getPath();
-        
         String instanceName = new File(dbPath).getName();
         char   lastChar     = destPath.charAt(destPath.length() - 1);
         boolean generateName = (lastChar == '/'
@@ -1713,7 +1324,6 @@ public class Logger {
         boolean nameImpliesCompress =
             archiveFile.getName().endsWith(".tar.gz")
             || archiveFile.getName().endsWith(".tgz");
-
         if ((!nameImpliesCompress)
                 && !archiveFile.getName().endsWith(".tar")) {
             throw Error.error(null, ErrorCode.UNSUPPORTED_FILENAME_SUFFIX, 0,
@@ -1721,85 +1331,59 @@ public class Logger {
                 archiveFile.getName(), ".tar, .tar.gz, .tgz"
             });
         }
-
         if (compressed != nameImpliesCompress) {
             throw Error.error(null, ErrorCode.COMPRESSION_SUFFIX_MISMATCH, 0,
                               new Object[] {
                 new Boolean(compressed), archiveFile.getName()
             });
         }
-
         if (blocking) {
             log.checkpointClose();
         }
-
         try {
             database.logger.logInfoEvent("Initiating backup of instance '"
                                          + instanceName + "'");
-
-            
-            
-            
             if (script) {
                 String path = getTempDirectoryPath();
-
                 if (path == null) {
                     return;
                 }
-
                 path = path + "/" + new File(database.getPath()).getName();
                 scriptName = path + scriptFileExtension;
-
                 ScriptWriterText dsw = new ScriptWriterText(database,
                     scriptName, true, true, true);
-
                 dsw.writeAll();
                 dsw.close();
-
                 backup = new DbBackup(archiveFile, path, true);
-
                 backup.write();
             } else {
                 backup = new DbBackup(archiveFile, dbPath);
-
                 backup.setAbortUponModify(false);
-
                 if (!blocking) {
                     InputStreamWrapper isw;
                     File               file = null;
-
                     if (hasCache()) {
                         DataFileCache dataFileCache = getCache();
-
                         file = new File(dataFileCache.dataFileName);
                         isw = new InputStreamWrapper(
                             new FileInputStream(file));
-
                         isw.setSizeLimit(dataFileCache.fileStartFreePosition);
                         backup.setStream(dataFileExtension, isw);
-
                         RAShadowFile shadowFile =
                             dataFileCache.getShadowFile();
-
                         if (shadowFile != null) {
                             InputStreamInterface isi =
                                 shadowFile.getInputStream();
-
                             backup.setStream(backupFileExtension, isi);
                         }
                     }
-
-                    
                     file = new File(log.getLogFileName());
                     isw  = new InputStreamWrapper(new FileInputStream(file));
-
                     isw.setSizeLimit(file.length());
                     backup.setStream(logFileExtension, isw);
                 }
-
                 backup.write();
             }
-
             database.logger.logInfoEvent("Successfully backed up instance '"
                                          + instanceName + "' to '" + destPath
                                          + "'");
@@ -1811,20 +1395,15 @@ public class Logger {
             if (scriptName != null) {
                 FileUtil.getFileUtil().delete(scriptName);
             }
-
             if (blocking) {
                 log.checkpointReopen();
             }
         }
     }
-
-    
     public String getSecurePath(String path) {
-
         if (database.getType() == DatabaseURL.S_RES) {
             return path;
         }
-
         if (path.indexOf("..") != -1) {
             if (database.logger.propTextAllowFullPath) {
                 return FileUtil.getFileUtil().canonicalOrAbsolutePath(path);
@@ -1832,60 +1411,38 @@ public class Logger {
                 return null;
             }
         }
-
         String fullPath =
             new File(new File(database.getPath()
                               + ".properties").getAbsolutePath()).getParent();
-
         if (fullPath != null) {
             path = fullPath + File.separator + path;
         }
-
         return path;
     }
-
-    
-
-    
     public DataFileCache openTextFilePersistence(Table table, String source,
             boolean readOnlyData, boolean reversed) {
-
         closeTextCache(table);
-
         source = getSecurePath(source);
-
         if (source == null) {
             throw (Error.error(ErrorCode.ACCESS_IS_DENIED, source));
         }
-
         TextCache c = new TextCache(table, source);
-
         c.open(readOnlyData || database.isFilesReadOnly());
         textCacheList.put(table.getName(), c);
-
         return c;
     }
-
-    
     public void closeTextCache(Table table) {
-
         TextCache c = (TextCache) textCacheList.remove(table.getName());
-
         if (c != null) {
             try {
                 c.close(true);
             } catch (HsqlException e) {}
         }
     }
-
     void closeAllTextCaches(boolean script) {
-
         Iterator it = textCacheList.values().iterator();
-
         while (it.hasNext()) {
             TextCache textCache = ((TextCache) it.next());
-
-            
             if (script && !textCache.table.isDataReadOnly()) {
                 textCache.purge();
             } else {
@@ -1893,17 +1450,13 @@ public class Logger {
             }
         }
     }
-
     boolean isAnyTextCacheModified() {
-
         Iterator it = textCacheList.values().iterator();
-
         while (it.hasNext()) {
             if (((TextCache) it.next()).isModified()) {
                 return true;
             }
         }
-
         return false;
     }
 }

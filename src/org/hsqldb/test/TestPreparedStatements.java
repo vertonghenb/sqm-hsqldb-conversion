@@ -1,46 +1,29 @@
-
-
-
 package org.hsqldb.test;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Statement;
-
 import junit.framework.TestCase;
-
 import java.sql.ResultSet;
-
-
 public class TestPreparedStatements extends TestCase {
-
     private Connection con = null;
-
     private class sqlStmt {
-
         boolean  prepare;
         boolean  update;
         String   command;
         Object[] args;
         Object   ret;
-
         sqlStmt(String c) {
-
             command = c;
             prepare = false;
             update  = false;
         }
-
         sqlStmt(String c, boolean p, boolean u, Object[] a) {
-
             command = c;
             prepare = p;
             update  = u;
             args    = a;
         }
-
         sqlStmt(String c, boolean p, boolean u, Object[] a, Object r) {
-
             command = c;
             prepare = p;
             update  = u;
@@ -48,7 +31,6 @@ public class TestPreparedStatements extends TestCase {
             ret     = r;
         }
     }
-
     private sqlStmt[] stmtArray = {
         new sqlStmt("drop table public.ivtest if exists cascade"),
         new sqlStmt(
@@ -95,77 +77,55 @@ public class TestPreparedStatements extends TestCase {
             1, 2, 3, 4, 5
         } }, 10L),
     };
-
     public TestPreparedStatements(String name) {
         super(name);
     }
-
     protected void setUp() {
-
         String url = "jdbc:hsqldb:test";
-
         try {
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
-
             con = java.sql.DriverManager.getConnection(url, "sa", "");
         } catch (Exception e) {}
     }
-
     public void testA() {
-
         int i = 0;
-
         try {
             for (i = 0; i < stmtArray.length; i++) {
                 int j;
-
                 System.out.println(" -- #" + i + " ----------------------- ");
-
                 if (stmtArray[i].prepare) {
                     Object[]          stmtArgs = stmtArray[i].args;
                     PreparedStatement ps       = null;
-
                     System.out.println(" -- preparing\n<<<\n"
                                        + stmtArray[i].command + "\n>>>\n");
-
                     ps = con.prepareStatement(stmtArray[i].command);
-
                     if (stmtArgs != null) {
                         System.out.print(" -- setting " + stmtArgs.length
                                          + " Args [");
-
                         for (j = 0; j < stmtArgs.length; j++) {
                             System.out.print((j > 0 ? "; "
                                                     : "") + stmtArgs[j]);
                             ps.setObject(j + 1, stmtArgs[j]);
                         }
-
                         System.out.println("]");
                     }
-
                     System.out.println(" -- executing ");
-
                     if (stmtArray[i].update) {
                         int r = ps.executeUpdate();
-
                         System.out.println(" ***** ps.executeUpdate gave me "
                                            + r);
                     } else {
                         boolean b     = ps.execute();
                         int     count = 0;
-
                         if (b) {
                             ResultSet rs = ps.getResultSet();
-
                             while (rs.next()) {
                                 if (count == 0 && stmtArray[i].ret != null) {
                                     super.assertEquals(stmtArray[i].ret,
                                                        rs.getObject(1));
                                 }
-
                                 count++;
                             }
-
                             System.out.print(
                                 " ***** ps.execute returned result row count "
                                 + count);
@@ -176,10 +136,8 @@ public class TestPreparedStatements extends TestCase {
                 } else {
                     System.out.println(" -- executing directly\n<<<\n"
                                        + stmtArray[i].command + "\n>>>\n");
-
                     Statement s = con.createStatement();
                     boolean   b = s.execute(stmtArray[i].command);
-
                     System.out.println(" ***** st.execute gave me " + b);
                 }
             }
@@ -187,7 +145,6 @@ public class TestPreparedStatements extends TestCase {
             System.out.println(i + " ?? Caught Exception " + e);
             super.fail();
         }
-
         assertTrue(true);
     }
 }

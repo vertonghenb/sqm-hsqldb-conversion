@@ -1,20 +1,14 @@
-
-
-
 package org.hsqldb.cmdline.sqltool;
-
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Pattern;
 import java.util.EnumSet;
-
 public class Calculator {
     private List<Atom> atoms = new ArrayList<Atom>();
     private static Pattern intPattern = Pattern.compile("[+-]?\\d+");
     private Map<String, String> vars;
-
     private enum MathOp {
         LPAREN('('),
         RPAREN(')'),
@@ -37,7 +31,6 @@ public class Calculator {
     private EnumSet<MathOp> TradOrLParen =
             EnumSet.of(MathOp.ADD, MathOp.SUBTRACT, MathOp.LPAREN,
             MathOp.MULTIPLY, MathOp.DIVIDE, MathOp.REM, MathOp.POWER);
-
     private long deref(String varName) {
         if (!vars.containsKey(varName))
             throw new IllegalStateException("Undefined variable: " + varName);
@@ -48,11 +41,8 @@ public class Calculator {
                     "Variable's value not an integer: " + varName);
         }
     }
-
     private class Atom {
-        
         private Atom(String token) {
-            
             if (token == null)
                 throw new IllegalArgumentException("Tokens may not be null");
             if (token.length() < 1)
@@ -65,7 +55,6 @@ public class Calculator {
                 op = MathOp.valueOf(token.charAt(0));
                 if (op != null) return;
             }
-            
             val = deref(token);
         }
         private Atom(MathOp op) { this.op = op; }
@@ -76,13 +65,10 @@ public class Calculator {
             return (op == null) ? Long.toString(val) : op.toString();
         }
     }
-
     public String toString() {
         return atoms.toString();
     }
-
     public Calculator(String[] sa, Map<String, String> vars) {
-        
         if (vars.size() < 1)
             throw new IllegalArgumentException("No expression supplied");
         this.vars = vars;
@@ -97,7 +83,6 @@ public class Calculator {
             prePrevAtom = (prevIndex > 0) ? atoms.get(prevIndex-1) : null;
             if (prePrevAtom != null && !TradOrLParen.contains(prePrevAtom.op))
                 continue;
-
             if (atom.op == null) {
                 atoms.remove(prevIndex);
                 atom.val *= -1;
@@ -110,19 +95,14 @@ public class Calculator {
             atoms.add(atom);
         }
     }
-
-    
     public Calculator(String s, Map<String, String> vars) {
         this(s.replaceAll("([-()*/+^])", " $1 ")
                 .trim().split("\\s+"), vars);
     }
-    
     public long reduce(int startAtomIndex, boolean stopAtParenClose) {
-        
         int i;
         Long prevValue = null;
         Atom atom;
-        
         i = startAtomIndex - 1;
         PAREN_SEEKER:
         while (atoms.size() >= ++i) {
@@ -145,17 +125,13 @@ public class Calculator {
                 atoms.add(i, new Atom(reduce(i, true)));
                 break;
               default:
-                
             }
         }
         int remaining = i - startAtomIndex;
         if (remaining < 1)
             throw new IllegalStateException("Empty expression");
-        
         Atom nextAtom;
         MathOp op;
-
-        
         i = startAtomIndex;
         atom = atoms.get(i);
         if (atom.op != null)
@@ -176,12 +152,10 @@ public class Calculator {
                 throw new IllegalStateException(
                         "Value expected but got operator " + nextAtom.op);
             if (op != MathOp.POWER) {
-                
                 i += 2;
                 atom = nextAtom;
                 continue;
             }
-            
             remaining -= 2;
             atoms.remove(i + 1);
             atoms.remove(i + 1);
@@ -189,8 +163,6 @@ public class Calculator {
             atom.val = 1;
             for (int j = 0; j < nextAtom.val; j++) atom.val *= origVal;
         }
-
-        
         i = startAtomIndex;
         atom = atoms.get(i);
         if (atom.op != null)
@@ -211,12 +183,10 @@ public class Calculator {
                 throw new IllegalStateException(
                         "Value expected but got operator " + nextAtom.op);
             if (op != MathOp.MULTIPLY && op != MathOp.DIVIDE && op != MathOp.REM) {
-                
                 i += 2;
                 atom = nextAtom;
                 continue;
             }
-            
             remaining -= 2;
             atoms.remove(i + 1);
             atoms.remove(i + 1);
@@ -224,9 +194,6 @@ public class Calculator {
             else if (op == MathOp.DIVIDE) atom.val /= nextAtom.val;
             else atom.val %= nextAtom.val;
         }
-
-        
-        
         atom = atoms.remove(startAtomIndex);
         remaining--;
         if (atom.op != null)
@@ -234,17 +201,14 @@ public class Calculator {
                     "Value expected but got operation " + atom.op);
         long total = atom.val;
         while (remaining > 0) {
-            
             --remaining;
             atom = atoms.remove(startAtomIndex);
             op = atom.op;
-            
             if (op == null)
                 throw new IllegalStateException(
                         "Operator expected but got value " + atom.val);
             if (remaining <= 0)
                 throw new IllegalStateException("No operand for operator " + op);
-            
             --remaining;
             atom = atoms.remove(startAtomIndex);
             if (atom.op != null)
@@ -261,11 +225,8 @@ public class Calculator {
                 throw new IllegalStateException("Unknown operator: " + op);
             }
         }
-
         return total;
     }
-
-    
     public static void main(String[] sa) {
         if (sa.length != 1)
             throw new IllegalArgumentException(
@@ -283,10 +244,7 @@ public class Calculator {
         Calculator calc = new Calculator(sa[0], uV);
         System.out.println(calc);
         System.out.println(calc.reduce(0, false));
-        
     }
-
-    
     public static long reassignValue(String assignee,
             Map<String, String> valMap, String opStr, String expr) {
         long outVal = 0;

@@ -1,25 +1,15 @@
-
-
-
 package org.hsqldb.test;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
 import junit.framework.TestCase;
-
 public class TestNullInUnion extends TestCase {
-
     public void testUnionSubquery() throws Exception {
-
         Class.forName("org.hsqldb.jdbcDriver").newInstance();
-
         Connection con = DriverManager.getConnection("jdbc:hsqldb:mem:test",
             "sa", "");
         Statement st = con.createStatement();
-
         st.execute(
             "CREATE TABLE t1 (id int not null, v1 int, v2 int, primary key(id))");
         st.execute(
@@ -27,12 +17,10 @@ public class TestNullInUnion extends TestCase {
         st.execute("INSERT INTO t1 values(1,1,1)");
         st.execute("INSERT INTO t1 values(2,2,2)");
         st.execute("INSERT INTO t2 values(1,3,3)");
-
         ResultSet rs = st.executeQuery(
             "select t as atable, a as idvalue, b as value1, c as value2, d as value3 from("
             + "(select 't1' as t, t1.id as a, t1.v1 as b, t1.v2 as c, null as d from t1) union"
             + "(select 't2' as t, t2.id as a, t2.v1 as b, null as c, t2.v3 as d from t2)) order by atable, idvalue");
-
         assertTrue(rs.next());
         assertEquals("t1", rs.getObject("atable"));
         assertEquals(1, rs.getInt("idvalue"));

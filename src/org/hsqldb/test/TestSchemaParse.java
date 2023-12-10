@@ -1,28 +1,18 @@
-
-
-
 package org.hsqldb.test;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 public class TestSchemaParse extends junit.framework.TestCase {
-
     Connection                  con = null;
     Statement                   statement;
     private static final String ipref = "INFORMATION_SCHEMA.";
-
     protected void setUp() throws Exception {
-
         Class.forName("org.hsqldb.jdbc.JDBCDriver");
-
         con = DriverManager.getConnection("jdbc:hsqldb:mem:parsetest", "sa",
                                           "");
         statement = con.createStatement();
-
         execSQL("SET AUTOCOMMIT false", 0);
         execSQL("CREATE TABLE tsttbl (i INT, vc VARCHAR(100))", 0);
         execSQL("CREATE TABLE bigtbl (i INT, vc VARCHAR(100), i101 INT, i102 INT, "
@@ -37,9 +27,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("CREATE TABLE indexedtbl (i3 INT, vc3 VARCHAR(100))", 0);
         execSQL("INSERT INTO indexedtbl VALUES (3, 'tres')", 1);
         execSQL("CREATE TABLE triggedtbl (i4 INT, vc4 VARCHAR(100))", 0);
-
-        
-        
         execSQL("INSERT INTO triggedtbl VALUES (4, 'quatro')", 1);
         execSQL("CREATE FUNCTION tstali(VARCHAR(100)) RETURNS VARCHAR(100) "
                 + "LANGUAGE JAVA EXTERNAL NAME "
@@ -59,36 +46,20 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("CREATE TABLE playtbl (i9 INT, vc9 VARCHAR(100))", 0);
         execSQL("CREATE TABLE toindextbl (i10 INT, vc10 VARCHAR(100))", 0);
         execSQL("INSERT INTO toindextbl VALUES (10, 'zehn')", 1);
-
-        
         execSQL("CREATE VIEW tstview AS SELECT * FROM tsttbl WHERE i < 10", 0);
         execSQL("COMMIT", 0);
     }
-
-    
-    
     private boolean shutdownTested = false;
-
     protected void tearDown() throws Exception {
-
-        
-        
         execSQL("SHUTDOWN", shutdownTested);
-
         if (con != null) {
             con.close();
         }
-
         super.tearDown();
     }
-
     public void test2pTables() throws Exception {
-
         String prefix = "public.";
-
         execSQL("DROP VIEW tstview", 0);    
-
-        
         assertEquals(2, queryRowCount("SELECT i FROM " + prefix
                                       + "tsttbl WHERE i IN (1, 2, 3)"));
         execSQL("CREATE TABLE " + prefix + "newtbl AS (SELECT * FROM tsttbl) WITH DATA", 0);
@@ -104,8 +75,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
                                    + prefix + "joinedtbl\n"
                                    + "WHERE tsttbl.i = joinedtbl.i2\n"
                                    + "AND joinedtbl.vc2 = 'zwei'"));
-
-        
         assertEquals(
             2, queryRowCount(
                 "SELECT ali.i FROM " + prefix
@@ -127,9 +96,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
                                    + "joinedtbl bali\n"
                                    + "WHERE ali.i = bali.i2\n"
                                    + "AND bali.vc2 = 'zwei'"));
-        
-
-        
         execSQL("ALTER TABLE " + prefix + "playtbl RENAME TO " + prefix
                 + "renamedtbl", 0);
         execSQL("ALTER TABLE " + prefix + "renamedtbl RENAME TO " + prefix
@@ -150,15 +116,9 @@ public class TestSchemaParse extends junit.framework.TestCase {
                 + "(i7) REFERENCES primarytbl (i8)", 0);
         execSQL("ALTER TABLE " + prefix
                 + "playtbl ADD CONSTRAINT ucons9 UNIQUE (i9)", 0);
-
-        
         execSQL("DROP TABLE " + prefix + "playtbl", 0);
-
-        
         execSQL("SET TABLE " + prefix + "tsttbl READONLY true", 0);
         execSQL("SET TABLE " + prefix + "tsttbl READONLY false", 0);
-
-        
         execSQL("CREATE TABLE " + prefix + "tsttbly (i INT, vc VARCHAR(100))", 0);
         execSQL("CREATE CACHED TABLE " + prefix
                 + "tsttblx (i INT, vc VARCHAR(100))", 0);
@@ -167,23 +127,14 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL(
             "CREATE TABLE forztbl (i7 INT, vc7 VARCHAR(100), "
             + "CONSTRAINT tstfkz FOREIGN KEY (i7) REFERENCES primarytbl (i8))", 0);
-
-        
         execSQL("UPDATE " + prefix + "tsttbl SET vc = 'eleven' WHERE i = 1",
                 1);
-
-        
         execSQL("DELETE FROM  " + prefix + "tsttbl WHERE i = 1", 1);
-
-        
         execSQL("GRANT ALL ON " + prefix + "tsttbl TO tstuser", 0);
         execSQL("REVOKE ALL ON " + prefix + "tsttbl FROM tstuser RESTRICT", 0);
     }
-
     public void test2pViews() throws Exception {
-
         String prefix = "public.";
-
         assertEquals(2, queryRowCount("SELECT i FROM " + prefix
                                       + "tstview WHERE i IN (1, 2, 3)"));
         assertEquals(2, queryRowCount("SELECT i FROM tstview"));
@@ -202,35 +153,22 @@ public class TestSchemaParse extends junit.framework.TestCase {
             2, queryRowCount(
                 "SELECT i FROM " + prefix
                 + "tstview ali WHERE ali.i IN (1, 2, 3)"));
-
-        
         execSQL("CREATE VIEW " + prefix
                 + "tstview2 AS SELECT * FROM tsttbl WHERE i < 10", 0);
-
-        
         execSQL("GRANT ALL ON " + prefix + "tstview TO tstuser", 0);
         execSQL("REVOKE ALL ON " + prefix + "tstview FROM tstuser RESTRICT", 0);
-
-        
         execSQL("DROP VIEW tstview", 0);
     }
-
     public void test2pSequences() throws Exception {
-
         String prefix = "public.";
-
         execSQL("CREATE SEQUENCE " + prefix + "tstseq2", 0);
         execSQL("ALTER SEQUENCE " + prefix + "tstseq RESTART WITH 23", 0);
         assertEquals(1, queryRowCount("SELECT next value FOR " + prefix
                                       + "tstseq FROM tsttbl WHERE i = 1"));
         execSQL("DROP SEQUENCE " + prefix + "tstseq", 0);
     }
-
     public void test2pConstraints() throws Exception {
-
         String prefix = "public.";
-
-        
         execSQL("CREATE TABLE constbl1 (i11 INT, vc12 VARCHAR(100), "
                 + "CONSTRAINT " + prefix + "uconsw UNIQUE(vc12))", 0);
         execSQL("CREATE TABLE constbl2 (i11 INT, vc12 VARCHAR(100), "
@@ -247,11 +185,8 @@ public class TestSchemaParse extends junit.framework.TestCase {
                 + "(i7) REFERENCES primarytbl (i18)", 0);
         execSQL("ALTER TABLE for3tbl DROP CONSTRAINT " + prefix + "tstpk2", 0);
     }
-
     public void test2pIndexes() throws Exception {
-
         String prefix = "public.";
-
         execSQL("CREATE UNIQUE INDEX playind ON playtbl (i9)", 0);
         execSQL("CREATE UNIQUE INDEX bigind ON bigtbl (i)", 0);
         execSQL("CREATE UNIQUE INDEX " + prefix + "tstind2 ON tsttbl (i)", 0);
@@ -261,43 +196,22 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("ALTER INDEX tstind RENAME TO " + prefix + "renamedind", 0);
         execSQL("DROP INDEX " + prefix + "bigind", 0);
     }
-
     public void test2pAliases() throws Exception {
-
         String prefix = "public.";
-
-        
-        
         int expect = 0;
-
         expect = SQL_ABORT;
-
         execSQL("CREATE ALIAS " + prefix + "tstalias "
                 + "FOR \"org.hsqldb.test.BlaineTrig.capitalize\"", expect);
-
-        
-        
     }
-
     public void test2pTriggers() throws Exception {
-
         String prefix = "public.";
-
         execSQL("CREATE TRIGGER " + prefix
                 + "tsttrig2 AFTER INSERT ON triggedtbl "
                 + "CALL \"org.hsqldb.test.BlaineTrig\"", 0);
         execSQL("DROP TRIGGER " + prefix + "tsttrig", 0);
     }
-
     public void testSanityCheck() throws Exception {
-
-        
-        
         int expect = SQL_ABORT;
-
-        
-        
-        
         assertEquals(2, queryRowCount("SELECT i FROM tstview"));
         execSQL("DROP VIEW tstview", 0);
         execSQL("CREATE CACHED TABLE cachtbl (i INT, vc VARCHAR(100))", 0);
@@ -314,22 +228,16 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("DROP TABLE bigtbl", 0);
         execSQL("DROP SEQUENCE tstseq", 0);
         execSQL("SET FILES LOG SIZE 5", 0);
-
-        
         execSQL("SET PROPERTY \"hsqldb.first_identity\" 4", SQL_ABORT);
         execSQL("UPDATE tsttbl SET vc = 'eleven' WHERE i = 1", 1);
         execSQL(
             "ALTER TABLE constrainedtbl ADD CONSTRAINT con1 CHECK (i6 > 4)",
             0);
-
-        
         execSQL("COMMIT", 0);
         execSQL("DELETE FROM tsttbl WHERE i < 10", 2);
         assertEquals(1, queryRowCount("SELECT i FROM tsttbl"));
         execSQL("ROLLBACK", 0);
         assertEquals(3, queryRowCount("SELECT i FROM tsttbl"));
-
-        
         execSQL("ALTER TABLE tsttbl ADD COLUMN vco1 VARCHAR(100)", 0);
         execSQL("ALTER TABLE tsttbl DROP COLUMN vco1", 0);
         execSQL("CREATE UNIQUE INDEX tstind ON tsttbl (i)", 0);
@@ -342,8 +250,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("SET DATABASE REFERENTIAL INTEGRITY true", 0);
         execSQL("GRANT ALL ON playtbl TO tstuser", 0);
         execSQL("REVOKE ALL ON playtbl FROM tstuser RESTRICT", 0);
-
-
         execSQL("ALTER INDEX tstind RENAME TO renamedind", 0);
         execSQL("ALTER INDEX renamedind RENAME TO tstind", 0);
         execSQL("ALTER USER tstuser SET PASSWORD frank", 0);
@@ -362,8 +268,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
             queryRowCount(
                 "SELECT vc FROM tsttbl, joinedtbl WHERE tsttbl.i = joinedtbl.i2\n"
                 + "AND joinedtbl.vc2 = 'zwei'"));
-
-        
         assertEquals(
             "Over-specified Query 1", 1,
             queryRowCount("SELECT tsttbl.i FROM tsttbl WHERE tsttbl.i = 1"));
@@ -371,8 +275,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
                      queryRowCount("SELECT tsttbl.i FROM tsttbl WHERE i = 1"));
         assertEquals("Over-specified Query 3", 1,
                      queryRowCount("SELECT i FROM tsttbl WHERE tsttbl.i = 1"));
-
-        
         assertEquals("Trivial Label/alias 1", 1,
                      queryRowCount("SELECT i FROM tsttbl ali WHERE i = 1"));
         assertEquals("Trivial Label/alias 2", 1,
@@ -386,8 +288,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
         assertEquals(
             "Trivial Label/alias 5", 1,
             queryRowCount("SELECT ali.i FROM tsttbl ali WHERE ali.i = 1"));
-
-        
         assertEquals(
             "Join w/Labels/aliases 1", 1,
             queryRowCount(
@@ -408,31 +308,19 @@ public class TestSchemaParse extends junit.framework.TestCase {
             queryRowCount(
                 "SELECT ali1.vc FROM tsttbl ali1, joinedtbl ali2\n"
                 + "WHERE i = i2 AND vc2 = 'zwei'"));
-
-        
         execSQL("CHECKPOINT bad", expect);
         execSQL("INSERT INTO tsttbl(i, vc) VALUES (12, 'twelve')", 1);
         execSQL("CREATE TABLE newtbl AS (SELECT * FROM tsttbl) WITH DATA", 0);
     }
-
     public void testTwoPartKeywords() throws Exception {
         multiPartKeywords("public.");
     }
-
     public void testThreePartKeywords() throws Exception {
         multiPartKeywords("alpha.public.");
     }
-
     public void multiPartKeywords(String pref) throws Exception {
-
-        
-        
         int expect = SQL_ABORT;
-
-        
         boolean manyParter = (pref.lastIndexOf('.') != pref.indexOf('.'));
-
-        
         execSQL("DROP VIEW tstview", 0);                              
         execSQL("CREATE TABLE adroptbl (i INT, vc VARCHAR(100))", 0);
         execSQL("CREATE TABLE bdroptbl (i INT, vc VARCHAR(100))", 0);
@@ -453,8 +341,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL(pref + "SET PROPERTY \"hsqldb.first_identity\" 4", expect);
         execSQL("SET " + pref + "PROPERTY \"hsqldb.first_identity\" 4",
                 expect);
-
-        
         execSQL("SELECT i FROM tsttbl WHERE i = " + pref + "1", expect);
         execSQL("SELECT i FROM tsttbl WHERE vc = " + pref + "'1.3'", expect);
         execSQL("SELECT i FROM tsttbl WHERE vc = " + pref + "1", expect);
@@ -490,8 +376,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("xDROP SEQUENCE adropseq", expect);
         execSQL("DROP xSEQUENCE bdropseq", expect);
         execSQL("SET LOGSIZE " + pref + "5", expect);
-
-        
         execSQL(pref + "SET TABLE texttbl SOURCE \"test.csv;fs=|\"", expect);
         execSQL("SET " + pref + "TABLE texttbl SOURCE \"test.csv;fs=|\"",
                 expect);
@@ -508,15 +392,11 @@ public class TestSchemaParse extends junit.framework.TestCase {
                 + pref + "4)", expect);
         execSQL(pref + "INSERT INTO tsttbl VALUES (1, 'one')", expect);
         execSQL("INSERT " + pref + "INTO tsttbl VALUES (1, 'one')", expect);
-
         if (!manyParter) {
             expect = 1;
         }
-
         execSQL("INSERT INTO " + pref + "tsttbl VALUES (1, 'one')", expect);
-
         expect = SQL_ABORT;
-
         execSQL(pref + "DELETE FROM tsttbl WHERE i < 10", expect);
         execSQL("SELECT vc FROM " + pref + "tsttbl, " + pref
                 + "joinedtbl WHERE tsttbl.i = joinedtbl.i2\n"
@@ -563,15 +443,11 @@ public class TestSchemaParse extends junit.framework.TestCase {
                 + "org.hsqldb.test.BlaineTrig\"", expect);
         execSQL("CREATE VIEW tstviewx AS SELECT * " + pref
                 + "FROM tsttbl WHERE i < 10", expect);
-
         if (!manyParter) {
             expect = 0;
         }
-
         execSQL("CREATE USER tstuserc PASSWORD " + pref + "fake", expect);
-
         expect = SQL_ABORT;
-
         execSQL("DROP VIEW tstviewx IF EXISTS", 0);    
         execSQL("CREATE TRIGGER tsttriga AFTER INSERT " + pref
                 + "ON triggedtbl CALL \""
@@ -614,15 +490,11 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("CREATE TABLE t1 (i INT, vc " + pref + "VARCHAR)", expect);
         execSQL("DROP TABLE t1 IF EXISTS", 0);         
         execSQL("DELETE " + pref + "FROM tsttbl WHERE i < 10", expect);
-
         if (!manyParter) {
             expect = 3;
         }
-
         execSQL("DELETE FROM tsttbl " + pref + "WHERE i < 10", expect);
-
         expect = SQL_ABORT;
-
         execSQL(pref + "SET AUTOCOMMIT true", expect);
         execSQL("SET " + pref + "AUTOCOMMIT true", expect);
         execSQL("SET AUTOCOMMIT false", 0);               
@@ -634,8 +506,6 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("SET " + pref + "PASSWORD blah", expect);
         execSQL(pref + "SET REFERENTIAL_INTEGRITY true", expect);
         execSQL("SET " + pref + "REFERENTIAL_INTEGRITY true", expect);
-
-        
         execSQL(pref + "SET SCRIPTFORMAT text", expect);
         execSQL("SET " + pref + "SCRIPTFORMAT text", expect);
         execSQL(pref + "SET TABLE tsttbl READONLY true", expect);
@@ -645,28 +515,20 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("GRANT " + pref + "ALL ON playtbl TO tstuser", expect);
         execSQL("GRANT ALL " + pref + "ON playtbl TO tstuser", expect);
         execSQL("GRANT ALL ON playtbl " + pref + "TO tstuser", expect);
-
         if (!manyParter) {
             expect = 0;
         }
-
         execSQL("GRANT ALL ON playtbl TO " + pref + "tstuser", expect);
-
         expect = SQL_ABORT;
-
         execSQL(pref + "REVOKE ALL ON playtbl FROM tstuser RESTRICT", expect);
         execSQL("REVOKE " + pref + "ALL ON playtbl FROM tstuser RESTRICT", expect);
         execSQL("REVOKE ALL " + pref + "ON playtbl FROM tstuser RESTRICT", expect);
         execSQL("REVOKE ALL ON playtbl " + pref + "FROM tstuser RESTRICT", expect);
-
         if (!manyParter) {
             expect = 0;
         }
-
         execSQL("REVOKE ALL ON playtbl FROM " + pref + "tstuser RESTRICT", expect);
-
         expect = SQL_ABORT;
-
         execSQL("GRANT ALL ON playtbl TO tstuser", 0);    
         execSQL(pref + "COMMIT", expect);
         execSQL(pref + "ROLLBACK", expect);
@@ -683,15 +545,11 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("ALTER " + pref + "SEQUENCE tstseq RESTART WITH 13", expect);
         execSQL("ALTER SEQUENCE tstseq " + pref + "RESTART WITH 13", expect);
         execSQL("ALTER SEQUENCE tstseq RESTART " + pref + "WITH 13", expect);
-
         if (!manyParter) {
             expect = 0;
         }
-
         execSQL("ALTER USER tstuser SET PASSWORD " + pref + "frank", expect);
-
         expect = SQL_ABORT;
-
         execSQL(pref + "ALTER USER tstuser SET PASSWORD frank", expect);
         execSQL("ALTER " + pref + "USER tstuser SET PASSWORD frank", expect);
         execSQL("ALTER USER tstuser " + pref + "SET PASSWORD frank", expect);
@@ -806,24 +664,15 @@ public class TestSchemaParse extends junit.framework.TestCase {
         execSQL("ALTER TABLE foreigntbl DROP CONSTRAINT tstfk", true);        
         execSQL("ALTER TABLE foreigntbl ADD CONSTRAINT tstfk FOREIGN KEY "
                 + "(i7) " + pref + "REFERENCES primarytbl (i8)", expect);
-
-        
         shutdownTested = true;
-
-        
         execSQL("SHUTDOWN IMMEDIATELY", 0);
     }
-
     public void testThreePartNames() throws Exception {
         execSQL("SELECT public.tsttbl.i FROM public.beta.tsttbl\n"
                 + "WHERE public.tsttbl.i = 1", SQL_ABORT);
     }
-
-    
     public void testBasicQueries() throws Exception {
-
         String prefix = "public.";
-
         assertEquals(2, queryRowCount("SELECT i FROM " + prefix + "tsttbl"));
         assertEquals(1, queryRowCount("SELECT vc FROM " + prefix
                                       + "tsttbl WHERE i = 1"));
@@ -832,14 +681,10 @@ public class TestSchemaParse extends junit.framework.TestCase {
                                       + "    SELECT i2 FROM " + prefix
                                       + "joinedtbl\n" + ")"));
     }
-
-    
     private static final int SQL_ABORT   = -1234;
     private static final int SQL_INITIAL = -1233;
     private static final int SQL_FAIL    = -1;
-
     private void execSQL(String s, boolean ignoreError) throws SQLException {
-
         try {
             statement.execute(s);
             statement.getUpdateCount();
@@ -847,41 +692,27 @@ public class TestSchemaParse extends junit.framework.TestCase {
             if (!ignoreError) {
                 throw se;
             }
-
-
         }
     }
-
     private void execSQL(String m, String s, int expect) {
-
         int retval = SQL_INITIAL;
-
         try {
             statement.execute(s);
-
             retval = statement.getUpdateCount();
         } catch (SQLException se) {
             retval = SQL_ABORT;
         }
-
         assertEquals(m, expect, retval);
     }
-
-
     private void execSQL(String s, int expect) {
         execSQL(s, s, expect);
     }
-
     private int queryRowCount(String query) throws SQLException {
-
         int count = 0;
-
         if (!statement.execute(query)) {
             return count;
         }
-
         ResultSet rs = statement.getResultSet();
-
         try {
             while (rs.next()) {
                 count++;
@@ -889,60 +720,41 @@ public class TestSchemaParse extends junit.framework.TestCase {
         } finally {
             rs.close();
         }
-
         return count;
     }
-
     private int tableRowCount(String tableName) throws SQLException {
-
         String query = "SELECT count(*) FROM " + tableName;
-
         if (!statement.execute(query)) {
             return 0;
         }
-
         ResultSet rs = statement.getResultSet();
-
         try {
             if (!rs.next()) {
                 throw new SQLException("0 rows returned by (" + query + ')');
             }
-
             int count = rs.getInt(1);
-
             if (rs.next()) {
                 throw new SQLException("> 1 row returned by (" + query + ')');
             }
-
             return count;
         } finally {
             rs.close();
         }
-
-        
     }
-
     public TestSchemaParse() {
         super();
     }
-
     public TestSchemaParse(String s) {
         super(s);
     }
-
-    
     public static void main(String[] sa) {
             junit.textui.TestRunner runner = new junit.textui.TestRunner();
             junit.framework.TestResult result =
                 runner.run(runner.getTest(TestSchemaParse.class.getName()));
-
             System.exit(result.wasSuccessful() ? 0 : 1);
     }
-
     public static junit.framework.Test suite() {
-
         junit.framework.TestSuite newSuite = new junit.framework.TestSuite();
-
         newSuite.addTest(new TestSchemaParse("testSanityCheck"));
         newSuite.addTest(new TestSchemaParse("testTwoPartKeywords"));
         newSuite.addTest(new TestSchemaParse("testThreePartKeywords"));
@@ -955,14 +767,11 @@ public class TestSchemaParse extends junit.framework.TestCase {
         newSuite.addTest(new TestSchemaParse("test2pAliases"));
         newSuite.addTest(new TestSchemaParse("test2pConstraints"));
         newSuite.addTest(new TestSchemaParse("test2pTriggers"));
-
         return newSuite;
     }
     ;
-
     public void fire(int i, String name, String table, Object[] row1,
                      Object[] row2) {}
-
     public static String capitalize(String inString) {
         return inString.toUpperCase();
     }

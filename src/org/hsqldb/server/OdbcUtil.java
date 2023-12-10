@@ -1,27 +1,16 @@
-
-
-
 package org.hsqldb.server;
-
 import java.io.IOException;
 import java.util.Locale;
-
 import org.hsqldb.ColumnBase;
 import org.hsqldb.lib.DataOutputStream;
 import org.hsqldb.result.ResultMetaData;
-
-
 public class OdbcUtil {
-
     static void validateInputPacketSize(OdbcPacketInputStream p)
     throws RecoverableOdbcFailure {
         int remaining = -1;
         try {
             remaining = p.available();
         } catch (IOException ioe) {
-            
-            
-            
         }
         if (remaining < 1) {
             return;
@@ -31,9 +20,7 @@ public class OdbcUtil {
             + " packet.  " + remaining + " bytes available after processing",
             "Bad length for " + p.packetType
             + " packet.  " + remaining + " extra bytes", "08P01");
-        
     }
-
     static String echoBackReplyString(String inCommand, int retval) {
         String uc = inCommand.trim().toUpperCase(Locale.ENGLISH);
         int firstWhiteSpace;
@@ -49,9 +36,6 @@ public class OdbcUtil {
         if (keyword.equals("UPDATE") || keyword.equals("DELETE")) {
             replyString.append(" " + retval);
         } else if (keyword.equals("CREATE") || keyword.equals("DROP")) {
-            
-            
-            
             int wordStart;
             for (wordStart = firstWhiteSpace; wordStart < uc.length();
                 wordStart++) {
@@ -69,16 +53,9 @@ public class OdbcUtil {
             replyString.append(" " + uc.substring(wordStart, wordEnd));
         } else if (keyword.equals("INSERT")) {
             replyString.append(" " + 0 + ' ' + retval);
-            
-            
-            
-            
         }
-        
-        
         return replyString.toString();
     }
-
     static void writeParam(
     String key, String val, DataOutputStream hOutStream) throws IOException {
         OdbcPacketOutputStream alertPacket =
@@ -88,8 +65,6 @@ public class OdbcUtil {
         alertPacket.xmit('S', hOutStream);
         alertPacket.close();
     }
-
-    
     static final int ODBC_SM_DATABASE = 64;
     static final int ODBC_SM_USER = 32;
     static final int ODBC_SM_OPTIONS = 64;
@@ -97,17 +72,14 @@ public class OdbcUtil {
     static final int ODBC_SM_TTY = 64;
     static final int ODBC_AUTH_REQ_PASSWORD = 3;
     static final int ODBC_AUTH_REQ_OK = 0;
-
     static void alertClient(int severity, String message,
     DataOutputStream hOutStream) throws IOException {
         alertClient(severity, message, null, hOutStream);
     }
-
     static void alertClient(int severity, String message,
     String sqlStateCode, DataOutputStream hOutStream) throws IOException {
         if (sqlStateCode == null) {
             sqlStateCode = "XX000";
-            
         }
         if (!odbcSeverityMap.containsKey(severity)) {
             throw new IllegalArgumentException(
@@ -125,7 +97,6 @@ public class OdbcUtil {
                 hOutStream);
         alertPacket.close();
     }
-
     static String[][] hardcodedParams = new String[][] {
         new String[] { "client_encoding", "SQL_ASCII" },
         new String[] { "DateStyle", "ISO, MDY" },
@@ -137,11 +108,9 @@ public class OdbcUtil {
         new String[] { "standard_conforming_strings", "off" },
         new String[] { "TimeZone", "US/Eastern" },
     };
-
     static final int ODBC_SIMPLE_MODE = 0;
     static final int ODBC_EXTENDED_MODE = 1;
     static final int ODBC_EXT_RECOVER_MODE = 2;
-
     static final int ODBC_SEVERITY_FATAL = 1;
     static final int ODBC_SEVERITY_ERROR = 2;
     static final int ODBC_SEVERITY_PANIC = 3;
@@ -150,10 +119,8 @@ public class OdbcUtil {
     static final int ODBC_SEVERITY_DEBUG = 6;
     static final int ODBC_SEVERITY_INFO = 7;
     static final int ODBC_SEVERITY_LOG = 8;
-
     static org.hsqldb.lib.IntKeyHashMap odbcSeverityMap =
         new org.hsqldb.lib.IntKeyHashMap();
-
     static {
         odbcSeverityMap.put(ODBC_SEVERITY_FATAL, "FATAL");
         odbcSeverityMap.put(ODBC_SEVERITY_ERROR, "ERROR");
@@ -164,14 +131,9 @@ public class OdbcUtil {
         odbcSeverityMap.put(ODBC_SEVERITY_INFO, "INFO");
         odbcSeverityMap.put(ODBC_SEVERITY_LOG, "LOG");
     }
-
-
-    
     static String revertMungledPreparedQuery(String inQuery) {
-        
         return inQuery.replaceAll("\\$\\d+", "?");
     }
-
     public static int getTableOidForColumn(int colIndex, ResultMetaData md) {
         if (!md.isTableColumn(colIndex)) {
             return 0;
@@ -184,8 +146,6 @@ public class OdbcUtil {
         }
         return hashCode;
     }
-
-    
     public static short getIdForColumn(int colIndex, ResultMetaData md) {
         if (!md.isTableColumn(colIndex)) {
             return 0;
@@ -196,10 +156,7 @@ public class OdbcUtil {
             hashCode *= -1;
         }
         return hashCode;
-        
     }
-
-    
     public static String hexCharsToOctalOctets(String hexChars) {
         int chars = hexChars.length();
         if (chars != (chars / 2) * 2) {
@@ -234,7 +191,6 @@ public class OdbcUtil {
                 throw new IllegalArgumentException(
                     "Non-hex character in input at offset " + i + ": " + c);
             }
-
             sb.append('\\');
             sb.append((char) ('0' + (octet >> 6)));
             sb.append((char) ('0' + ((octet >> 3) & 7)));
@@ -242,7 +198,6 @@ public class OdbcUtil {
         }
         return sb.toString();
     }
-
     public static void main(String[] sa) {
         System.out.println("(" + OdbcUtil.hexCharsToOctalOctets(sa[0]) + ')');
     }

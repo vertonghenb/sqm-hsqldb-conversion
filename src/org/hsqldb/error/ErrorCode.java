@@ -1,17 +1,8 @@
-
-
-
 package org.hsqldb.error;
-
-
 public interface ErrorCode {
-
-    
     int TOKEN_REQUIRED    = 1;                     
     int CONSTRAINT        = 2;                     
     int COLUMN_CONSTRAINT = 3;                     
-
-    
     int M_ERROR_IN_BINARY_SCRIPT_1 = 21;           
     int M_ERROR_IN_BINARY_SCRIPT_2 = 22;           
     int M_DatabaseManager_getDatabase = 23;        
@@ -20,38 +11,23 @@ public interface ErrorCode {
     int M_Message_Pair              = 26;          
     int M_LOAD_SAVE_PROPERTIES      = 27;          
     int M_HsqlProperties_load       = 28;          
-
-    
     int M_TEXT_SOURCE_FIELD_ERROR       = 41;      
     int M_TextCache_openning_file_error = 42;      
     int M_TextCache_closing_file_error  = 43;      
     int M_TextCache_purging_file_error  = 44;      
-
-    
     int M_DataFileCache_makeRow = 51;              
     int M_DataFileCache_open    = 52;              
     int M_DataFileCache_close   = 53;              
-
-    
     int M_SERVER_OPEN_SERVER_SOCKET_1 = 61;        
     int M_SERVER_OPEN_SERVER_SOCKET_2 = 62;        
     int M_SERVER_SECURE_VERIFY_1      = 63;        
     int M_SERVER_SECURE_VERIFY_2      = 64;        
     int M_SERVER_SECURE_VERIFY_3 = 65;             
-
-    
     int M_RS_EMPTY        = 70;                    
     int M_RS_BEFORE_FIRST = 71;                    
     int M_RS_AFTER_LAST   = 72;                    
-
-    
     int M_INVALID_LIMIT = 81;                      
-
-    
-    
     int S_00000 = 0000;                            
-
-    
     int U_S0500 = 201;
     int X_S0501 = 301;                             
     int X_S0502 = 302;                             
@@ -60,11 +36,7 @@ public interface ErrorCode {
     int X_S0521 = 320;                             
     int X_S0522 = 321;                             
     int X_S0531 = 331;                             
-
-    
     int PASSWORD_COMPLEXITY = 391;                 
-
-    
     int SERVER_TRANSFER_CORRUPTED    = 401;        
     int SERVER_DATABASE_DISCONNECTED = 402;        
     int SERVER_VERSIONS_INCOMPATIBLE = 403;        
@@ -72,16 +44,11 @@ public interface ErrorCode {
     int SERVER_HTTP_NOT_HSQL_PROTOCOL = 405;       
     int SERVER_INCOMPLETE_HANDSHAKE_READ = 406;    
     int SERVER_NO_DATABASE = 407;                  
-
-    
-    
     int JDBC_COLUMN_NOT_FOUND      = 421;          
     int JDBC_INPUTSTREAM_ERROR     = 422;          
     int JDBC_INVALID_ARGUMENT      = 423;          
     int JDBC_PARAMETER_NOT_SET     = 424;          
     int JDBC_CONNECTION_NATIVE_SQL = 425;          
-
-    
     int LOCK_FILE_ACQUISITION_FAILURE = 451;       
     int FILE_IO_ERROR               = 452;         
     int WRONG_DATABASE_FILE_VERSION = 453;         
@@ -102,8 +69,6 @@ public interface ErrorCode {
     int DATA_FILE_IS_FULL    = 468;                
     int DATA_FILE_IN_USE     = 469;                
     int BACKUP_ERROR         = 470;                
-
-    
     int TEXT_TABLE_UNKNOWN_DATA_SOURCE = 481;      
     int TEXT_TABLE_SOURCE = 482;                   
     int TEXT_FILE         = 483;                   
@@ -112,8 +77,6 @@ public interface ErrorCode {
     int TEXT_TABLE_HEADER            = 486;        
     int TEXT_SOURCE_EXISTS           = 487;        
     int TEXT_SOURCE_NO_END_SEPARATOR = 488;        
-
-    
     int W_01000 = 1000;                            
     int W_01001 = 1001;                            
     int W_01002 = 1002;                            
@@ -131,12 +94,8 @@ public interface ErrorCode {
     int W_0100F = 1015;                            
     int W_01011 = 1016;                            
     int W_0102F = 1017;                            
-
-    
     int N_02000 = 1100;                            
     int N_02001 = 1101;                            
-
-    
     int X_07000 = 1200;                            
     int X_07001 = 1201;                            
     int X_07002 = 1202;                            
@@ -152,16 +111,12 @@ public interface ErrorCode {
     int X_0700D = 1213;                            
     int X_0700E = 1214;                            
     int X_0700F = 1215;                            
-
-    
     int X_07501 = 1251;                            
     int X_07502 = 1252;                            
     int X_07503 = 1253;                            
     int X_07504 = 1254;                            
     int X_07505 = 1255;                            
     int X_07506 = 1256;                            
-
-    
     int X_08000 = 1300;                            
     int X_08001 = 1301;                            
     int X_08002 = 1302;                            
@@ -169,93 +124,41 @@ public interface ErrorCode {
     int X_08004 = 1304;                            
     int X_08006 = 1305;                            
     int X_08007 = 1306;                            
-
-    
     int X_08501 = 1351;                            
     int X_08502 = 1352;                            
     int X_08503 = 1353;                            
-
-    
     int X_09000 = 1400;                            
-
-    
     int X_0A000 = 1500;                            
     int X_0A001 = 1501;                            
-
-    
     int X_0A501 = 1551;                            
-
-    
     int X_0D000 = 1600;                            
-
-    
     int X_0E000 = 1700;                            
-
-    
     int X_0F000 = 1800;                            
     int X_0F001 = 1801;                            
-
-    
     int X_0F502 = 3474;                            
     int X_0F503 = 3475;                            
-
-    
     int X_0K000 = 1900;                            
-
-    
     int X_0L000 = 2000;                            
-
-    
     int X_0L501 = 2051;                            
-
-    
     int X_0M000 = 2100;                            
-
-    
     int X_0P000 = 2200;                            
-
-    
     int X_0P501 = 2251;                            
     int X_0P502 = 2252;                            
     int X_0P503 = 2253;                            
-
-    
     int X_0S000 = 2300;                            
-
-    
     int X_0T000 = 2400;                            
-
-    
     int X_0U000 = 2500;                            
-
-    
     int X_0V000 = 2600;                            
-
-    
     int X_0W000 = 2700;                            
-
-    
     int X_0X000 = 2800;                            
-
-    
     int X_0Y000 = 2900;                            
     int X_0Y001 = 2901;                            
     int X_0Y002 = 2902;                            
-
-    
     int X_0Z000 = 3000;                            
     int X_0Z001 = 3001;                            
-
-    
     int X_0Z002 = 3003;                            
-
-    
     int X_20000 = 3100;                            
-
-    
     int X_21000 = 3201;                            
-
-    
     int X_22000 = 3400;                            
     int X_22001 = 3401;                            
     int X_22002 = 3402;                            
@@ -318,21 +221,15 @@ public interface ErrorCode {
     int X_22026 = 3459;                            
     int X_22027 = 3460;                            
     int X_22029 = 3461;                            
-
-    
     int X_22501 = 3471;                            
     int X_22511 = 3472;                            
     int X_22521 = 3473;                            
-
-    
     int X_2202A = 3488;                            
     int X_2202D = 3489;                            
     int X_2202E = 3490;                            
     int X_2202F = 3491;                            
     int X_2202G = 3492;                            
     int X_2202H = 3493;                            
-
-    
     int X_23000 = 3500;                            
     int X_23001 = 3501;                            
     int X_23502 = 10;                              
@@ -340,8 +237,6 @@ public interface ErrorCode {
     int X_23504 = 8;                               
     int X_23505 = 104;                             
     int X_23513 = 157;                             
-
-    
     int X_24000 = 3600;                            
     int X_24501 = 3601;                            
     int X_24502 = 3602;                            
@@ -350,8 +245,6 @@ public interface ErrorCode {
     int X_24514 = 3605;                            
     int X_24515 = 3606;                            
     int X_24521 = 3621;                            
-
-    
     int X_25000 = 3700;                            
     int X_25001 = 3701;                            
     int X_25002 = 3702;                            
@@ -361,111 +254,55 @@ public interface ErrorCode {
     int X_25006 = 3706;                            
     int X_25007 = 3707;                            
     int X_25008 = 3708;                            
-
-    
     int X_26000 = 3800;                            
-
-    
     int X_27000 = 3900;                            
-
-    
     int X_28000 = 4000;                            
-
-    
     int X_28501 = 4001;                            
     int X_28502 = 4002;                            
     int X_28503 = 4003;                            
-
-    
     int X_2A000 = 4100;                            
-
-    
     int X_2B000 = 4200;                            
-
-    
     int X_2C000 = 4300;                            
-
-    
     int X_2D000 = 4400;                            
     int X_2D522 = 4401;                            
-
-    
     int X_2E000 = 4500;                            
-
-    
     int X_2F000 = 4600;                            
     int X_2F002 = 4602;                            
     int X_2F003 = 4603;                            
     int X_2F004 = 4604;                            
     int X_2F005 = 4605;                            
-
-    
     int X_2H000 = 4650;                            
-
-    
     int X_30000 = 4660;                            
-
-    
     int X_33000 = 4670;                            
-
-    
     int X_34000 = 4680;                            
-
-    
     int X_35000 = 4690;                            
-
-    
     int X_36000 = 4700;                            
     int X_36001 = 4701;                            
     int X_36002 = 4702;                            
-
-    
     int W_36501 = 4711;                            
     int W_36502 = 4712;                            
     int W_36503 = 4713;                            
-
-    
     int X_37000 = 4790;                            
-
-    
     int X_38000 = 4800;                            
     int X_38001 = 4801;                            
     int X_38002 = 4802;                            
     int X_38003 = 4803;                            
     int X_38004 = 4804;                            
-
-    
     int X_39000 = 4810;                            
     int X_39004 = 4811;                            
-
-    
     int X_3B000 = 4820;                            
     int X_3B001 = 4821;                            
     int X_3B002 = 4822;                            
-
-    
     int X_3C000 = 4830;                            
-
-    
     int X_3D000 = 4840;                            
-
-    
     int X_3F000 = 4850;                            
-
-    
     int X_40000 = 4860;                            
     int X_40001 = 4861;                            
     int X_40002 = 4862;                            
     int X_40003 = 4863;                            
     int X_40004 = 4864;                            
-
-    
     int X_40501 = 4871;                            
-
-    
     int X_42000 = 5000;                            
-
-    
     int X_42501 = 5501;                            
     int X_42502 = 5502;                            
     int X_42503 = 5503;                            
@@ -476,12 +313,8 @@ public interface ErrorCode {
     int X_42508 = 5508;                            
     int X_42509 = 5509;                            
     int X_42510 = 5510;                            
-
-    
     int X_42512 = 5512;                            
     int X_42513 = 5513;                            
-
-    
     int X_42520 = 5520;                            
     int X_42521 = 5521;                            
     int X_42522 = 5522;                            
@@ -497,15 +330,11 @@ public interface ErrorCode {
     int X_42532 = 5532;                            
     int X_42533 = 5533;                            
     int X_42534 = 5534;                            
-
-    
     int X_42535 = 5535;                            
     int X_42536 = 5536;                            
     int X_42537 = 5537;                            
     int X_42538 = 5538;                            
     int X_42539 = 5539;                            
-
-    
     int X_42541 = 5541;                            
     int X_42542 = 5542;                            
     int X_42543 = 5543;                            
@@ -515,13 +344,9 @@ public interface ErrorCode {
     int X_42547 = 5547;                            
     int X_42548 = 5548;                            
     int X_42549 = 5549;                            
-
-    
     int X_42551 = 5551;                            
     int X_42555 = 5555;                            
     int X_42556 = 5556;                            
-
-    
     int X_42561 = 5561;                            
     int X_42562 = 5562;                            
     int X_42563 = 5563;                            
@@ -532,8 +357,6 @@ public interface ErrorCode {
     int X_42568 = 5568;                            
     int X_42569 = 5569;                            
     int X_42570 = 5570;                            
-
-    
     int X_42571 = 5571;                            
     int X_42572 = 5572;                            
     int X_42573 = 5573;                            
@@ -544,8 +367,6 @@ public interface ErrorCode {
     int X_42578 = 5578;                            
     int X_42579 = 5579;                            
     int X_42580 = 5580;                            
-
-    
     int X_42581 = 5581;                            
     int X_42582 = 5582;                            
     int X_42583 = 5583;                            
@@ -556,8 +377,6 @@ public interface ErrorCode {
     int X_42588 = 5588;                            
     int X_42589 = 5589;                            
     int X_42590 = 5590;                            
-
-    
     int X_42591 = 5591;                            
     int X_42592 = 5592;                            
     int X_42593 = 5593;                            
@@ -567,8 +386,6 @@ public interface ErrorCode {
     int X_42597 = 5597;                            
     int X_42598 = 5598;                            
     int X_42599 = 5599;                            
-
-    
     int X_42601 = 5601;                            
     int X_42602 = 5602;                            
     int X_42603 = 5603;                            
@@ -579,15 +396,8 @@ public interface ErrorCode {
     int X_42608 = 5608;                            
     int X_42609 = 5609;                            
     int X_42610 = 5610;                            
-
-    
     int X_44000 = 5700;                            
-
-    
-    
     int X_45000 = 5800;                            
-
-    
     int X_46000 = 6000;                            
     int X_46001 = 6001;                            
     int X_46002 = 6002;                            
@@ -600,15 +410,9 @@ public interface ErrorCode {
     int X_4600E = 6011;                            
     int X_46102 = 6012;                            
     int X_46103 = 6013;                            
-
-    
     int X_46511 = 6021;                            
-
-    
     int X_99000 = 6500;                            
     int X_99099 = 6501;                            
-
-    
     int X_HV000 = 6600;                            
     int X_HV001 = 6601;                            
     int X_HV002 = 6602;                            
@@ -636,8 +440,6 @@ public interface ErrorCode {
     int X_HV024 = 6624;                            
     int X_HV090 = 6625;                            
     int X_HV091 = 6626;                            
-
-    
     int X_HW000 = 6700;                            
     int X_HW001 = 6701;                            
     int X_HW002 = 6702;                            
@@ -646,7 +448,5 @@ public interface ErrorCode {
     int X_HW005 = 6705;                            
     int X_HW006 = 6706;                            
     int X_HW007 = 6707;                            
-
-    
     int X_HY093 = 6800;                            
 }

@@ -1,11 +1,4 @@
-
-
-
 package org.hsqldb.util.preprocessor;
-
-
-
-
 final class Token {
     static final int EOI     = -1;
     static final int UNKNOWN = 0;
@@ -24,11 +17,9 @@ final class Token {
     static final int EQ      = '=' + '=';
     static final int LPAREN  = '(';
     static final int RPAREN  = ')';
-
     static boolean isAssignmentOperator(final int type) {
         return (type == ASSIGN);
     }
-
     static boolean isComparisonOperator(final int type) {
         switch(type) {
             case EQ :
@@ -43,7 +34,6 @@ final class Token {
             }
         }
     }
-
     static boolean isLogicalOperator(final int type) {
         switch(type) {
             case AND :
@@ -57,7 +47,6 @@ final class Token {
             }
         }
     }
-
     static boolean isValue(final int type) {
         switch (type) {
             case IDENT :

@@ -1,28 +1,17 @@
-
-
-
 package org.hsqldb.test;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Properties;
-
 public class TestDima {
-
     public void testOne() {
-
         try {
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
-
             Connection conn = java.sql.DriverManager.getConnection(
                 "jdbc:hsqldb:file:/hsql/testdima/test", "sa", "");
-
             conn.setAutoCommit(false);
-
             Statement stat = conn.createStatement();
-
             stat.executeUpdate("DROP TABLE BAZ IF EXISTS");
             stat.executeUpdate("DROP TABLE BAR IF EXISTS");
             stat.executeUpdate("DROP TABLE FOO IF EXISTS");
@@ -53,41 +42,30 @@ public class TestDima {
                 "INSERT INTO BAR (FOOID,VAL) VALUES (IDENTITY(),'bar 3')");
             stat.executeUpdate(
                 "INSERT INTO BAZ (BARID,VAL) VALUES (IDENTITY(),'baz 3')");
-
             ResultSet rs;
             Statement query = conn.createStatement(
                 java.sql.ResultSet.TYPE_SCROLL_INSENSITIVE,
                 java.sql.ResultSet.CONCUR_READ_ONLY);
-
             rs = query.executeQuery("SELECT ID,VAL FROM FOO");
-
             System.out.println("Table FOO:");
-
             while (rs.next()) {
                 System.out.println(rs.getInt(1));
                 System.out.println(rs.getString(2));
             }
-
             rs = query.executeQuery("SELECT ID,FOOID,VAL FROM BAR");
-
             System.out.println("Table BAR:");
-
             while (rs.next()) {
                 System.out.println(rs.getInt(1));
                 System.out.println(rs.getInt(2));
                 System.out.println(rs.getString(3));
             }
-
             rs = query.executeQuery("SELECT ID,BARID,VAL FROM BAZ");
-
             System.out.println("Table BAZ:");
-
             while (rs.next()) {
                 System.out.println(rs.getInt(1));
                 System.out.println(rs.getInt(2));
                 System.out.println(rs.getString(3));
             }
-
             rs.close();
             query.close();
             stat.close();
@@ -97,22 +75,15 @@ public class TestDima {
             e.printStackTrace();
         }
     }
-
     public static void testTwo() {
-
         TestUtil.deleteDatabase("test");
-
         try {
             Class.forName("org.hsqldb.jdbc.JDBCDriver");
-
             Properties pp = new Properties();
-
             pp.put("user", "sa");
             pp.put("password", "");
-
             Connection c =
                 DriverManager.getConnection("jdbc:hsqldb:file:test", pp);
-
             c.createStatement().executeUpdate(
                 "create cached table SNS_OIDS(NAME varchar(20) not null primary key, ID int)");
             c.createStatement().executeUpdate(
@@ -169,23 +140,17 @@ public class TestDima {
                 "UPDATE SNS_OIDS SET \"ID\"=1 WHERE \"NAME\"='reactionOperations'");
             c.createStatement().executeUpdate(
                 "INSERT INTO SNS_OIDS (\"NAME\", \"ID\") VALUES ('reactionOperations', 1)");
-
             int count = c.createStatement().executeUpdate(
                 "UPDATE SNS_OIDS SET \"ID\"=21 WHERE \"NAME\"='actionTags'");
-
             System.out.println("count == " + count);    
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
-
     public static void main(String[] args) throws Exception {
-
         TestDima test = new TestDima();
-
         test.testOne();
         test.testTwo();
-
     }
 }

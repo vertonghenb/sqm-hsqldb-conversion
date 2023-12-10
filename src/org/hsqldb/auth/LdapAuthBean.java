@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.auth;
-
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -28,38 +24,27 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.ExtendedRequest;
 import javax.naming.ldap.ExtendedResponse;
 import org.hsqldb.lib.FrameworkLogger;
-
-
 public class LdapAuthBean implements AuthFunctionBean {
     private static FrameworkLogger logger =
             FrameworkLogger.getLog(LdapAuthBean.class);
-
     private Integer ldapPort;
     private String ldapHost, principalTemplate, saslRealm, parentDn;
     private Pattern roleSchemaValuePattern, accessValuePattern;
     private String initialContextFactory = "com.sun.jndi.ldap.LdapCtxFactory";
     private boolean tls;  
-                  
     private String mechanism = "SIMPLE";
     private String rdnAttribute = "uid";
     private boolean initialized;
     private String rolesSchemaAttribute, accessAttribute;
     protected String[] attributeUnion;
-
-    
     public void setStartTls(boolean isTls) {
         this.tls = isTls;
     }
-
     public LdapAuthBean() {
-        
     }
-
     public void setLdapPort(int ldapPort) {
         this.ldapPort = Integer.valueOf(ldapPort);
     }
-
-    
     public void init() {
         if (ldapHost == null) {
             throw new IllegalStateException(
@@ -108,73 +93,45 @@ public class LdapAuthBean implements AuthFunctionBean {
         }
         initialized = true;
     }
-
-    
     public void setAccessValuePattern(Pattern accessValuePattern) {
         this.accessValuePattern = accessValuePattern;
     }
-
-    
     public void setAccessValuePatternString(String patternString) {
         setAccessValuePattern(Pattern.compile(patternString));
     }
-
-    
     public void setRoleSchemaValuePattern(Pattern roleSchemaValuePattern) {
         this.roleSchemaValuePattern = roleSchemaValuePattern;
     }
-
-    
     public void setRoleSchemaValuePatternString(String patternString) {
         setRoleSchemaValuePattern(Pattern.compile(patternString));
     }
-
-    
     public void setSecurityMechanism(String mechanism) {
         this.mechanism = mechanism;
     }
-
-    
     public void setLdapHost(String ldapHost) {
         this.ldapHost = ldapHost;
     }
-
-    
     public void setPrincipalTemplate(String principalTemplate) {
         this.principalTemplate = principalTemplate;
     }
-
-    
     public void setInitialContextFactory(String initialContextFactory) {
         this.initialContextFactory = initialContextFactory;
     }
-
-    
     public void setSaslRealm(String saslRealm) {
         this.saslRealm = saslRealm;
     }
-
-    
     public void setParentDn(String parentDn) {
         this.parentDn = parentDn;
     }
-
-    
     public void setRdnAttribute(String rdnAttribute) {
         this.rdnAttribute = rdnAttribute;
     }
-
-    
     public void setRolesSchemaAttribute(String attribute) {
         rolesSchemaAttribute = attribute;
     }
-
-    
     public void setAccessAttribute(String attribute) {
         accessAttribute = attribute;
     }
-
-    
     public String[] authenticate(String userName, String password)
             throws DenyException {
         if (!initialized) {
@@ -188,22 +145,13 @@ public class LdapAuthBean implements AuthFunctionBean {
                 + ((ldapPort == null) ? "" : (":" + ldapPort)));
         StartTlsResponse tlsResponse = null;
         LdapContext ctx = null;
-
         try {
             ctx = new InitialLdapContext(env, null);
-
             if (tls) {
-                
                 tlsResponse = (StartTlsResponse) ctx.extendedOperation(
                         new StartTlsRequest());
-
-                
                 tlsResponse.negotiate();
             }
-
-            
-          
-            
             ctx.addToEnvironment(Context.SECURITY_AUTHENTICATION, mechanism);
             ctx.addToEnvironment(Context.SECURITY_PRINCIPAL,
                   ((principalTemplate == null)
@@ -213,10 +161,6 @@ public class LdapAuthBean implements AuthFunctionBean {
             if (saslRealm != null) {
                 env.put("java.naming.security.sasl.realm", saslRealm);
             }
-          
-            
-            
-            
             NamingEnumeration<SearchResult> sRess = null;
             try {
                 sRess = ctx.search(parentDn,
@@ -265,9 +209,6 @@ public class LdapAuthBean implements AuthFunctionBean {
             if (rolesSchemaAttribute == null) {
                 return null;
             }
-
-            
-            
             List<String> returns = new ArrayList<String>();
             Attribute attribute =  attrs.get(rolesSchemaAttribute);
             if (attribute != null) {
@@ -306,8 +247,6 @@ public class LdapAuthBean implements AuthFunctionBean {
             }
             return returns.toArray(new String[0]);
         } catch (DenyException de) {
-            
-            
             throw de;
         } catch (RuntimeException re) {
             throw re;
@@ -328,8 +267,6 @@ public class LdapAuthBean implements AuthFunctionBean {
             }
         }
     }
-
-    
     public static void main(String[] sa) throws IOException {
         if (sa.length != 3) {
             throw new IllegalArgumentException(

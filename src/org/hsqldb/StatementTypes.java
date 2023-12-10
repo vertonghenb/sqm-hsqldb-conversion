@@ -1,11 +1,5 @@
-
-
-
 package org.hsqldb;
-
-
 public interface StatementTypes {
-
     int ALLOCATE_CURSOR                  = 1;
     int ALLOCATE_DESCRIPTOR              = 2;
     int ALTER_DOMAIN                     = 3;
@@ -116,8 +110,6 @@ public interface StatementTypes {
     int SIGNAL                           = 92;
     int CREATE_MODULE                    = 51;
     int WHILE                            = 97;
-
-    
     int ALTER_FOREIGN_TABLE         = 104;
     int ALTER_USER_MAPPING          = 123;
     int DROP_FOREIGN_DATA_WRAPPER   = 121;
@@ -132,15 +124,11 @@ public interface StatementTypes {
     int CREATE_ROUTINE_MAPPING      = 132;
     int SET_PASSTHROUGH             = 126;
     int CREATE_USER_MAPPING         = 122;
-
-    
     int DATABASE_BACKUP     = 1001;
     int DATABASE_CHECKPOINT = 1002;
     int DATABASE_SHUTDOWN   = 1003;
     int DATABASE_SCRIPT     = 1004;
     int ALTER_SESSION       = 1005;
-
-    
     int SET_DATABASE_FILES_BACKUP_INCREMENT    = 1011;
     int SET_DATABASE_FILES_CACHE_ROWS          = 1012;
     int SET_DATABASE_FILES_CACHE_SIZE          = 1013;
@@ -175,21 +163,15 @@ public interface StatementTypes {
     int SET_DATABASE_DEFAULT_ISOLATION_LEVEL   = 1050;
     int SET_DATABASE_TRANSACTION_CONFLICT      = 1051;
     int SET_DATABASE_UNIQUE_NAME               = 1052;
-
-    
     int SET_USER_LOCAL          = 1060;
     int SET_USER_INITIAL_SCHEMA = 1061;
     int SET_USER_PASSWORD       = 1062;
-
-    
     int TRANSACTION_LOCK_TABLE         = 1063;
     int SET_SESSION_AUTOCOMMIT         = 1064;
     int SET_SESSION_RESULT_MAX_ROWS    = 1065;
     int SET_SESSION_RESULT_MEMORY_ROWS = 1066;
     int ROLLBACK_SAVEPOINT             = 1067;
     int DECLARE_SESSION_TABLE          = 1068;
-
-    
     int ALTER_INDEX                 = 1069;
     int ALTER_VIEW                  = 1070;
     int COMMENT                     = 1071;
@@ -212,8 +194,6 @@ public interface StatementTypes {
     int ALTER_COLUMN_DROP_DEFAULT   = 1088;
     int ALTER_COLUMN_DROP_GENERATED = 1089;
     int ALTER_COLUMN_TYPE_IDENTITY  = 1090;
-
-    
     int EXPLAIN_PLAN            = 1191;
     int RENAME_OBJECT           = 1192;
     int SET_TABLE_INDEX         = 1193;
@@ -223,15 +203,11 @@ public interface StatementTypes {
     int SET_TABLE_TYPE          = 1197;
     int SET_TABLE_CLUSTERED     = 1198;
     int LOG_SCHEMA_STATEMENT    = 1199;
-
-    
     int CONDITION = 1201;                         
     int HANDLER   = 1202;
     int DDL       = 1203;
     int CHECK     = 1204;
     int TRUNCATE  = 1205;
-
-    
     int X_SQL_SCHEMA_DEFINITION      = 2001;
     int X_SQL_SCHEMA_MANIPULATION    = 2002;
     int X_SQL_DATA                   = 2003;
@@ -248,8 +224,6 @@ public interface StatementTypes {
     int X_HSQLDB_DATABASE_OPERATION  = 2014;
     int X_HSQLDB_TRANSACTION         = 2015;
     int X_DYNAMIC                    = 2016;
-
-    
     int RETURN_ANY    = 0;
     int RETURN_COUNT  = 1;
     int RETURN_RESULT = 2;

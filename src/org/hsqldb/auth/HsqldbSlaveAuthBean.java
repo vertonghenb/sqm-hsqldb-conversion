@@ -1,47 +1,29 @@
-
-
-
 package org.hsqldb.auth;
-
 import java.util.Set;
 import java.sql.SQLException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import org.hsqldb.lib.FrameworkLogger;
-
-
 public class HsqldbSlaveAuthBean implements AuthFunctionBean {
     private static FrameworkLogger logger =
             FrameworkLogger.getLog(HsqldbSlaveAuthBean.class);
-
     private String masterJdbcUrl, validationUser, validationPassword;
     private boolean delegateRolesSchema = true;
     protected boolean initialized;
-
-    
     public void setValidationUser(String validationUser) {
         this.validationUser = validationUser;
     }
-
-    
     public void setValidationPassword(String validationPassword) {
         this.validationPassword = validationPassword;
     }
-
     public void setMasterJdbcUrl(String masterJdbcUrl) {
         this.masterJdbcUrl = masterJdbcUrl;
     }
-
-    
     public void setDelegateRolesSchema(boolean doDelegateRolesSchema) {
         delegateRolesSchema = doDelegateRolesSchema;
     }
-
     public HsqldbSlaveAuthBean() {
-        
     }
-
-    
     public void init() throws SQLException {
         if (masterJdbcUrl == null) {
             throw new IllegalStateException(
@@ -61,9 +43,6 @@ public class HsqldbSlaveAuthBean implements AuthFunctionBean {
             } catch (SQLException se) {
                 logger.error("Master/slave Connection validation failure", se);
                 problem = se;  
-                  
-                  
-                  
             } finally {
                 if (c != null) try {
                     c.close();
@@ -80,8 +59,6 @@ public class HsqldbSlaveAuthBean implements AuthFunctionBean {
         }
         initialized = true;
     }
-
-    
     public String[] authenticate(String userName, String password)
             throws DenyException {
         if (!initialized) {

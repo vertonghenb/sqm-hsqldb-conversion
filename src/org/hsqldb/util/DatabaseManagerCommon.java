@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.util;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -10,21 +6,10 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Random;
-
-
-
-
-
-
-
-
-
 class DatabaseManagerCommon {
-
     private static Random rRandom    = new Random(100);
     static String[]       selectHelp = {
         "SELECT * FROM ",
-
         "SELECT [LIMIT n m] [DISTINCT] \n"
         + "{ selectExpression | table.* | * } [, ... ] \n"
         + "[INTO [CACHED|TEMP|TEXT] newTable] \n" + "FROM tableList \n"
@@ -75,7 +60,6 @@ class DatabaseManagerCommon {
     };
     static String[] setHelp = {
         "SET ",
-
         "SET AUTOCOMMIT { TRUE | FALSE }\n"
         + "SET DATABASE COLLATION \"<collationname>\"\n"
         + "SET FILES CHECKPOINT DEFRAG <size>\n"
@@ -119,21 +103,15 @@ class DatabaseManagerCommon {
         + "COALESCE(sum(i.Total), 0) \"TOTAL\", COALESCE(AVG(i.Total),0) \"AVG\" FROM Customer a "
         + "LEFT OUTER JOIN Invoice i ON a.ID=i.CustomerID GROUP BY a.id, a.firstname, a.lastname"
     };
-
     static String random(String[] s) {
         return s[random(s.length)];
     }
-
     static int random(int i) {
-
         i = rRandom.nextInt() % i;
-
         return i < 0 ? -i
                      : i;
     }
-
     static void createTestTables(Statement sStatement) {
-
         String[] demo = {
             "DROP TABLE Item IF EXISTS;", "DROP TABLE Invoice IF EXISTS;",
             "DROP TABLE Product IF EXISTS;", "DROP TABLE Customer IF EXISTS;",
@@ -151,10 +129,7 @@ class DatabaseManagerCommon {
             + "Invoice (ID) ON DELETE CASCADE, FOREIGN KEY (ProductId) "
             + "REFERENCES Product(ID) ON DELETE CASCADE);"
         };
-
         for (int i = 0; i < demo.length; i++) {
-
-            
             try {
                 sStatement.execute(demo[i]);
             } catch (SQLException e) {
@@ -162,9 +137,7 @@ class DatabaseManagerCommon {
             }
         }
     }
-
     static String createTestData(Statement sStatement) throws SQLException {
-
         String[] name = {
             "White", "Karsen", "Smith", "Ringer", "May", "King", "Fuller",
             "Miller", "Ott", "Sommer", "Schneider", "Steel", "Peterson",
@@ -187,7 +160,6 @@ class DatabaseManagerCommon {
             "Iron", "Ice Tea", "Clock", "Chair", "Telephone", "Shoe"
         };
         int      max     = 50;
-
         for (int i = 0; i < max; i++) {
             sStatement.execute("INSERT INTO Customer VALUES(" + i + ",'"
                                + random(firstname) + "','" + random(name)
@@ -197,18 +169,15 @@ class DatabaseManagerCommon {
                                + random(product) + " " + random(product)
                                + "'," + (20 + 2 * random(120)) + ")");
         }
-
         for (int i = 0; i < max; i++) {
             sStatement.execute("INSERT INTO Invoice VALUES(" + i + ","
                                + random(max) + ",0.0)");
-
             for (int j = random(20) + 2; j >= 0; j--) {
                 sStatement.execute("INSERT INTO Item VALUES(" + i + "," + j
                                    + "," + random(max) + ","
                                    + (1 + random(24)) + ",1.5)");
             }
         }
-
         sStatement.execute("UPDATE Product SET Price=ROUND(Price*.1,2)");
         sStatement.execute(
             "UPDATE Item SET Cost=Cost*"
@@ -216,87 +185,62 @@ class DatabaseManagerCommon {
         sStatement.execute(
             "UPDATE Invoice SET Total=(SELECT SUM(Cost*"
             + "Quantity) FROM Item WHERE InvoiceID=Invoice.ID)");
-
         return ("SELECT * FROM Customer");
     }
-
-    
     static String readFile(String file) {
-
         try {
             FileReader     reader = new FileReader(file);
             BufferedReader read   = new BufferedReader(reader);
             StringBuffer   b      = new StringBuffer();
             String         s      = null;
             int            count  = 0;
-
             while ((s = read.readLine()) != null) {
                 count++;
-
                 b.append(s);
                 b.append('\n');
             }
-
             read.close();
             reader.close();
-
             return b.toString();
         } catch (IOException e) {
             return e.toString();
         }
     }
-
     static void writeFile(String file, String text) {
-
         try {
             FileWriter write = new FileWriter(file);
-
             write.write(text.toCharArray());
             write.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    
     static long testStatement(Statement sStatement, String sql,
                               int max) throws SQLException {
-
         long start = System.currentTimeMillis();
-
         if (sql.indexOf('#') == -1) {
             max = 1;
         }
-
         for (int i = 0; i < max; i++) {
             String s = sql;
-
             while (true) {
                 int j = s.indexOf("#r#");
-
                 if (j == -1) {
                     break;
                 }
-
                 s = s.substring(0, j) + ((int) (Math.random() * i))
                     + s.substring(j + 3);
             }
-
             while (true) {
                 int j = s.indexOf('#');
-
                 if (j == -1) {
                     break;
                 }
-
                 s = s.substring(0, j) + i + s.substring(j + 1);
             }
-
             sStatement.execute(s);
         }
-
         return (System.currentTimeMillis() - start);
     }
-
     private DatabaseManagerCommon() {}
 }

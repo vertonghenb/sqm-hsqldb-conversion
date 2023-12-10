@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.sample;
-
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,16 +7,10 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import org.hsqldb.error.Error;
 import org.hsqldb.error.ErrorCode;
 import org.hsqldb.Trigger;
 import org.hsqldb.lib.StringUtil;
-
-
-
-
-
 /**
  * <P>Sample code for use of triggers in hsqldb.
  *
@@ -98,7 +88,6 @@ import org.hsqldb.lib.StringUtil;
  * @since 1.7.0
  */
 public class TriggerSample implements Trigger {
-
     static final PrintWriter out  = new PrintWriter(System.out);
     static final String      drv  = "org.hsqldb.jdbc.JDBCDriver";
     static final String      url  = "jdbc:hsqldb:mem:trigger-sample";
@@ -117,7 +106,6 @@ public class TriggerSample implements Trigger {
         + "nrs LONGVARCHAR, " + "ts  TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
     static final String audit_insert_stmt =
         "INSERT INTO audit(op, tn, ors, nrs) VALUES(?, ?, ?, ?)";
-
     /**
      * A sample HSQLDB Trigger interface implementation. <p>
      *
@@ -136,81 +124,52 @@ public class TriggerSample implements Trigger {
      */
     public void fire(int typ, String trn, String tn, Object[] or,
                      Object[] nr) {
-
         synchronized (TriggerSample.class) {
             String ors = or == null ? "null"
                                     : StringUtil.arrayToString(or);
             String nrs = nr == null ? "null"
                                     : StringUtil.arrayToString(nr);
-
             out.println("----------------------------------------");
             out.println(getTriggerDescriptor(trn, typ, tn));
             out.println("old row : " + ors);
             out.println("new row : " + nrs);
             out.flush();
-
             if ("TRIG_TEST".equals(tn)) {
                 switch (typ) {
-
                     case INSERT_BEFORE_ROW : {
-
-                        
-                        
-                        
-                        
                         final int ID = ((Number) nr[0]).intValue();
-
                         doAssert(ID < 11, "ID < 11");
-
                         break;
                     }
                     case UPDATE_BEFORE_ROW : {
-
-                        
                         if ("unchangable".equals(or[1])) {
                             nr[1] = or[1];    
                         }
-
-                        
-                        
-                        
-                        
-                        
                         break;
                     }
                 }
             }
-
             doAuditStep(typ, tn, ors, nrs);
         }
     }
-
     private static void doAssert(boolean b, String msg) {
-
         if (b) {
-
-            
         } else {
             throw org.hsqldb.error.Error.error(ErrorCode.GENERAL_ERROR,
                                                msg);
         }
     }
-
     private static void doAuditStep(int typ, String tn, String ors,
                                     String nrs) {
-
         Connection        conn;
         PreparedStatement stmt;
-
         switch (typ) {
-
             case INSERT_AFTER_ROW :
             case UPDATE_AFTER_ROW :
             case DELETE_AFTER_ROW : {
                 try {
                     conn = getConnection();
                     stmt = conn.prepareStatement(audit_insert_stmt);
-
                     stmt.setString(1, getOperationSpec(typ));
                     stmt.setString(2, tn);
                     stmt.setString(3, ors);
@@ -223,11 +182,8 @@ public class TriggerSample implements Trigger {
             }
         }
     }
-
     public static String getWhenSpec(int type) {
-
         switch (type) {
-
             case INSERT_BEFORE_ROW :
             case UPDATE_BEFORE_ROW :
             case DELETE_BEFORE_ROW : {
@@ -246,11 +202,8 @@ public class TriggerSample implements Trigger {
             }
         }
     }
-
     public static String getOperationSpec(int type) {
-
         switch (type) {
-
             case INSERT_AFTER :
             case INSERT_AFTER_ROW :
             case INSERT_BEFORE_ROW : {
@@ -271,16 +224,12 @@ public class TriggerSample implements Trigger {
             }
         }
     }
-
     public static String getQueueSpec(int qs) {
         return (qs < 0) ? ""
                         : ("QUEUE " + qs);
     }
-
     public static String getForEachSpec(int type) {
-
         switch (type) {
-
             case INSERT_BEFORE_ROW :
             case INSERT_AFTER_ROW :
             case UPDATE_BEFORE_ROW :
@@ -294,13 +243,10 @@ public class TriggerSample implements Trigger {
             }
         }
     }
-
     public static String getTriggerDDL(String trn, int typ, String tab,
                                        int qs,
                                        String impl) throws SQLException {
-
         StringBuffer sb = new StringBuffer();
-
         sb.append("CREATE TRIGGER ");
         sb.append(trn);
         sb.append(' ');
@@ -316,15 +262,11 @@ public class TriggerSample implements Trigger {
         sb.append(" CALL \"");
         sb.append(impl);
         sb.append("\"");
-
         return sb.toString();
     }
-
     public static String getTriggerDescriptor(String trn, int typ,
             String tab) {
-
         StringBuffer sb = new StringBuffer();
-
         sb.append("TRIGGER : ");
         sb.append(trn);
         sb.append(' ');
@@ -335,15 +277,11 @@ public class TriggerSample implements Trigger {
         sb.append(tab);
         sb.append(' ');
         sb.append(getForEachSpec(typ));
-
         return sb.toString();
     }
-
     private static Connection getConnection() throws SQLException {
-
         try {
             Class.forName(drv).newInstance();
-
             return DriverManager.getConnection(url, usr, pwd);
         } catch (SQLException se) {
             throw se;
@@ -351,17 +289,13 @@ public class TriggerSample implements Trigger {
             throw new SQLException(e.toString());
         }
     }
-
     private static void createTrigger(Statement stmt, String trn,
                                       int typ) throws SQLException {
         stmt.execute(getTriggerDDL(trn, typ, tn, 0, impl));
     }
-
     private static void setup() throws SQLException {
-
         Connection conn = getConnection();
         Statement  stmt = conn.createStatement();
-
         stmt.execute(drop_test_table_stmt);
         stmt.execute(create_test_table_stmt);
         stmt.execute(drop_audit_table_stmt);
@@ -378,12 +312,9 @@ public class TriggerSample implements Trigger {
         stmt.close();
         conn.close();
     }
-
     private static void doSomeWork() throws SQLException {
-
         Connection conn = getConnection();
         Statement  stmt = conn.createStatement();
-
         conn.setAutoCommit(false);
         stmt.execute("INSERT INTO trig_test VALUES (1, 'hello')");
         stmt.execute("INSERT INTO trig_test VALUES (2, 'now what?')");
@@ -397,64 +328,50 @@ public class TriggerSample implements Trigger {
         stmt.execute("DELETE FROM trig_test");
         conn.rollback();
         dumpTable("trig_test");
-
         try {
             stmt.execute("INSERT INTO trig_test VALUES(11, 'whatever')");
         } catch (SQLException se) {
             se.printStackTrace();
         }
-
         stmt.execute("INSERT INTO trig_test VALUES(10, 'whatever')");
         conn.commit();
         dumpTable("trig_test");
         stmt.close();
         conn.close();
     }
-
     private static void dumpTable(String tn) throws SQLException {
-
         Connection        conn  = getConnection();
         Statement         stmt  = conn.createStatement();
         ResultSet         rs    = stmt.executeQuery("select * from " + tn);
         ResultSetMetaData rsmd  = rs.getMetaData();
         int               count = rsmd.getColumnCount();
-
         out.println();
         out.println("****************************************");
         out.println("DUMP FOR TABLE: " + tn);
         out.println("****************************************");
         out.flush();
-
         while (rs.next()) {
             out.print("[");
-
             for (int i = 1; i <= count; i++) {
                 out.print(rs.getString(i));
-
                 if (i < count) {
                     out.print(" : ");
                 }
             }
-
             out.println("]");
         }
-
         out.println();
         out.flush();
         rs.close();
         stmt.close();
         conn.close();
     }
-
     private static void runSample() throws SQLException {
-
         setup();
         doSomeWork();
         dumpTable("audit");
     }
-
     public static void main(String[] args) throws SQLException {
         runSample();
     }
 }
-

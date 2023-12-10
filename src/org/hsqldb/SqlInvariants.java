@@ -1,31 +1,13 @@
-
-
-
 package org.hsqldb;
-
 import org.hsqldb.HsqlNameManager.HsqlName;
 import org.hsqldb.error.Error;
 import org.hsqldb.error.ErrorCode;
-
-
 public class SqlInvariants {
-
-    
     public static final String SYSTEM_AUTHORIZATION_NAME = "_SYSTEM";
-
-    
     public static final String DBA_ADMIN_ROLE_NAME = "DBA";
-
-    
     public static final String SCHEMA_CREATE_ROLE_NAME = "CREATE_SCHEMA";
-
-    
     public static final String CHANGE_AUTH_ROLE_NAME = "CHANGE_AUTHORIZATION";
-
-    
     public static final String SYSTEM_SUBQUERY = "SYSTEM_SUBQUERY";
-
-    
     public static final String   PUBLIC_ROLE_NAME   = "PUBLIC";
     public static final String   SYSTEM_SCHEMA      = "SYSTEM_SCHEMA";
     public static final String   LOBS_SCHEMA        = "SYSTEM_LOBS";
@@ -47,7 +29,6 @@ public class SqlInvariants {
     public static final HsqlName DUAL_TABLE_HSQLNAME;
     public static final HsqlName DUAL_COLUMN_HSQLNAME;
     public static final HsqlName SYSTEM_INDEX_HSQLNAME;
-
     static {
         INFORMATION_SCHEMA_HSQLNAME =
             HsqlNameManager.newSystemObjectName(INFORMATION_SCHEMA,
@@ -70,50 +51,37 @@ public class SqlInvariants {
                 SchemaObject.SCHEMA);
         SYSTEM_INDEX_HSQLNAME = HsqlNameManager.newSystemObjectName(IDX,
                 SchemaObject.INDEX);
-
         SYSTEM_SUBQUERY_HSQLNAME.setSchemaIfNull(SYSTEM_SCHEMA_HSQLNAME);
     }
-
     public static final void checkSchemaNameNotSystem(String name) {
-
         if (isSystemSchemaName(name)) {
             throw Error.error(ErrorCode.X_42503, name);
         }
     }
-
     public static final boolean isSystemSchemaName(String name) {
-
         if (SqlInvariants.DEFINITION_SCHEMA.equals(name)
                 || SqlInvariants.INFORMATION_SCHEMA.equals(name)
                 || SqlInvariants.SYSTEM_SCHEMA.equals(name)
                 || SqlInvariants.SQLJ_SCHEMA.equals(name)) {
             return true;
         }
-
         return false;
     }
-
     public static final boolean isLobsSchemaName(String name) {
-
         if (SqlInvariants.LOBS_SCHEMA.equals(name)) {
             return true;
         }
-
         return false;
     }
-
     public static final boolean isSchemaNameSystem(HsqlName name) {
-
         if (name.schema != null) {
             name = name.schema;
         }
-
         if (SqlInvariants.INFORMATION_SCHEMA_HSQLNAME.equals(name)
                 || SqlInvariants.SYSTEM_SCHEMA_HSQLNAME.equals(name)
                 || SqlInvariants.SQLJ_SCHEMA_HSQLNAME.equals(name)) {
             return true;
         }
-
         return false;
     }
 }

@@ -1,14 +1,8 @@
-
-
-
 package org.hsqldb.server;
-
 import java.util.Map;
-
 import org.hsqldb.Session;
 import org.hsqldb.result.Result;
 import org.hsqldb.result.ResultConstants;
-
 class StatementPortal {
     public Object[] parameters;
     public Result bindResult, ackResult;
@@ -16,15 +10,11 @@ class StatementPortal {
     public String handle;
     private Map containingMap;
     private Session session;
-
-    
     public StatementPortal(String handle,
     OdbcPreparedStatement odbcPs, Map containingMap)
     throws RecoverableOdbcFailure {
         this(handle, odbcPs, new Object[0], containingMap);
     }
-
-    
     public StatementPortal(String handle, OdbcPreparedStatement odbcPs,
     Object[] paramObjs, Map containingMap) throws RecoverableOdbcFailure {
         this.handle = handle;
@@ -73,10 +63,7 @@ class StatementPortal {
         }
         containingMap.put(handle, this);
     }
-
-    
     public void close() {
-        
         containingMap.remove(handle);
     }
 }

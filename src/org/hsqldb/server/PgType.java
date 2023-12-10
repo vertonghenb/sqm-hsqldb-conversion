@@ -1,25 +1,15 @@
-
-
-
-
-
 package org.hsqldb.server;
-
 import java.sql.SQLException;
-
 import org.hsqldb.HsqlException;
 import org.hsqldb.Session;
 import org.hsqldb.jdbc.Util;
 import org.hsqldb.types.Type;
 import org.hsqldb.types.Types;
-
-
 public class PgType {
     private int oid;
     private int typeWidth = -1;
     private int lpConstraint = -1; 
     private Type hType;
-
     public int getOid() {
         return oid;
     }
@@ -29,18 +19,12 @@ public class PgType {
     public int getLPConstraint() {
         return lpConstraint;
     }
-
-    
     protected PgType(Type hType, int oid) {
         this(hType, oid, null, null);
     }
-
-    
     protected PgType(Type hType, int oid, int typeWidth) {
         this(hType, oid, new Integer(typeWidth), null);
     }
-
-    
     protected PgType(Type hType, int oid, Integer dummy, long lpConstraint)
     throws RecoverableOdbcFailure {
         this(hType, oid, dummy, new Integer((int) lpConstraint));
@@ -54,8 +38,6 @@ public class PgType {
                 + Integer.MAX_VALUE);
         }
     }
-
-    
     protected PgType(Type hType,
         int oid, Integer typeWidthObject, Integer lpConstraintObject) {
         this.hType = hType;
@@ -65,7 +47,6 @@ public class PgType {
         this.lpConstraint = (lpConstraintObject == null)
                        ? -1 : lpConstraintObject.intValue();
     }
-
     public static PgType getPgType(Type hType, boolean directColumn)
     throws RecoverableOdbcFailure {
         switch (hType.typeCode) {
@@ -77,30 +58,22 @@ public class PgType {
                 return int4singleton;
             case Types.SQL_BIGINT:
                 return int8singleton;
-
             case Types.SQL_NUMERIC:
             case Types.SQL_DECIMAL:
                 return new PgType(hType, TYPE_NUMERIC, null,
                         (hType.precision << 16) + hType.scale + 4);
-
             case Types.SQL_FLOAT:
-                
-                
-                
             case Types.SQL_DOUBLE:
             case Types.SQL_REAL:
                 return doubleSingleton;
-
             case Types.BOOLEAN:
                 return boolSingleton;
-
             case Types.SQL_CHAR: 
                 if (directColumn) {
                     return new PgType(hType,
                         TYPE_BPCHAR, null, hType.precision + 4);
                 }
                 return unknownSingleton;  
-
             case Types.SQL_VARCHAR: 
             case Types.VARCHAR_IGNORECASE: 
                 if (hType.precision < 0) {
@@ -115,63 +88,38 @@ public class PgType {
                 return (hType.precision != 0 && directColumn)
                     ? new PgType(hType, TYPE_VARCHAR, null, hType.precision + 4)
                     : textSingleton;
-                
-                
             case Types.SQL_CLOB: 
                 throw new RecoverableOdbcFailure (
                     "Driver doesn't support type 'CLOB' yet");
-
             case Types.SQL_BLOB: 
                 return new PgType(hType, TYPE_BLOB, null, hType.precision);
             case Types.SQL_BINARY:
             case Types.SQL_VARBINARY: 
                 return new PgType(hType, TYPE_BYTEA, null, hType.precision);
-                
-                
-                
-                
-                
-                
-
             case Types.OTHER:
                 throw new RecoverableOdbcFailure (
                     "Driver doesn't support type 'OTHER' yet");
-
             case Types.SQL_BIT:
                 return bitSingleton;
             case Types.SQL_BIT_VARYING:
                 return bitVaryingSingleton;
-                
-                
-
             case Types.SQL_DATE:
                 return dateSingleton;
-
-            
             case Types.SQL_TIME :
                 return new PgType(hType, TYPE_TIME, new Integer(8),
                                   hType.precision);
-
             case Types.SQL_TIME_WITH_TIME_ZONE :
                 return new PgType(hType, TYPE_TIME_WITH_TMZONE,
                                   new Integer(12), hType.precision);
-
             case Types.SQL_TIMESTAMP :
                 return new PgType(hType, TYPE_TIMESTAMP_NO_TMZONE,
                                   new Integer(8), hType.precision);
-
             case Types.SQL_TIMESTAMP_WITH_TIME_ZONE :
                 return new PgType(hType, TYPE_TIMESTAMP, new Integer(8),
                                   hType.precision);
-
-            
-            
-            
             case Types.SQL_INTERVAL_YEAR:
             case Types.SQL_INTERVAL_YEAR_TO_MONTH:
             case Types.SQL_INTERVAL_MONTH:
-                
-                
                 throw new RecoverableOdbcFailure (
                     "Driver doesn't support month-resolution 'INTERVAL's yet");
             case Types.SQL_INTERVAL_DAY:
@@ -180,11 +128,6 @@ public class PgType {
             case Types.SQL_INTERVAL_HOUR:
             case Types.SQL_INTERVAL_HOUR_TO_MINUTE:
             case Types.SQL_INTERVAL_MINUTE:
-                
-                
-                
-                
-                
                 throw new RecoverableOdbcFailure (
                     "Driver doesn't support non-second-resolution 'INTERVAL's "
                     + "yet");
@@ -200,21 +143,17 @@ public class PgType {
             case Types.SQL_INTERVAL_SECOND:
                 PgType.ignoredConstraintWarning(hType);
                 return secIntervalSingleton;
-
             default:
                 throw new RecoverableOdbcFailure (
                     "Unsupported type: " + hType.getNameString());
         }
     }
-
-    
     public Object getParameter(String inString, Session session)
     throws SQLException, RecoverableOdbcFailure {
         if (inString == null) {
             return null;
         }
         Object o = inString;
-
         switch (hType.typeCode) {
             case Types.SQL_BOOLEAN :
                 if (inString.length() == 1) switch (inString.charAt(0)) {
@@ -228,19 +167,16 @@ public class PgType {
                         return Boolean.FALSE;
                 }
                 return Boolean.valueOf(inString);
-
             case Types.SQL_BINARY :
             case Types.SQL_VARBINARY :
             case Types.SQL_BLOB :
                 throw new RecoverableOdbcFailure(
                     "This data type should be transmitted to server in binary "
                     + "format: " + hType.getNameString());
-
             case Types.OTHER :
             case Types.SQL_CLOB :
                 throw new RecoverableOdbcFailure(
                         "Type not supported yet: " + hType.getNameString());
-                
             case Types.SQL_DATE :
             case Types.SQL_TIME_WITH_TIME_ZONE :
             case Types.SQL_TIMESTAMP_WITH_TIME_ZONE :
@@ -253,7 +189,6 @@ public class PgType {
                 }
                 break;
             }
-
             case Types.TINYINT :
             case Types.SQL_SMALLINT :
             case Types.SQL_INTEGER :
@@ -270,10 +205,8 @@ public class PgType {
                 }
                 break;
             default :
-                
                 try {
                     o = hType.convertToDefaultType(session, o);
-                    
                 } catch (HsqlException e) {
                     PgType.throwError(e);
                 }
@@ -281,17 +214,12 @@ public class PgType {
         }
         return o;
     }
-
     public String valueString(Object datum) {
         String dataString = hType.convertToString(datum);
         switch (hType.typeCode) {
             case Types.SQL_BOOLEAN :
                 return String.valueOf(((Boolean) datum).booleanValue()
                     ? 't' : 'f');
-                
-                
-                
-                
             case Types.SQL_VARBINARY :
             case Types.SQL_BINARY :
                 dataString = OdbcUtil.hexCharsToOctalOctets(dataString);
@@ -299,8 +227,6 @@ public class PgType {
         }
         return dataString;
     }
-
-    
     public static final int TYPE_BOOL         =  16;
     public static final int TYPE_BYTEA        =  17;
     public static final int TYPE_CHAR         =  18;
@@ -356,31 +282,14 @@ public class PgType {
     public static final int TYPE_RECORD       = 2249;
     public static final int TYPE_VOID         = 2278;
     public static final int TYPE_UUID         = 2950;
-
-    
-    
     public static final int TYPE_BLOB         = 9998;
     public static final int TYPE_TINYINT      = 9999;
-
-    
     public static final int TYPE_BIT          = 1560;
-    
     public static final int TYPE_VARBIT       = 1562;
-    
-
-    
     static final void throwError(HsqlException e) throws SQLException {
-
-
         throw Util.sqlException(e.getMessage(), e.getSQLState(),
             e.getErrorCode(), e);
-
-
-
-
-
     }
-
     static protected final PgType tinyIntSingleton =
         new PgType(Type.TINYINT, TYPE_TINYINT, 1);
     static protected final PgType int2singleton =
@@ -411,12 +320,9 @@ public class PgType {
         new PgType(Type.SQL_INTERVAL_MINUTE_TO_SECOND, TYPE_TINTERVAL, 16);
     static protected final PgType secIntervalSingleton =
         new PgType(Type.SQL_INTERVAL_SECOND, TYPE_TINTERVAL, 16);
-
     static private void ignoredConstraintWarning(Type hsqldbType) {
         if (hsqldbType.precision == 0 && hsqldbType.scale == 0) {
             return;
         }
-        
-        
     }
 }

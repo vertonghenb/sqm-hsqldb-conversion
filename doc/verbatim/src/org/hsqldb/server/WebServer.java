@@ -1,19 +1,7 @@
-
-
-
 package org.hsqldb.server;
-
 import org.hsqldb.lib.FileUtil;
 import org.hsqldb.persist.HsqlProperties;
 import org.hsqldb.resources.BundleHandler;
-
-
-
-
-
-
-
-
 /**
  *  The HSQLDB HTTP protocol network database server. <p>
  *
@@ -89,18 +77,15 @@ import org.hsqldb.resources.BundleHandler;
  * @since 1.7.2
  */
 public class WebServer extends Server {
-
     /**
      * Handle to resource bundle providing i18n for things like
      * HTTP error pages.
      */
     static int webBundleHandle = BundleHandler.getBundleHandle("webserver",
         null);
-
     public WebServer() {
         super(ServerConstants.SC_PROTOCOL_HTTP);
     }
-
     /**
      *  Starts a new WebServer.
      *
@@ -109,64 +94,41 @@ public class WebServer extends Server {
      *      help to be printed to the standard output
      */
     public static void main(String[] args) {
-
         HsqlProperties argProps = null;
-
         argProps = HsqlProperties.argArrayToProps(args,
                 ServerProperties.sc_key_prefix);
-
         String[] errors = argProps.getErrorKeys();
-
         if (errors.length != 0) {
             System.out.println("no value for argument:" + errors[0]);
             printHelp("webserver.help");
-
             return;
         }
-
         String propsPath = argProps.getProperty(ServerProperties.sc_key_props);
         String propsExtension = "";
-
         if (propsPath == null) {
             propsPath      = "webserver";
             propsExtension = ".properties";
         }
-
         propsPath = FileUtil.getFileUtil().canonicalOrAbsolutePath(propsPath);
-
         ServerProperties fileProps = ServerConfiguration.getPropertiesFromFile(
             ServerConstants.SC_PROTOCOL_HTTP, propsPath, propsExtension);
         ServerProperties props =
             fileProps == null
             ? new ServerProperties(ServerConstants.SC_PROTOCOL_HTTP)
             : fileProps;
-
         props.addProperties(argProps);
         ServerConfiguration.translateDefaultDatabaseProperty(props);
-
-        
-        
-        
-        
         ServerConfiguration.translateDefaultNoSystemExitProperty(props);
-
         ServerConfiguration.translateAddressProperty(props);
-
-        
         Server server = new WebServer();
-
         try {
             server.setProperties(props);
         } catch (Exception e) {
             server.printError("Failed to set properties");
             server.printStackTrace(e);
-
             return;
         }
-
-        
         server.print("Startup sequence initiated from main() method");
-
         if (fileProps != null) {
             server.print("Loaded properties from [" + propsPath
                          + ".properties]");
@@ -174,10 +136,8 @@ public class WebServer extends Server {
             server.print("Could not load properties from file");
             server.print("Using cli/default properties only");
         }
-
         server.start();
     }
-
     /**
      * Retrieves the name of the web page served when no page is specified.
      * This attribute is relevant only when server protocol is HTTP(S).
@@ -192,7 +152,6 @@ public class WebServer extends Server {
         return serverProperties.getProperty(
             ServerProperties.sc_key_web_default_page);
     }
-
     /**
      * Retrieves a String object describing the command line and
      * properties options for this Server.
@@ -202,7 +161,6 @@ public class WebServer extends Server {
     public String getHelpString() {
         return BundleHandler.getString(serverBundleHandle, "webserver.help");
     }
-
     /**
      * Retrieves this server's product name.  <p>
      *
@@ -217,7 +175,6 @@ public class WebServer extends Server {
     public String getProductName() {
         return "HSQLDB web server";
     }
-
     /**
      * Retrieves a string respresentaion of the network protocol
      * this server offers, typically one of 'HTTP', HTTPS', 'HSQL' or 'HSQLS'.
@@ -232,7 +189,6 @@ public class WebServer extends Server {
         return isTls() ? "HTTPS"
                        : "HTTP";
     }
-
     /**
      * Retrieves the root context (directory) from which web content
      * is served.  This property is relevant only when the server

@@ -1,10 +1,5 @@
-
-
-
 package org.hsqldb.server;
-
 import org.hsqldb.result.Result;
-
 class RecoverableOdbcFailure extends Exception {
     private String clientMessage = null;
     private String sqlStateCode = null;
@@ -18,17 +13,14 @@ class RecoverableOdbcFailure extends Exception {
     public RecoverableOdbcFailure(Result errorResult) {
         this.errorResult = errorResult;
     }
-    
     public RecoverableOdbcFailure(String m) {
         super(m);
         clientMessage = m;
     }
-    
     public RecoverableOdbcFailure(String m, String sqlStateCode) {
         this(m);
         this.sqlStateCode = sqlStateCode;
     }
-    
     public RecoverableOdbcFailure(
     String ourMessage, String clientMessage, String sqlStateCode) {
         super(ourMessage);

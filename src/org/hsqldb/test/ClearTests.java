@@ -1,12 +1,6 @@
-
-
-
 package org.hsqldb.test;
-
 class ClearTests {
-
     public static void main(String[] argv) {
-
         TestUtil.deleteDatabase("test");
         TestUtil.deleteDatabase("test1");
         TestUtil.deleteDatabase("test2");

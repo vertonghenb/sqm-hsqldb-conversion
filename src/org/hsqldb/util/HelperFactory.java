@@ -1,20 +1,8 @@
-
-
-
 package org.hsqldb.util;
-
-
-
-
 class HelperFactory {
-
     HelperFactory() {}
-
-    
     static TransferHelper getHelper(String productLowerName) {
-
         TransferHelper f = null;
-
         if (productLowerName.indexOf("hsql database") != -1) {
             f = new HsqldbTransferHelper();
         } else if (productLowerName.indexOf("postgresql") != -1) {
@@ -25,7 +13,6 @@ class HelperFactory {
             f = new InformixTransferHelper();
         } else if (productLowerName.indexOf("oracle") != -1) {
             System.out.println("using the Oracle helper");
-
             f = new OracleTransferHelper();
         } else if (productLowerName.equals("access")
                    || (productLowerName.indexOf("microsoft") != -1)) {
@@ -33,7 +20,6 @@ class HelperFactory {
         } else {
             f = new TransferHelper();
         }
-
         return (f);
     }
 }

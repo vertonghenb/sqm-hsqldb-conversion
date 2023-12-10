@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb;
-
 import org.hsqldb.HsqlNameManager.SimpleName;
 import org.hsqldb.ParserDQL.CompileContext;
 import org.hsqldb.error.Error;
@@ -21,19 +17,12 @@ import org.hsqldb.navigator.RowIterator;
 import org.hsqldb.persist.PersistentStore;
 import org.hsqldb.store.ValuePool;
 import org.hsqldb.types.Type;
-
-
 public class RangeVariable implements Cloneable {
-
     static final RangeVariable[] emptyArray = new RangeVariable[]{};
-
-    
     public static final int TABLE_RANGE      = 1;
     public static final int TRANSITION_RANGE = 2;
     public static final int PARAMETER_RANGE  = 3;
     public static final int VARIALBE_RANGE   = 4;
-
-    
     Table                  rangeTable;
     final SimpleName       tableAlias;
     private OrderedHashSet columnAliases;
@@ -46,47 +35,23 @@ public class RangeVariable implements Cloneable {
     boolean                hasKeyedColumnInGroupBy;
     boolean[]              usedColumns;
     boolean[]              updatedColumns;
-
-    
     RangeVariableConditions[] joinConditions;
     RangeVariableConditions[] whereConditions;
     int                       subRangeCount;
-
-    
     Expression joinCondition;
-
-    
     boolean isLeftJoin;     
     boolean isRightJoin;    
     boolean isBoundary;
-
-    
     int level;
-
-    
     int indexDistinctCount;
-
-    
     int rangePositionInJoin;
-
-    
     int rangePosition;
-
-    
     int parsePosition;
-
-    
     HashMappedList variables;
-
-    
     int rangeType;
-
-    
     boolean isGenerated;
-
     RangeVariable(HashMappedList variables, SimpleName rangeName,
                   boolean isVariable, int rangeType) {
-
         this.variables   = variables;
         this.rangeType   = rangeType;
         rangeTable       = null;
@@ -99,10 +64,8 @@ public class RangeVariable implements Cloneable {
         whereConditions = new RangeVariableConditions[]{
             new RangeVariableConditions(this, false) };
     }
-
     RangeVariable(Table table, SimpleName alias, OrderedHashSet columnList,
                   SimpleName[] columnNameList, CompileContext compileContext) {
-
         rangeType        = TABLE_RANGE;
         rangeTable       = table;
         tableAlias       = alias;
@@ -112,18 +75,13 @@ public class RangeVariable implements Cloneable {
             new RangeVariableConditions(this, true) };
         whereConditions = new RangeVariableConditions[]{
             new RangeVariableConditions(this, false) };
-
         compileContext.registerRangeVariable(this);
-
         SubQuery subQuery = rangeTable.getSubQuery();
-
         if (subQuery == null || subQuery.isResolved()) {
             setRangeTableVariables();
         }
     }
-
     RangeVariable(Table table, int position) {
-
         rangeType        = TABLE_RANGE;
         rangeTable       = table;
         tableAlias       = null;
@@ -136,205 +94,143 @@ public class RangeVariable implements Cloneable {
         whereConditions = new RangeVariableConditions[]{
             new RangeVariableConditions(this, false) };
     }
-
     public void resetViewRageTableAsSubquery() {
         rangeTable                   = ((View) rangeTable).getSubqueryTable();
         joinConditions[0].rangeIndex = rangeTable.getPrimaryIndex();
     }
-
     public void setRangeTableVariables() {
-
         if (columnAliasNames != null
                 && rangeTable.getColumnCount() != columnAliasNames.length) {
             throw Error.error(ErrorCode.X_42593);
         }
-
         emptyData                    = rangeTable.getEmptyRowData();
         columnsInGroupBy             = rangeTable.getNewColumnCheckList();
         usedColumns                  = rangeTable.getNewColumnCheckList();
         joinConditions[0].rangeIndex = rangeTable.getPrimaryIndex();
     }
-
     public RangeVariable duplicate() {
-
         RangeVariable r = null;
-
         try {
             r = (RangeVariable) super.clone();
         } catch (CloneNotSupportedException ex) {
             throw Error.runtimeError(ErrorCode.U_S0500, "RangeVariable");
         }
-
         r.resetConditions();
-
         return r;
     }
-
     void setJoinType(boolean isLeft, boolean isRight) {
-
         isLeftJoin  = isLeft;
         isRightJoin = isRight;
-
         if (isRightJoin) {
             whereConditions[0].rangeIndex = rangeTable.getPrimaryIndex();
         }
     }
-
     public void addNamedJoinColumns(OrderedHashSet columns) {
         namedJoinColumns = columns;
     }
-
     public void addColumn(int columnIndex) {
         usedColumns[columnIndex] = true;
     }
-
     public void addAllColumns() {}
-
     void addNamedJoinColumnExpression(String name, Expression e) {
-
         if (namedJoinColumnExpressions == null) {
             namedJoinColumnExpressions = new HashMap();
         }
-
         namedJoinColumnExpressions.put(name, e);
     }
-
     ExpressionColumn getColumnExpression(String name) {
-
         return namedJoinColumnExpressions == null ? null
                                                   : (ExpressionColumn) namedJoinColumnExpressions
                                                   .get(name);
     }
-
     Table getTable() {
         return rangeTable;
     }
-
     boolean hasAnyIndexCondition() {
-
         for (int i = 0; i < joinConditions.length; i++) {
             if (joinConditions[0].indexedColumnCount > 0) {
                 return true;
             }
         }
-
         for (int i = 0; i < whereConditions.length; i++) {
             if (whereConditions[0].indexedColumnCount > 0) {
                 return true;
             }
         }
-
         return false;
     }
-
     boolean hasSingleIndexCondition() {
         return joinConditions.length == 1
                && joinConditions[0].indexedColumnCount > 0;
     }
-
     boolean setDistinctColumnsOnIndex(int[] colMap) {
-
         if (joinConditions.length != 1) {
             return false;
         }
-
         int[] indexColMap = joinConditions[0].rangeIndex.getColumns();
-
         if (colMap.length != ArrayUtil.countTrueElements(usedColumns)) {
             return false;
         }
-
         if (colMap.length == 1 && colMap[0] == indexColMap[0]) {
             indexDistinctCount = 1;
-
             return true;
         }
-
         return false;
     }
-
-    
     Index getSortIndex() {
-
         if (joinConditions.length == 1) {
             return joinConditions[0].rangeIndex;
         } else {
             return null;
         }
     }
-
-    
     boolean setSortIndex(Index index, boolean reversed) {
-
         if (joinConditions.length == 1) {
             if (joinConditions[0].indexedColumnCount == 0) {
                 joinConditions[0].rangeIndex = index;
                 joinConditions[0].reversed   = reversed;
-
                 return true;
             }
         }
-
         return false;
     }
-
     boolean reverseOrder() {
-
         joinConditions[0].reverseIndexCondition();
-
         return true;
     }
-
     public OrderedHashSet getColumnNames() {
-
         if (columnNames == null) {
             columnNames = new OrderedHashSet();
-
             rangeTable.getColumnNames(this.usedColumns, columnNames);
         }
-
         return columnNames;
     }
-
     public OrderedHashSet getUniqueColumnNameSet() {
-
         OrderedHashSet set = new OrderedHashSet();
-
         if (columnAliases != null) {
             set.addAll(columnAliases);
-
             return set;
         }
-
         for (int i = 0; i < rangeTable.columnList.size(); i++) {
             String  name  = rangeTable.getColumn(i).getName().name;
             boolean added = set.add(name);
-
             if (!added) {
                 throw Error.error(ErrorCode.X_42578, name);
             }
         }
-
         return set;
     }
-
     public int findColumn(ExpressionColumn e) {
-
         if (!resolvesTableName(e)) {
             return -1;
         }
-
         return findColumn(e.columnName);
     }
-
-    
     public int findColumn(String columnName) {
-
         if (namedJoinColumnExpressions != null
                 && namedJoinColumnExpressions.containsKey(columnName)) {
             return -1;
         }
-
         if (variables != null) {
             return variables.getIndex(columnName);
         } else if (columnAliases != null) {
@@ -343,56 +239,42 @@ public class RangeVariable implements Cloneable {
             return rangeTable.findColumn(columnName);
         }
     }
-
     ColumnSchema getColumn(String columnName) {
-
         int index = findColumn(columnName);
-
         return index < 0 ? null
                          : rangeTable.getColumn(index);
     }
-
     ColumnSchema getColumn(int i) {
-
         if (variables == null) {
             return rangeTable.getColumn(i);
         } else {
             return (ColumnSchema) variables.get(i);
         }
     }
-
     public SimpleName getColumnAlias(int i) {
-
         if (columnAliases == null) {
             return rangeTable.getColumn(i).getName();
         } else {
             return columnAliasNames[i];
         }
     }
-
     boolean hasColumnAlias() {
         return columnAliases != null;
     }
-
     SimpleName getTableAlias() {
         return tableAlias == null ? rangeTable.getName()
                                   : tableAlias;
     }
-
     boolean resolvesTableName(ExpressionColumn e) {
-
         if (e.tableName == null) {
             return true;
         }
-
         if (variables != null) {
             if (tableAlias != null) {
                 return e.tableName.equals(tableAlias.name);
             }
-
             return false;
         }
-
         if (e.schema == null) {
             if (tableAlias == null) {
                 if (e.tableName.equals(rangeTable.getName().name)) {
@@ -409,24 +291,18 @@ public class RangeVariable implements Cloneable {
                 }
             }
         }
-
         return false;
     }
-
     public boolean resolvesTableName(String name) {
-
         if (name == null) {
             return true;
         }
-
         if (variables != null) {
             if (tableAlias != null) {
                 return name.equals(tableAlias.name);
             }
-
             return false;
         }
-
         if (tableAlias == null) {
             if (name.equals(rangeTable.getName().name)) {
                 return true;
@@ -434,235 +310,170 @@ public class RangeVariable implements Cloneable {
         } else if (name.equals(tableAlias.name)) {
             return true;
         }
-
         return false;
     }
-
     boolean resolvesSchemaName(String name) {
-
         if (name == null) {
             return true;
         }
-
         if (variables != null) {
             return false;
         }
-
         if (tableAlias != null) {
             return false;
         }
-
         return name.equals(rangeTable.getSchemaName().name);
     }
-
-    
     void addTableColumns(HsqlArrayList exprList) {
-
         if (namedJoinColumns != null) {
             int count    = exprList.size();
             int position = 0;
-
             for (int i = 0; i < count; i++) {
                 Expression e          = (Expression) exprList.get(i);
                 String     columnName = e.getColumnName();
-
                 if (namedJoinColumns.contains(columnName)) {
                     if (position != i) {
                         exprList.remove(i);
                         exprList.add(position, e);
                     }
-
                     e = getColumnExpression(columnName);
-
                     exprList.set(position, e);
-
                     position++;
                 }
             }
         }
-
         addTableColumns(exprList, exprList.size(), namedJoinColumns);
     }
-
-    
     int addTableColumns(HsqlArrayList exprList, int position,
                         HashSet exclude) {
-
         Table table = getTable();
         int   count = table.getColumnCount();
-
         for (int i = 0; i < count; i++) {
             ColumnSchema column = table.getColumn(i);
             String columnName = columnAliases == null ? column.getName().name
                                                       : (String) columnAliases
                                                           .get(i);
-
             if (exclude != null && exclude.contains(columnName)) {
                 continue;
             }
-
             Expression e = new ExpressionColumn(this, i);
-
             exprList.add(position++, e);
         }
-
         return position;
     }
-
     void addTableColumns(Expression expression, HashSet exclude) {
-
         HsqlArrayList list  = new HsqlArrayList();
         Table         table = getTable();
         int           count = table.getColumnCount();
-
         for (int i = 0; i < count; i++) {
             ColumnSchema column = table.getColumn(i);
             String columnName = columnAliases == null ? column.getName().name
                                                       : (String) columnAliases
                                                           .get(i);
-
             if (exclude != null && exclude.contains(columnName)) {
                 continue;
             }
-
             Expression e = new ExpressionColumn(this, i);
-
             list.add(e);
         }
-
         Expression[] nodes = new Expression[list.size()];
-
         list.toArray(nodes);
-
         expression.nodes = nodes;
     }
-
-    
     void setForCheckConstraint() {
         joinConditions[0].rangeIndex = null;
         rangePosition                = 0;
     }
-
-    
     Expression getJoinCondition() {
         return joinCondition;
     }
-
     void addJoinCondition(Expression e) {
         joinCondition = ExpressionLogical.andExpressions(joinCondition, e);
     }
-
     void resetConditions() {
-
         Index index = joinConditions[0].rangeIndex;
-
         joinConditions = new RangeVariableConditions[]{
             new RangeVariableConditions(this, true) };
         joinConditions[0].rangeIndex = index;
         whereConditions = new RangeVariableConditions[]{
             new RangeVariableConditions(this, false) };
     }
-
     OrderedHashSet getSubqueries() {
-
         OrderedHashSet set = null;
-
         if (joinCondition != null) {
             set = joinCondition.collectAllSubqueries(set);
         }
-
         if (rangeTable instanceof TableDerived) {
             QueryExpression baseQueryExpression =
                 ((TableDerived) rangeTable).getQueryExpression();
-
             if (((TableDerived) rangeTable).view != null) {
                 if (set == null) {
                     set = new OrderedHashSet();
                 }
-
                 set.addAll(((TableDerived) rangeTable).view.getSubqueries());
             } else if (baseQueryExpression == null) {
                 set = OrderedHashSet.add(set, rangeTable.getSubQuery());
             } else {
                 OrderedHashSet temp = baseQueryExpression.getSubqueries();
-
                 set = OrderedHashSet.addAll(set, temp);
                 set = OrderedHashSet.add(set, rangeTable.getSubQuery());
             }
         }
-
         return set;
     }
-
     public void replaceColumnReference(RangeVariable range,
                                        Expression[] list) {
-
         if (joinCondition != null) {
             joinCondition.replaceColumnReferences(range, list);
         }
     }
-
     public void replaceRangeVariables(RangeVariable[] ranges,
                                       RangeVariable[] newRanges) {
-
         if (joinCondition != null) {
             joinCondition.replaceRangeVariables(ranges, newRanges);
         }
     }
-
     public void resolveRangeTable(Session session,
                                   RangeVariable[] rangeVariables,
                                   int rangeCount,
                                   RangeVariable[] outerRanges) {
-
         Table    table    = rangeTable;
         SubQuery subQuery = table.getSubQuery();
-
         if (subQuery != null && !subQuery.isResolved()) {
             if (subQuery.dataExpression != null) {
                 HsqlList unresolved =
                     subQuery.dataExpression.resolveColumnReferences(session,
                         RangeVariable.emptyArray, null);
-
                 if (unresolved != null) {
                     unresolved =
                         subQuery.dataExpression.resolveColumnReferences(
                             session, rangeVariables, rangeCount, null, true);
                 }
-
                 if (unresolved != null) {
                     unresolved =
                         subQuery.dataExpression.resolveColumnReferences(
                             session, outerRanges, null);
                 }
-
                 if (unresolved != null) {
                     throw Error.error(
                         ErrorCode.X_42501,
                         ((Expression) unresolved.get(0)).getSQL());
                 }
-
                 subQuery.dataExpression.resolveTypes(session, null);
                 setRangeTableVariables();
             }
-
             if (subQuery.queryExpression != null) {
                 subQuery.queryExpression.resolveReferences(session,
                         outerRanges);
-
                 HsqlList list =
                     subQuery.queryExpression.getUnresolvedExpressions();
-
-                
                 HsqlList unresolved = Expression.resolveColumnSet(session,
                     rangeVariables, rangeCount, list, null);
-
                 if (unresolved != null) {
                     throw Error.error(
                         ErrorCode.X_42501,
                         ((Expression) unresolved.get(0)).getSQL());
                 }
-
                 subQuery.queryExpression.resolveTypes(session);
                 subQuery.prepareTable(session);
                 subQuery.setCorrelated();
@@ -670,45 +481,31 @@ public class RangeVariable implements Cloneable {
             }
         }
     }
-
-    
     public String describe(Session session, int blanks) {
-
         StringBuffer sb;
         String       b = ValuePool.spaceString.substring(0, blanks);
-
         sb = new StringBuffer();
-
         String temp = "INNER";
-
         if (isLeftJoin) {
             temp = "LEFT OUTER";
-
             if (isRightJoin) {
                 temp = "FULL";
             }
         } else if (isRightJoin) {
             temp = "RIGHT OUTER";
         }
-
         sb.append(b).append("join type=").append(temp).append("\n");
         sb.append(b).append("table=").append(rangeTable.getName().name).append(
             "\n");
-
         if (tableAlias != null) {
             sb.append(b).append("alias=").append(tableAlias.name).append("\n");
         }
-
         RangeVariableConditions[] conditions = joinConditions;
-
         if (whereConditions[0].hasIndexCondition()) {
             conditions = whereConditions;
         }
-
         boolean fullScan = !conditions[0].hasIndexCondition();
-
         sb.append(b);
-
         if (conditions == whereConditions) {
             if (joinConditions[0].nonIndexCondition != null) {
                 sb.append("join condition = [");
@@ -718,30 +515,24 @@ public class RangeVariable implements Cloneable {
                 sb.append(b);
             }
         }
-
         sb.append("access=").append(fullScan ? "FULL SCAN"
                                              : "INDEX PRED").append("\n");
-
         for (int i = 0; i < conditions.length; i++) {
             if (i > 0) {
                 sb.append(b).append("OR condition = [");
             } else {
                 sb.append(b);
-
                 if (conditions == whereConditions) {
                     sb.append("where condition = [");
                 } else {
                     sb.append("join condition = [");
                 }
             }
-
             sb.append(conditions[i].describe(session, blanks + 2));
             sb.append(b).append("]\n");
         }
-
         if (conditions == joinConditions) {
             sb.append(b);
-
             if (whereConditions[0].nonIndexCondition != null) {
                 sb.append("where condition = [");
                 sb.append(
@@ -751,44 +542,31 @@ public class RangeVariable implements Cloneable {
                 sb.append(b);
             }
         }
-
         return sb.toString();
     }
-
     public RangeIteratorMain getIterator(Session session) {
-
         RangeIteratorMain it;
-
         if (this.isRightJoin) {
             it = new RangeIteratorRight(session, this, null);
         } else {
             it = new RangeIteratorMain(session, this);
         }
-
         session.sessionContext.setRangeIterator(it);
-
         return it;
     }
-
     public static RangeIterator getIterator(Session session,
             RangeVariable[] rangeVars) {
-
         if (rangeVars.length == 1) {
             return rangeVars[0].getIterator(session);
         }
-
         RangeIteratorMain[] iterators =
             new RangeIteratorMain[rangeVars.length];
-
         for (int i = 0; i < rangeVars.length; i++) {
             iterators[i] = rangeVars[i].getIterator(session);
         }
-
         return new RangeIteratorJoined(iterators);
     }
-
     public static class RangeIteratorBase implements RangeIterator {
-
         Session         session;
         int             rangePosition;
         RowIterator     it;
@@ -797,15 +575,11 @@ public class RangeVariable implements Cloneable {
         Row             currentRow;
         boolean         isBeforeFirst;
         RangeVariable   rangeVar;
-
         private RangeIteratorBase() {}
-
         public boolean isBeforeFirst() {
             return isBeforeFirst;
         }
-
         public boolean next() {
-
             if (isBeforeFirst) {
                 isBeforeFirst = false;
             } else {
@@ -813,109 +587,79 @@ public class RangeVariable implements Cloneable {
                     return false;
                 }
             }
-
             currentRow = it.getNextRow();
-
             if (currentRow == null) {
                 return false;
             } else {
                 currentData = currentRow.getData();
-
                 return true;
             }
         }
-
         public Row getCurrentRow() {
             return currentRow;
         }
-
         public Object[] getCurrent() {
             return currentData;
         }
-
         public Object getCurrent(int i) {
             return currentData == null ? null
                                        : currentData[i];
         }
-
         public void setCurrent(Object[] data) {
             currentData = data;
         }
-
         public long getRowId() {
-
             return currentRow == null ? 0
                                       : ((long) rangeVar.rangeTable.getId() << 32)
                                         + ((long) currentRow.getPos());
         }
-
         public Object getRowidObject() {
             return currentRow == null ? null
                                       : ValuePool.getLong(getRowId());
         }
-
         public void remove() {}
-
         public void reset() {
-
             if (it != null) {
                 it.release();
             }
-
             it            = null;
             currentRow    = null;
             isBeforeFirst = true;
         }
-
         public int getRangePosition() {
             return rangePosition;
         }
-
         public Row getNextRow() {
             throw Error.runtimeError(ErrorCode.U_S0500, "RangeVariable");
         }
-
         public boolean hasNext() {
             throw Error.runtimeError(ErrorCode.U_S0500, "RangeVariable");
         }
-
         public Object[] getNext() {
             throw Error.runtimeError(ErrorCode.U_S0500, "RangeVariable");
         }
-
         public boolean setRowColumns(boolean[] columns) {
             throw Error.runtimeError(ErrorCode.U_S0500, "RangeVariable");
         }
-
         public void release() {
-
             if (it != null) {
                 it.release();
             }
         }
     }
-
     public static class RangeIteratorMain extends RangeIteratorBase {
-
         boolean                   hasLeftOuterRow;
         boolean                   isFullIterator;
         RangeVariableConditions[] conditions;
         RangeVariableConditions[] whereConditions;
         RangeVariableConditions[] joinConditions;
         int                       condIndex = 0;
-
-        
         OrderedIntHashSet lookup;
-
-        
         Object[] currentJoinData = null;
-
         RangeIteratorMain() {
             super();
         }
-
         private RangeIteratorMain(Session session, RangeVariable rangeVar) {
-
             this.rangePosition = rangeVar.rangePosition;
             this.store         = rangeVar.rangeTable.getRowStore(session);
             this.session       = session;
@@ -924,84 +668,58 @@ public class RangeVariable implements Cloneable {
             isBeforeFirst      = true;
             whereConditions    = rangeVar.whereConditions;
             joinConditions     = rangeVar.joinConditions;
-
             if (rangeVar.isRightJoin) {
                 lookup = new OrderedIntHashSet();
             }
-
             conditions = rangeVar.joinConditions;
-
             if (rangeVar.whereConditions[0].hasIndexCondition()) {
                 conditions = rangeVar.whereConditions;
             }
         }
-
         public boolean isBeforeFirst() {
             return isBeforeFirst;
         }
-
         public boolean next() {
-
             while (condIndex < conditions.length) {
                 if (isBeforeFirst) {
                     isBeforeFirst = false;
-
                     initialiseIterator();
                 }
-
                 boolean result = findNext();
-
                 if (result) {
                     return true;
                 }
-
                 reset();
-
                 condIndex++;
             }
-
             condIndex = 0;
-
             return false;
         }
-
         public void remove() {}
-
         public void reset() {
-
             if (it != null) {
                 it.release();
             }
-
             it            = null;
             currentData   = rangeVar.emptyData;
             currentRow    = null;
             isBeforeFirst = true;
         }
-
         public int getRangePosition() {
             return rangeVar.rangePosition;
         }
-
-        
         protected void initialiseIterator() {
-
             if (condIndex == 0) {
                 hasLeftOuterRow = rangeVar.isLeftJoin;
             }
-
             if (conditions[condIndex].isFalse) {
                 it = conditions[condIndex].rangeIndex.emptyIterator();
-
                 return;
             }
-
             SubQuery subQuery = rangeVar.rangeTable.getSubQuery();
-
             if (subQuery != null && subQuery.isCorrelated()) {
                 subQuery.materialiseCorrelated(session);
             }
-
             if (conditions[condIndex].indexCond == null) {
                 if (conditions[condIndex].reversed) {
                     it = conditions[condIndex].rangeIndex.lastRow(session,
@@ -1012,36 +730,29 @@ public class RangeVariable implements Cloneable {
                 }
             } else {
                 getFirstRow();
-
                 if (!conditions[condIndex].isJoin) {
                     hasLeftOuterRow = false;
                 }
             }
         }
-
         private void getFirstRow() {
-
             if (currentJoinData == null
                     || currentJoinData.length
                        < conditions[condIndex].indexedColumnCount) {
                 currentJoinData =
                     new Object[conditions[condIndex].indexedColumnCount];
             }
-
             for (int i = 0; i < conditions[condIndex].indexedColumnCount;
                     i++) {
                 int range = 0;
                 int opType = i == conditions[condIndex].indexedColumnCount - 1
                              ? conditions[condIndex].opType
                              : conditions[condIndex].indexCond[i].getType();
-
                 if (opType == OpTypes.IS_NULL || opType == OpTypes.NOT
                         || opType == OpTypes.MAX) {
                     currentJoinData[i] = null;
-
                     continue;
                 }
-
                 Type valueType =
                     conditions[condIndex].indexCond[i].getRightNode()
                         .getDataType();
@@ -1051,10 +762,8 @@ public class RangeVariable implements Cloneable {
                 Type targetType =
                     conditions[condIndex].indexCond[i].getLeftNode()
                         .getDataType();
-
                 if (targetType != valueType) {
                     range = targetType.compareToTypeRange(value);
-
                     if (range == 0) {
                         if (targetType.typeComparisonGroup
                                 != valueType.typeComparisonGroup) {
@@ -1063,114 +772,83 @@ public class RangeVariable implements Cloneable {
                         }
                     }
                 }
-
                 if (i == 0) {
                     int exprType =
                         conditions[condIndex].indexCond[0].getType();
-
                     if (range < 0) {
                         switch (exprType) {
-
                             case OpTypes.GREATER_EQUAL :
                             case OpTypes.GREATER :
                                 value = null;
                                 break;
-
                             default :
                                 it = conditions[condIndex].rangeIndex
                                     .emptyIterator();
-
                                 return;
                         }
                     } else if (range > 0) {
                         switch (exprType) {
-
                             case OpTypes.NOT :
                                 value = null;
                                 break;
-
                             default :
                                 it = conditions[condIndex].rangeIndex
                                     .emptyIterator();
-
                                 return;
                         }
                     }
                 }
-
                 currentJoinData[i] = value;
             }
-
             it = conditions[condIndex].rangeIndex.findFirstRow(session, store,
                     currentJoinData, conditions[condIndex].indexedColumnCount,
                     rangeVar.indexDistinctCount, conditions[condIndex].opType,
                     conditions[condIndex].reversed, null);
         }
-
-        
         protected boolean findNext() {
-
             boolean result = false;
-
             while (true) {
                 currentRow = it.getNextRow();
-
                 if (currentRow == null) {
                     break;
                 }
-
                 currentData = currentRow.getData();
-
                 if (conditions[condIndex].terminalCondition != null
                         && !conditions[condIndex].terminalCondition
                             .testCondition(session)) {
                     break;
                 }
-
                 if (conditions[condIndex].indexEndCondition != null
                         && !conditions[condIndex].indexEndCondition
                             .testCondition(session)) {
                     if (!conditions[condIndex].isJoin) {
                         hasLeftOuterRow = false;
                     }
-
                     break;
                 }
-
                 if (joinConditions[condIndex].nonIndexCondition != null
                         && !joinConditions[condIndex].nonIndexCondition
                             .testCondition(session)) {
                     continue;
                 }
-
                 if (whereConditions[condIndex].nonIndexCondition != null
                         && !whereConditions[condIndex].nonIndexCondition
                             .testCondition(session)) {
                     hasLeftOuterRow = false;
-
                     addFoundRow();
-
                     continue;
                 }
-
                 Expression e = conditions[condIndex].excludeConditions;
-
                 if (e != null && e.testCondition(session)) {
                     continue;
                 }
-
                 addFoundRow();
-
                 hasLeftOuterRow = false;
-
                 return true;
             }
-
             it.release();
-
             currentRow  = null;
             currentData = rangeVar.emptyData;
-
             if (hasLeftOuterRow && condIndex == conditions.length - 1) {
                 result =
                     (whereConditions[condIndex].nonIndexCondition == null
@@ -1178,196 +856,138 @@ public class RangeVariable implements Cloneable {
                          .testCondition(session));
                 hasLeftOuterRow = false;
             }
-
             return result;
         }
-
         protected void addFoundRow() {
-
             if (rangeVar.isRightJoin) {
                 lookup.add(currentRow.getPos());
             }
         }
     }
-
     public static class RangeIteratorRight extends RangeIteratorMain {
-
         private RangeIteratorRight(Session session, RangeVariable rangeVar,
                                    RangeIteratorMain main) {
-
             super(session, rangeVar);
-
             isFullIterator = true;
         }
-
         boolean isOnRightOuterRows;
-
         public void setOnOuterRows() {
-
             conditions         = rangeVar.whereConditions;
             isOnRightOuterRows = true;
             hasLeftOuterRow    = false;
             condIndex          = 0;
-
             initialiseIterator();
         }
-
         public boolean next() {
-
             if (isOnRightOuterRows) {
                 if (it == null) {
                     return false;
                 }
-
                 return findNextRight();
             } else {
                 return super.next();
             }
         }
-
         protected boolean findNextRight() {
-
             boolean result = false;
-
             while (true) {
                 currentRow = it.getNextRow();
-
                 if (currentRow == null) {
                     break;
                 }
-
                 currentData = currentRow.getData();
-
                 if (conditions[condIndex].indexEndCondition != null
                         && !conditions[condIndex].indexEndCondition
                             .testCondition(session)) {
                     break;
                 }
-
                 if (conditions[condIndex].nonIndexCondition != null
                         && !conditions[condIndex].nonIndexCondition
                             .testCondition(session)) {
                     continue;
                 }
-
                 if (!lookupAndTest()) {
                     continue;
                 }
-
                 result = true;
-
                 break;
             }
-
             if (result) {
                 return true;
             }
-
             it.release();
-
             currentRow  = null;
             currentData = rangeVar.emptyData;
-
             return result;
         }
-
         private boolean lookupAndTest() {
-
             boolean result = !lookup.contains(currentRow.getPos());
-
             if (result) {
                 currentData = currentRow.getData();
-
                 if (conditions[condIndex].nonIndexCondition != null
                         && !conditions[condIndex].nonIndexCondition
                             .testCondition(session)) {
                     result = false;
                 }
             }
-
             return result;
         }
     }
-
     public static class RangeIteratorJoined extends RangeIteratorBase {
-
         RangeIteratorMain[] rangeIterators;
         int                 currentIndex = 0;
-
         public RangeIteratorJoined(RangeIteratorMain[] rangeIterators) {
             this.rangeIterators = rangeIterators;
             isBeforeFirst       = true;
         }
-
         public boolean isBeforeFirst() {
             return isBeforeFirst;
         }
-
         public boolean next() {
-
             while (currentIndex >= 0) {
                 RangeIteratorMain it = rangeIterators[currentIndex];
-
                 if (it.next()) {
                     if (currentIndex < rangeIterators.length - 1) {
                         currentIndex++;
-
                         continue;
                     }
-
                     currentRow  = rangeIterators[currentIndex].currentRow;
                     currentData = currentRow.getData();
-
                     return true;
                 } else {
                     it.reset();
-
                     currentIndex--;
-
                     continue;
                 }
             }
-
             currentData =
                 rangeIterators[rangeIterators.length - 1].rangeVar.emptyData;
             currentRow = null;
-
             for (int i = 0; i < rangeIterators.length; i++) {
                 rangeIterators[i].reset();
             }
-
             return false;
         }
-
         public void remove() {}
-
         public void release() {
-
             if (it != null) {
                 it.release();
             }
-
             for (int i = 0; i < rangeIterators.length; i++) {
                 rangeIterators[i].reset();
             }
         }
-
         public void reset() {
-
             super.reset();
-
             for (int i = 0; i < rangeIterators.length; i++) {
                 rangeIterators[i].reset();
             }
         }
-
         public int getRangePosition() {
             return 0;
         }
     }
-
     public static class RangeVariableConditions {
-
         final RangeVariable rangeVar;
         Expression[]        indexCond;
         Expression[]        indexEndCond;
@@ -1385,67 +1005,49 @@ public class RangeVariable implements Cloneable {
         boolean             isFalse;
         boolean             reversed;
         boolean             hasIndex;
-
         RangeVariableConditions(RangeVariable rangeVar, boolean isJoin) {
             this.rangeVar = rangeVar;
             this.isJoin   = isJoin;
         }
-
         RangeVariableConditions(RangeVariableConditions base) {
-
             this.rangeVar     = base.rangeVar;
             this.isJoin       = base.isJoin;
             nonIndexCondition = base.nonIndexCondition;
         }
-
         boolean hasIndexCondition() {
             return indexedColumnCount > 0;
         }
-
         boolean hasIndex() {
             return hasIndex;
         }
-
         void addCondition(Expression e) {
-
             if (e == null) {
                 return;
             }
-
             if (e instanceof ExpressionLogical) {
                 if (((ExpressionLogical) e).isTerminal) {
                     terminalCondition = e;
                 }
             }
-
             nonIndexCondition =
                 ExpressionLogical.andExpressions(nonIndexCondition, e);
-
             if (Expression.EXPR_FALSE.equals(nonIndexCondition)) {
                 isFalse = true;
             }
-
             if (rangeIndex == null || rangeIndex.getColumnCount() == 0) {
                 return;
             }
-
             if (indexedColumnCount == 0) {
                 return;
             }
-
             if (e.getIndexableExpression(rangeVar) == null) {
                 return;
             }
-
             int   colIndex  = e.getLeftNode().getColumnIndex();
             int[] indexCols = rangeIndex.getColumns();
-
             switch (e.getType()) {
-
                 case OpTypes.GREATER :
                 case OpTypes.GREATER_EQUAL : {
-
-                    
                     if (opType == OpTypes.NOT) {
                         if (indexCols[indexedColumnCount - 1] == colIndex) {
                             nonIndexCondition =
@@ -1455,7 +1057,6 @@ public class RangeVariable implements Cloneable {
                             indexCond[indexedColumnCount - 1] = e;
                             opType                            = e.opType;
                             opTypes[indexedColumnCount - 1]   = e.opType;
-
                             if (e.exprSubType == OpTypes.LIKE
                                     && indexedColumnCount == 1) {
                                 indexEndCond[indexedColumnCount - 1] =
@@ -1467,7 +1068,6 @@ public class RangeVariable implements Cloneable {
                     } else {
                         addToIndexConditions(e);
                     }
-
                     break;
                 }
                 case OpTypes.SMALLER :
@@ -1478,7 +1078,6 @@ public class RangeVariable implements Cloneable {
                         if (opTypeEnd != OpTypes.MAX) {
                             break;
                         }
-
                         if (indexCols[indexedColumnCount - 1] == colIndex) {
                             indexEndCond[indexedColumnCount - 1] = e;
                             indexEndCondition =
@@ -1490,15 +1089,12 @@ public class RangeVariable implements Cloneable {
                     } else {
                         addToIndexEndConditions(e);
                     }
-
                     break;
                 }
                 default :
             }
         }
-
         private boolean addToIndexConditions(Expression e) {
-
             if (opType == OpTypes.EQUAL || opType == OpTypes.IS_NULL) {
                 if (indexedColumnCount < rangeIndex.getColumnCount()) {
                     if (rangeIndex.getColumns()[indexedColumnCount]
@@ -1508,25 +1104,19 @@ public class RangeVariable implements Cloneable {
                         opTypes[indexedColumnCount]    = e.opType;
                         opTypeEnd                      = OpTypes.MAX;
                         opTypesEnd[indexedColumnCount] = OpTypes.MAX;
-
                         indexedColumnCount++;
-
                         return true;
                     }
                 }
             }
-
             return false;
         }
-
         private boolean addToIndexEndConditions(Expression e) {
-
             if (opType == OpTypes.EQUAL || opType == OpTypes.IS_NULL) {
                 if (indexedColumnCount < rangeIndex.getColumnCount()) {
                     if (rangeIndex.getColumns()[indexedColumnCount]
                             == e.getLeftNode().getColumnIndex()) {
                         Expression condition = e.getLeftNode();
-
                         condition = new ExpressionLogical(OpTypes.IS_NULL,
                                                           condition);
                         condition = new ExpressionLogical(OpTypes.NOT,
@@ -1540,23 +1130,16 @@ public class RangeVariable implements Cloneable {
                         opTypes[indexedColumnCount]    = OpTypes.NOT;
                         opTypeEnd                      = e.opType;
                         opTypesEnd[indexedColumnCount] = e.opType;
-
                         indexedColumnCount++;
-
                         return true;
                     }
                 }
             }
-
             return false;
         }
-
-        
         void addIndexCondition(Expression[] exprList, Index index,
                                int colCount) {
-
             int indexColCount = index.getColumnCount();
-
             rangeIndex   = index;
             indexCond    = new Expression[indexColCount];
             indexEndCond = new Expression[indexColCount];
@@ -1564,32 +1147,25 @@ public class RangeVariable implements Cloneable {
             opTypesEnd   = new int[indexColCount];
             opType       = exprList[0].opType;
             opTypes[0]   = exprList[0].opType;
-
             switch (opType) {
-
                 case OpTypes.NOT :
                     indexCond     = exprList;
                     opTypeEnd     = OpTypes.MAX;
                     opTypesEnd[0] = OpTypes.MAX;
                     break;
-
                 case OpTypes.GREATER :
                 case OpTypes.GREATER_EQUAL :
                     indexCond = exprList;
-
                     if (exprList[0].exprSubType == OpTypes.LIKE) {
                         indexEndCond[0] = indexEndCondition =
                             exprList[0].nodes[2];
                     }
-
                     opTypeEnd     = OpTypes.MAX;
                     opTypesEnd[0] = OpTypes.MAX;
                     break;
-
                 case OpTypes.SMALLER :
                 case OpTypes.SMALLER_EQUAL : {
                     Expression e = exprList[0].getLeftNode();
-
                     e = new ExpressionLogical(OpTypes.IS_NULL, e);
                     e               = new ExpressionLogical(OpTypes.NOT, e);
                     indexCond[0]    = e;
@@ -1598,16 +1174,13 @@ public class RangeVariable implements Cloneable {
                     opTypesEnd[0]   = opType;
                     opType          = OpTypes.NOT;
                     opTypes[0]      = OpTypes.NOT;
-
                     break;
                 }
                 case OpTypes.IS_NULL :
                 case OpTypes.EQUAL : {
                     indexCond = exprList;
-
                     for (int i = 0; i < colCount; i++) {
                         Expression e = exprList[i];
-
                         indexEndCond[i] = e;
                         indexEndCondition =
                             ExpressionLogical.andExpressions(indexEndCondition,
@@ -1615,75 +1188,55 @@ public class RangeVariable implements Cloneable {
                         opType     = e.opType;
                         opTypes[0] = e.opType;
                     }
-
                     opTypeEnd = opType;
-
                     break;
                 }
                 default :
                     Error.runtimeError(ErrorCode.U_S0500, "RangeVariable");
             }
-
             indexedColumnCount = colCount;
             hasIndex           = true;
         }
-
         void reverseIndexCondition() {
-
             if (opType == OpTypes.EQUAL || opType == OpTypes.IS_NULL) {
                 return;
             }
-
             indexEndCondition = null;
-
             for (int i = 0; i < indexedColumnCount; i++) {
                 Expression e = indexCond[i];
-
                 indexCond[i]    = indexEndCond[i];
                 indexEndCond[i] = e;
                 indexEndCondition =
                     ExpressionLogical.andExpressions(indexEndCondition, e);
             }
-
             opType   = opTypeEnd;
             reversed = true;
         }
-
         String describe(Session session, int blanks) {
-
             StringBuffer sb = new StringBuffer();
             String       b  = ValuePool.spaceString.substring(0, blanks);
-
             sb.append("index=").append(rangeIndex.getName().name).append("\n");
-
             if (hasIndexCondition()) {
                 if (indexedColumnCount > 0) {
                     sb.append(b).append("start conditions=[");
-
                     for (int j = 0; j < indexedColumnCount; j++) {
                         if (indexCond != null && indexCond[j] != null) {
                             sb.append(indexCond[j].describe(session, blanks));
                         }
                     }
-
                     sb.append("]\n");
                 }
-
                 if (indexEndCondition != null) {
                     String temp = indexEndCondition.describe(session, blanks);
-
                     sb.append(b).append("end condition=[").append(temp).append(
                         "]\n");
                 }
             }
-
             if (nonIndexCondition != null) {
                 String temp = nonIndexCondition.describe(session, blanks);
-
                 sb.append(b).append("other condition=[").append(temp).append(
                     "]\n");
             }
-
             return sb.toString();
         }
     }

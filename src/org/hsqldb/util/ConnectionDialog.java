@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.util;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Enumeration;
@@ -24,48 +20,29 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-
-
-
-
-
-
 class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
-
     protected Connection mConnection;
     protected TextField  mName, mDriver, mURL, mUser, mPassword;
     protected Label      mError;
     private String[][]   connTypes;
     private Hashtable    settings;
     private Choice       types, recent;
-
-    
     public static Connection createConnection(String driver, String url,
             String user, String password) throws Exception {
-
         Class.forName(driver).newInstance();
-
         return DriverManager.getConnection(url, user, password);
     }
-
-    
     ConnectionDialog(Frame owner, String title) {
         super(owner, title, true);
     }
-
     private void create() {
-
         Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-
         setLayout(new BorderLayout());
-
         Panel p = new Panel(new BorderLayout());
         Panel pLabel;
         Panel pText;
         Panel pButton;
         Panel pClearButton;
-
-        
         if (d.width >= 640) {
             pLabel       = new Panel(new GridLayout(8, 1, 10, 10));
             pText        = new Panel(new GridLayout(8, 1, 10, 10));
@@ -77,7 +54,6 @@ class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
             pButton      = new Panel(new GridLayout(1, 2));
             pClearButton = new Panel(new GridLayout(8, 1));
         }
-
         p.add("West", pLabel);
         p.add("Center", pText);
         p.add("South", pButton);
@@ -88,31 +64,22 @@ class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
         pLabel.setBackground(SystemColor.control);
         pButton.setBackground(SystemColor.control);
         pLabel.add(createLabel("Recent:"));
-
         recent = new Choice();
-
         try {
             settings = ConnectionDialogCommon.loadRecentConnectionSettings();
         } catch (java.io.IOException ioe) {
             ioe.printStackTrace();
         }
-
         recent.add(ConnectionDialogCommon.emptySettingName);
-
         Enumeration en = settings.elements();
-
         while (en.hasMoreElements()) {
             recent.add(((ConnectionSetting) en.nextElement()).getName());
         }
-
         recent.addItemListener(new ItemListener() {
-
             public void itemStateChanged(ItemEvent e) {
-
                 String s = (String) e.getItem();
                 ConnectionSetting setting =
                     (ConnectionSetting) settings.get(s);
-
                 if (setting != null) {
                     mName.setText(setting.getName());
                     mDriver.setText(setting.getDriver());
@@ -123,20 +90,13 @@ class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
             }
         });
         pText.add(recent);
-
         Button b;
-
         b = new Button("Clr");
-
         b.setActionCommand("Clear");
         b.addActionListener(new ActionListener() {
-
             public void actionPerformed(ActionEvent e) {
-
                 ConnectionDialogCommon.deleteRecentConnectionSettings();
-
                 settings = new Hashtable();
-
                 recent.removeAll();
                 recent.add(ConnectionDialogCommon.emptySettingName);
                 mName.setText(null);
@@ -144,73 +104,50 @@ class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
         });
         pClearButton.add(b);
         pLabel.add(createLabel("Setting Name:"));
-
         mName = new TextField("");
-
         pText.add(mName);
         pLabel.add(createLabel("Type:"));
-
         types     = new Choice();
         connTypes = ConnectionDialogCommon.getTypes();
-
         for (int i = 0; i < connTypes.length; i++) {
             types.add(connTypes[i][0]);
         }
-
         types.addItemListener(this);
         pText.add(types);
         pLabel.add(createLabel("Driver:"));
-
         mDriver = new TextField(connTypes[0][1]);
-
         pText.add(mDriver);
         pLabel.add(createLabel("URL:"));
-
         mURL = new TextField(connTypes[0][2]);
-
         mURL.addActionListener(this);
         pText.add(mURL);
         pLabel.add(createLabel("User:"));
-
         mUser = new TextField("SA");
-
         mUser.addActionListener(this);
         pText.add(mUser);
         pLabel.add(createLabel("Password:"));
-
         mPassword = new TextField("");
-
         mPassword.addActionListener(this);
         mPassword.setEchoChar('*');
         pText.add(mPassword);
-
         b = new Button("Ok");
-
         b.setActionCommand("ConnectOk");
         b.addActionListener(this);
         pButton.add(b);
-
         b = new Button("Cancel");
-
         b.setActionCommand("ConnectCancel");
         b.addActionListener(this);
         pButton.add(b);
         add("East", createLabel(""));
         add("West", createLabel(""));
-
         mError = new Label("");
-
         Panel pMessage = createBorderPanel(mError);
-
         add("South", pMessage);
         add("North", createLabel(""));
         add("Center", p);
         doLayout();
         pack();
-
         Dimension size = getSize();
-
-        
         if (d.width >= 640) {
             setLocation((d.width - size.width) / 2,
                         (d.height - size.height) / 2);
@@ -218,32 +155,20 @@ class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
             setLocation(0, 0);
             setSize(d);
         }
-
         show();
     }
-
     public static Connection createConnection(Frame owner, String title) {
-
         ConnectionDialog dialog = new ConnectionDialog(owner, title);
-
         dialog.create();
-
         return dialog.mConnection;
     }
-
     protected static Label createLabel(String s) {
-
         Label l = new Label(s);
-
         l.setBackground(SystemColor.control);
-
         return l;
     }
-
     protected static Panel createBorderPanel(Component center) {
-
         Panel p = new Panel();
-
         p.setBackground(SystemColor.control);
         p.setLayout(new BorderLayout());
         p.add("Center", center);
@@ -252,25 +177,19 @@ class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
         p.add("East", createLabel(""));
         p.add("West", createLabel(""));
         p.setBackground(SystemColor.control);
-
         return p;
     }
-
     public void actionPerformed(ActionEvent ev) {
-
         String s = ev.getActionCommand();
-
         if (s.equals("ConnectOk") || (ev.getSource() instanceof TextField)) {
             try {
                 if (mURL.getText().indexOf('\u00AB') >= 0) {
                     throw new Exception("please specify db path");
                 }
-
                 mConnection = createConnection(mDriver.getText(),
                                                mURL.getText(),
                                                mUser.getText(),
                                                mPassword.getText());
-
                 if (mName.getText() != null
                         && mName.getText().trim().length() != 0) {
                     ConnectionSetting newSetting =
@@ -278,11 +197,9 @@ class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
                                               mDriver.getText(),
                                               mURL.getText(), mUser.getText(),
                                               mPassword.getText());
-
                     ConnectionDialogCommon.addToRecentConnectionSettings(
                         settings, newSetting);
                 }
-
                 dispose();
             } catch (java.io.IOException ioe) {
                 dispose();
@@ -294,11 +211,8 @@ class ConnectionDialog extends Dialog implements ActionListener, ItemListener {
             dispose();
         }
     }
-
     public void itemStateChanged(ItemEvent e) {
-
         String s = (String) e.getItem();
-
         for (int i = 0; i < connTypes.length; i++) {
             if (s.equals(connTypes[i][0])) {
                 mDriver.setText(connTypes[i][1]);

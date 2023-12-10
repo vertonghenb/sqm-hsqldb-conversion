@@ -1,8 +1,4 @@
-
-
-
 package org.hsqldb.test;
-
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,18 +7,11 @@ import java.sql.PreparedStatement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.math.BigDecimal;
-
-
 public class TestOdbcTypes extends AbstractTestOdbc {
-    
-
     public TestOdbcTypes() {}
-
-    
     public TestOdbcTypes(String s) {
         super(s);
     }
-
     protected void populate(Statement st) throws SQLException {
         st.executeUpdate("DROP TABLE alltypes IF EXISTS");
         st.executeUpdate("CREATE TABLE alltypes (\n"
@@ -49,11 +38,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             + "    dsival INTERVAL DAY(5) TO SECOND(6),\n"
             + "    sival INTERVAL SECOND(6,4)\n"
            + ')');
-        
-
-        
-        
-        
         st.executeUpdate("INSERT INTO alltypes VALUES (\n"
             + "    1, 3, 4, 5, 6, 7.8, 8.9, 9.7, true, 'ab', 'cd',\n"
             + "    b'10', b'10', current_date, '13:14:00',\n"
@@ -73,7 +57,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             + ')'
         );
     }
-
     public void testIntegerSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -102,7 +85,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testTinyIntSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -111,7 +93,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             rs = st.executeQuery("SELECT * FROM alltypes WHERE id in (1, 2)");
             assertTrue("Got no rows with id in (1, 2)", rs.next());
             assertEquals(Integer.class, rs.getObject("ti").getClass());
-            
             assertTrue("Got only one row with id in (1, 2)", rs.next());
             assertEquals((byte) 3, rs.getByte("ti"));
             assertFalse("Got too many rows with id in (1, 2)", rs.next());
@@ -132,7 +113,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testSmallIntSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -141,7 +121,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             rs = st.executeQuery("SELECT * FROM alltypes WHERE id in (1, 2)");
             assertTrue("Got no rows with id in (1, 2)", rs.next());
             assertEquals(Integer.class, rs.getObject("si").getClass());
-            
             assertTrue("Got only one row with id in (1, 2)", rs.next());
             assertEquals((short) 4, rs.getShort("si"));
             assertFalse("Got too many rows with id in (1, 2)", rs.next());
@@ -162,7 +141,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testBigIntSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -191,9 +169,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
-    
-
     public void testFloatSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -222,7 +197,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testDoubleSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -251,7 +225,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testBooleanSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -280,7 +253,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testCharSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -309,7 +281,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testVarCharSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -338,7 +309,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testFixedStringSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -368,7 +338,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testDerivedStringSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -398,7 +367,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testDateSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -429,7 +397,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testTimeSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -458,9 +425,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
-    
-
     public void testTimestampSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -489,7 +453,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testTimestampWSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -519,9 +482,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testBitSimpleRead() {
-        
         ResultSet rs = null;
         Statement st = null;
         try {
@@ -548,7 +509,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testBitVaryingSimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -576,7 +536,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testBinarySimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -613,7 +572,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertEquals("Byte " + i + " wrong", expectedBytes[i], ba[i]);
         }
     }
-
     public void testVarBinarySimpleRead() {
         ResultSet rs = null;
         Statement st = null;
@@ -649,9 +607,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertEquals("Byte " + i + " wrong", expectedBytes[i], ba[i]);
         }
     }
-
     public void testDaySecIntervalSimpleRead() {
-        
         ResultSet rs = null;
         Statement st = null;
         try {
@@ -660,8 +616,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertTrue("Got no rows with id in (1, 2)", rs.next());
             assertEquals("145 23:12:19.345000", rs.getString("dsival"));
             assertTrue("Got only one row with id in (1, 2)", rs.next());
-            
-            
             assertFalse("Got too many rows with id in (1, 2)", rs.next());
         } catch (SQLException se) {
             junit.framework.AssertionFailedError ase
@@ -680,9 +634,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testSecIntervalSimpleRead() {
-        
         ResultSet rs = null;
         Statement st = null;
         try {
@@ -691,8 +643,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertTrue("Got no rows with id in (1, 2)", rs.next());
             assertEquals("1000.345000", rs.getString("sival"));
             assertTrue("Got only one row with id in (1, 2)", rs.next());
-            
-            
             assertFalse("Got too many rows with id in (1, 2)", rs.next());
         } catch (SQLException se) {
             junit.framework.AssertionFailedError ase
@@ -711,7 +661,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testIntegerComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -751,7 +700,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testTinyIntComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -791,7 +739,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testSmallIntComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -811,7 +758,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             rs = ps.executeQuery();
             assertTrue("Got no rows with si = 395", rs.next());
             assertEquals(Integer.class, rs.getObject("si").getClass());
-            
             assertTrue("Got only one row with si = 395", rs.next());
             assertEquals((short) 395, rs.getShort("si"));
             assertFalse("Got too many rows with si = 395", rs.next());
@@ -832,7 +778,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testBigIntComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -872,9 +817,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
-    
-
     public void testFloatComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -914,7 +856,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testDoubleComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -954,7 +895,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testBooleanComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -994,7 +934,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testCharComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -1034,7 +973,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testVarCharComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -1074,16 +1012,12 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
-    
-
     public void testDateComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         java.sql.Date tomorrow =
                 new java.sql.Date(new java.util.Date().getTime()
                         + 1000 * 60 * 60 * 24);
-
         try {
             ps = netConn.prepareStatement(
                 "INSERT INTO alltypes(id, d) VALUES(?, ?)");
@@ -1102,8 +1036,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertEquals(java.sql.Date.class, rs.getObject("d").getClass());
             assertTrue("Got only one row with d = tomorrow", rs.next());
             assertEquals(tomorrow.toString(), rs.getDate("d").toString());
-            
-            
             assertFalse("Got too many rows with d = tomorrow", rs.next());
         } catch (SQLException se) {
             junit.framework.AssertionFailedError ase
@@ -1122,12 +1054,10 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testTimeComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         Time aTime = Time.valueOf("21:19:27");
-
         try {
             ps = netConn.prepareStatement(
                 "INSERT INTO alltypes(id, t) VALUES(?, ?)");
@@ -1164,14 +1094,10 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
-    
-
     public void testTimestampComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         Timestamp aTimestamp = Timestamp.valueOf("2009-03-27 17:18:19");
-
         try {
             ps = netConn.prepareStatement(
                 "INSERT INTO alltypes(id, ts) VALUES(?, ?)");
@@ -1208,12 +1134,10 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
     public void testTimestampWComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         Timestamp aTimestamp = Timestamp.valueOf("2009-03-27 17:18:19");
-
         try {
             ps = netConn.prepareStatement(
                 "INSERT INTO alltypes(id, tsw) VALUES(?, ?)");
@@ -1250,9 +1174,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             }
         }
     }
-
-    
-
     public void testBinaryComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -1260,7 +1181,6 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             (byte) 0xaa, (byte) 0x99, (byte) 0, (byte) 0
         };
         byte[] ba1, ba2;
-
         try {
             ps = netConn.prepareStatement(
                 "INSERT INTO alltypes(id, bin) VALUES(?, ?)");
@@ -1306,13 +1226,11 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertEquals("Byte " + i + " wrong (2)", expectedBytes[i], ba2[i]);
         }
     }
-
     public void testVarBinaryComplex() {
         PreparedStatement ps = null;
         ResultSet rs = null;
         byte[] expectedBytes = new byte[] { (byte) 0xaa, (byte) 0x99 };
         byte[] ba1, ba2;
-
         try {
             ps = netConn.prepareStatement(
                 "INSERT INTO alltypes(id, vb) VALUES(?, ?)");
@@ -1358,12 +1276,7 @@ public class TestOdbcTypes extends AbstractTestOdbc {
             assertEquals("Byte " + i + " wrong (2)", expectedBytes[i], ba2[i]);
         }
     }
-
-    
-
     public static void main(String[] sa) {
         staticRunner(TestOdbcTypes.class, sa);
     }
-
-    
 }

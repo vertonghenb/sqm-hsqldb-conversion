@@ -1,13 +1,6 @@
-
-
-
 package org.hsqldb.util;
-
 import java.io.Serializable;
-
-
 class SQLStatements implements Serializable {
-
     String  sSchema, sType;
     String  sDatabaseToConvert;
     String  sSourceTable, sDestTable;

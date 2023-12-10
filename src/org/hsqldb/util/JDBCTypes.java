@@ -1,13 +1,6 @@
-
-
-
 package org.hsqldb.util;
-
 import java.util.Hashtable;
-
-
 class JDBCTypes {
-
     public static final int JAVA_OBJECT = 2000;
     public static final int DISTINCT    = 2001;
     public static final int STRUCT      = 2002;
@@ -17,12 +10,9 @@ class JDBCTypes {
     public static final int REF         = 2006;
     private Hashtable       hStringJDBCtypes;
     private Hashtable       hIntJDBCtypes;
-
     JDBCTypes() {
-
         hStringJDBCtypes = new Hashtable();
         hIntJDBCtypes    = new Hashtable();
-
         hStringJDBCtypes.put(new Integer(ARRAY), "ARRAY");
         hStringJDBCtypes.put(new Integer(BLOB), "BLOB");
         hStringJDBCtypes.put(new Integer(CLOB), "CLOB");
@@ -30,8 +20,6 @@ class JDBCTypes {
         hStringJDBCtypes.put(new Integer(JAVA_OBJECT), "JAVA_OBJECT");
         hStringJDBCtypes.put(new Integer(REF), "REF");
         hStringJDBCtypes.put(new Integer(STRUCT), "STRUCT");
-
-        
         hStringJDBCtypes.put(new Integer(java.sql.Types.BIGINT), "BIGINT");
         hStringJDBCtypes.put(new Integer(java.sql.Types.BINARY), "BINARY");
         hStringJDBCtypes.put(new Integer(java.sql.Types.BIT), "BIT");
@@ -58,9 +46,7 @@ class JDBCTypes {
         hStringJDBCtypes.put(new Integer(java.sql.Types.VARBINARY),
                              "VARBINARY");
         hStringJDBCtypes.put(new Integer(java.sql.Types.VARCHAR), "VARCHAR");
-
         hStringJDBCtypes.put(new Integer(java.sql.Types.BOOLEAN), "BOOLEAN");
-        
         hIntJDBCtypes.put("ARRAY", new Integer(ARRAY));
         hIntJDBCtypes.put("BLOB", new Integer(BLOB));
         hIntJDBCtypes.put("CLOB", new Integer(CLOB));
@@ -68,8 +54,6 @@ class JDBCTypes {
         hIntJDBCtypes.put("JAVA_OBJECT", new Integer(JAVA_OBJECT));
         hIntJDBCtypes.put("REF", new Integer(REF));
         hIntJDBCtypes.put("STRUCT", new Integer(STRUCT));
-
-        
         hIntJDBCtypes.put("BIGINT", new Integer(java.sql.Types.BIGINT));
         hIntJDBCtypes.put("BINARY", new Integer(java.sql.Types.BINARY));
         hIntJDBCtypes.put("BIT", new Integer(java.sql.Types.BIT));
@@ -95,19 +79,14 @@ class JDBCTypes {
         hIntJDBCtypes.put("VARCHAR", new Integer(java.sql.Types.VARCHAR));
         hIntJDBCtypes.put("BOOLEAN", new Integer(java.sql.Types.BOOLEAN));
     }
-
     public Hashtable getHashtable() {
         return hStringJDBCtypes;
     }
-
     public String toString(int type) {
         return (String) hStringJDBCtypes.get(new Integer(type));
     }
-
     public int toInt(String type) throws Exception {
-
         Integer tempInteger = (Integer) hIntJDBCtypes.get(type);
-
         return tempInteger.intValue();
     }
 }

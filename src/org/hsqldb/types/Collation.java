@@ -1,11 +1,6 @@
-
-
-
 package org.hsqldb.types;
-
 import java.text.Collator;
 import java.util.Locale;
-
 import org.hsqldb.HsqlException;
 import org.hsqldb.HsqlNameManager;
 import org.hsqldb.HsqlNameManager.HsqlName;
@@ -22,14 +17,10 @@ import org.hsqldb.lib.OrderedHashSet;
 import org.hsqldb.lib.StringUtil;
 import org.hsqldb.lib.java.JavaSystem;
 import org.hsqldb.rights.Grantee;
-
-
 public class Collation implements SchemaObject {
-
     public static final HashMap nameToJavaName    = new HashMap(101);
     public static final HashMap dbNameToJavaName  = new HashMap(101);
     public static final HashMap dbNameToCollation = new HashMap(11);
-
     static {
         nameToJavaName.put("Afrikaans", "af-ZA");
         nameToJavaName.put("Amharic", "am-ET");
@@ -126,48 +117,33 @@ public class Collation implements SchemaObject {
         nameToJavaName.put("Yoruba", "yo-NG");
         nameToJavaName.put("Chinese", "zh-CN");
         nameToJavaName.put("Zulu", "zu-ZA");
-
-        
         Iterator it = nameToJavaName.values().iterator();
-
         while (it.hasNext()) {
             String javaName = (String) it.next();
             String dbName = javaName.replace('-',
                                              '_').toUpperCase(Locale.ENGLISH);
-
             dbNameToJavaName.put(dbName, javaName);
         }
     }
-
     static final Collation defaultCollation = new Collation();
-
     static {
         defaultCollation.charset = TypeInvariants.SQL_TEXT;
     }
-
     final HsqlName name;
     Collator       collator;
     Locale         locale;
     boolean        equalIsIdentical = true;
     boolean        isFinal;
-
-    
     Charset  charset;
     HsqlName sourceName;
-
     private Collation() {
-
         locale = Locale.ENGLISH;
-
         String language = locale.getDisplayLanguage(Locale.ENGLISH);
-
         name = HsqlNameManager.newInfoSchemaObjectName(language, true,
                 SchemaObject.COLLATION);
         this.isFinal = true;
     }
-
     private Collation(String name, String language, String country) {
-
         locale           = new Locale(language, country);
         collator         = Collator.getInstance(locale);
         equalIsIdentical = false;
@@ -176,197 +152,137 @@ public class Collation implements SchemaObject {
         charset      = TypeInvariants.SQL_TEXT;
         this.isFinal = true;
     }
-
     public Collation(HsqlName name, Collation source, Charset charset) {
-
         this.name             = name;
         this.locale           = source.locale;
         this.collator         = source.collator;
         this.equalIsIdentical = source.equalIsIdentical;
         this.isFinal          = true;
-
-        
         this.charset    = charset;
         this.sourceName = source.name;
     }
-
     public static Collation getDefaultInstance() {
         return defaultCollation;
     }
-
     public static Collation getDatabaseInstance() {
-
         Collation collation = new Collation();
-
         collation.isFinal = false;
-
         return collation;
     }
-
     public static org.hsqldb.lib.Iterator getCollationsIterator() {
         return nameToJavaName.keySet().iterator();
     }
-
     public static org.hsqldb.lib.Iterator getLocalesIterator() {
         return nameToJavaName.values().iterator();
     }
-
     public synchronized static Collation getCollation(String name) {
-
         Collation collation = (Collation) dbNameToCollation.get(name);
-
         if (collation != null) {
             return collation;
         }
-
         String javaName = (String) dbNameToJavaName.get(name);
-
         if (javaName == null) {
             javaName = (String) nameToJavaName.get(name);
-
             if (javaName == null) {
                 throw Error.error(ErrorCode.X_42501, javaName);
             }
         }
-
         String[] parts    = StringUtil.split(javaName, "-");
         String   language = parts[0];
         String   country  = parts.length == 2 ? parts[1]
                                               : "";
-
         collation = new Collation(name, language, country);
-
         dbNameToCollation.put(name, collation);
-
         return collation;
     }
-
     public void setCollationAsLocale() {
-
         Locale locale   = Locale.getDefault();
         String language = locale.getDisplayLanguage(Locale.ENGLISH);
-
         try {
             setCollation(language);
         } catch (HsqlException e) {}
     }
-
     public void setCollation(String newName) {
-
         String jname = (String) Collation.nameToJavaName.get(newName);
-
         if (jname == null) {
             jname = (String) Collation.dbNameToJavaName.get(newName);
         }
-
         if (jname == null) {
             throw Error.error(ErrorCode.X_42501, newName);
         }
-
         if (isFinal) {
             throw Error.error(ErrorCode.X_42503, newName);
         }
-
         name.rename(newName, true);
-
         String[] parts    = StringUtil.split(jname, "-");
         String   language = parts[0];
         String   country  = parts.length == 2 ? parts[1]
                                               : "";
-
         locale           = new Locale(language, country);
         collator         = Collator.getInstance(locale);
         equalIsIdentical = false;
     }
-
-    
     public boolean isEqualAlwaysIdentical() {
         return collator == null;
     }
-
-    
     public int compare(String a, String b) {
-
         int i;
-
         if (collator == null) {
             i = a.compareTo(b);
         } else {
             i = collator.compare(a, b);
         }
-
         return (i == 0) ? 0
                         : (i < 0 ? -1
                                  : 1);
     }
-
     public int compareIgnoreCase(String a, String b) {
-
         int i;
-
         if (collator == null) {
             i = JavaSystem.compareIngnoreCase(a, b);
         } else {
             i = collator.compare(toUpperCase(a), toUpperCase(b));
         }
-
         return (i == 0) ? 0
                         : (i < 0 ? -1
                                  : 1);
     }
-
     public String toUpperCase(String s) {
         return s.toUpperCase(locale);
     }
-
     public String toLowerCase(String s) {
         return s.toLowerCase(locale);
     }
-
-    
     public boolean isDefaultCollation() {
         return collator == null;
     }
-
-    
     public boolean isObjectCollation() {
         return isFinal && collator != null;
     }
-
     public HsqlName getName() {
         return name;
     }
-
     public int getType() {
         return SchemaObject.COLLATION;
     }
-
     public HsqlName getSchemaName() {
         return name.schema;
     }
-
     public HsqlName getCatalogName() {
         return name.schema.schema;
     }
-
     public Grantee getOwner() {
         return name.schema.owner;
     }
-
     public OrderedHashSet getReferences() {
         return new OrderedHashSet();
     }
-
     public OrderedHashSet getComponents() {
         return null;
     }
-
     public void compile(Session session, SchemaObject parentObject) {}
-
     public String getSQL() {
-
         StringBuffer sb = new StringBuffer();
-
         sb.append(Tokens.T_CREATE).append(' ');
         sb.append(Tokens.T_COLLATION).append(' ');
         sb.append(name.getSchemaQualifiedStatementName()).append(' ');
@@ -374,10 +290,8 @@ public class Collation implements SchemaObject {
         sb.append(charset.name.getSchemaQualifiedStatementName()).append(' ');
         sb.append(Tokens.T_FROM).append(' ');
         sb.append(sourceName.statementName);
-
         return sb.toString();
     }
-
     public long getChangeTimestamp() {
         return 0;
     }
